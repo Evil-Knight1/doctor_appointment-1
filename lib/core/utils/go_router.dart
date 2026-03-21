@@ -4,6 +4,7 @@ import 'package:doctor_appointment/features/appointment/presentation/views/new_a
 import 'package:doctor_appointment/features/appointment/presentation/views/patient_details_view.dart';
 import 'package:doctor_appointment/features/auth/presentation/views/login_view.dart';
 import 'package:doctor_appointment/features/auth/presentation/views/signup_view.dart';
+import 'package:doctor_appointment/features/auth/logic/auth_cubit.dart';
 import 'package:doctor_appointment/features/calendar/presentation/views/calendar_view.dart';
 import 'package:doctor_appointment/features/doctor_details/presentation/views/doctor_details_view.dart';
 import 'package:doctor_appointment/features/favorite/presentation/views/favorite_view.dart';
@@ -13,6 +14,8 @@ import 'package:doctor_appointment/features/home/data/models/doctor_model.dart';
 import 'package:doctor_appointment/features/profile/presentation/views/profile_view.dart';
 import 'package:doctor_appointment/features/splash/presentation/views/splash_view.dart';
 import 'package:doctor_appointment/features/on_boarding_view/presentation/views/on_boarding_view.dart';
+import 'package:doctor_appointment/core/services/service_locator.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 abstract class AppRouter {
@@ -34,7 +37,13 @@ abstract class AppRouter {
   static final router = GoRouter(
     routes: [
       GoRoute(path: '/', builder: (context, state) => const SplashView()),
-      GoRoute(path: kLoginView, builder: (context, state) => const LoginView()),
+      GoRoute(
+        path: kLoginView,
+        builder: (context, state) => BlocProvider(
+          create: (_) => getIt<AuthCubit>(),
+          child: const LoginView(),
+        ),
+      ),
       GoRoute(
         path: kOnBoardingView,
         builder: (context, state) => const OnBoardingView(),
@@ -42,7 +51,10 @@ abstract class AppRouter {
       GoRoute(path: kHomeView, builder: (context, state) => const HomeView()),
       GoRoute(
         path: kSignUpView,
-        builder: (context, state) => const SignUpView(),
+        builder: (context, state) => BlocProvider(
+          create: (_) => getIt<AuthCubit>(),
+          child: const SignUpView(),
+        ),
       ),
       GoRoute(path: kRoot, builder: (context, state) => const Root()),
       GoRoute(
