@@ -69,6 +69,39 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 
+  @override
+  Future<Result<AuthResponse>> refreshToken({
+    required String token,
+    required String refreshToken,
+  }) async {
+    try {
+      final response = await remoteDataSource.refreshToken(
+        token: token,
+        refreshToken: refreshToken,
+      );
+      await localDataSource.cacheAuthSession(response);
+      return Result.success(response);
+    } on ApiException catch (exception) {
+      return Result.failure(
+        ServerFailure(exception.message, statusCode: exception.statusCode),
+      );
+    } on DioException catch (exception) {
+      return Result.failure(_mapDioFailure(exception));
+    } catch (exception) {
+      return Result.failure(const UnknownFailure('Unexpected error occurred'));
+    }
+  }
+
+  @override
+  Future<Result<AuthResponse?>> getCachedSession() async {
+    try {
+      final session = await localDataSource.getCachedSession();
+      return Result.success(session);
+    } catch (_) {
+      return Result.failure(const UnknownFailure('Failed to read session'));
+    }
+  }
+
   Failure _mapDioFailure(DioException exception) {
     if (exception.type == DioExceptionType.connectionTimeout ||
         exception.type == DioExceptionType.sendTimeout ||

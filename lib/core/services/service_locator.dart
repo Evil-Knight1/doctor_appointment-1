@@ -10,7 +10,9 @@ import 'package:doctor_appointment/features/auth/data/datasources/auth_remote_da
 import 'package:doctor_appointment/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:doctor_appointment/features/auth/domain/repositories/auth_repository.dart';
 import 'package:doctor_appointment/features/auth/domain/usecases/login_usecase.dart';
+import 'package:doctor_appointment/features/auth/domain/usecases/get_cached_session_usecase.dart';
 import 'package:doctor_appointment/features/auth/domain/usecases/register_patient_usecase.dart';
+import 'package:doctor_appointment/features/auth/domain/usecases/refresh_token_usecase.dart';
 import 'package:doctor_appointment/features/auth/logic/auth_cubit.dart';
 
 final getIt = GetIt.instance;
@@ -53,7 +55,13 @@ void setupServiceLocator() {
   );
   getIt.registerLazySingleton(() => LoginUseCase(getIt<AuthRepository>()));
   getIt.registerLazySingleton(
+    () => GetCachedSessionUseCase(getIt<AuthRepository>()),
+  );
+  getIt.registerLazySingleton(
     () => RegisterPatientUseCase(getIt<AuthRepository>()),
+  );
+  getIt.registerLazySingleton(
+    () => RefreshTokenUseCase(getIt<AuthRepository>()),
   );
   getIt.registerFactory(
     () => AuthCubit(

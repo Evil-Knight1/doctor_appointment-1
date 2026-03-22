@@ -17,6 +17,11 @@ abstract class AuthRemoteDataSource {
     String? gender,
     String? address,
   });
+
+  Future<AuthResponseModel> refreshToken({
+    required String token,
+    required String refreshToken,
+  });
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -57,6 +62,18 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         'gender': gender,
         'address': address,
       },
+    );
+    return _parseAuthResponse(response);
+  }
+
+  @override
+  Future<AuthResponseModel> refreshToken({
+    required String token,
+    required String refreshToken,
+  }) async {
+    final response = await apiService.post(
+      '/api/Auth/refresh',
+      data: {'token': token, 'refreshToken': refreshToken},
     );
     return _parseAuthResponse(response);
   }

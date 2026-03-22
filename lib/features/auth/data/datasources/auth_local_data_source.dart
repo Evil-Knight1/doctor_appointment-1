@@ -3,6 +3,7 @@ import 'package:doctor_appointment/features/auth/domain/entities/auth_response.d
 
 abstract class AuthLocalDataSource {
   Future<void> cacheAuthSession(AuthResponse response);
+  Future<AuthResponse?> getCachedSession();
   Future<void> clearSession();
 }
 
@@ -28,6 +29,33 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
     await storage.write(
       key: _expiresAtKey,
       value: response.expiresAt.toIso8601String(),
+    );
+  }
+
+  @override
+  Future<AuthResponse?> getCachedSession() async {
+    final token = await storage.read(key: _tokenKey);
+    final refreshToken = await storage.read(key: _refreshTokenKey);
+    if (token == null || refreshToken == null) {
+      return null;
+    }
+
+    final email = await storage.read(key: _emailKey) ?? '';
+    final role = await storage.read(key: _roleKey) ?? '';
+    final userIdRaw = await storage.read(key: _userIdKey);
+    final expiresAtRaw = await storage.read(key: _expiresAtKey);
+
+    final userId = int.tryParse(userIdRaw ?? '') ?? 0;
+    final expiresAt = DateTime.tryParse(expiresAtRaw ?? '') ??
+        DateTime.fromMillisecondsSinceEpoch(0);
+
+    return AuthResponse(
+      token: token,
+      refreshToken: refreshToken,
+      email: email,
+      role: role,
+      userId: userId,
+      expiresAt: expiresAt,
     );
   }
 

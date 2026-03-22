@@ -16,4 +16,11 @@ abstract class AuthRepository {
     String? gender,
     String? address,
   });
+
+  Future<Result<AuthResponse>> refreshToken({
+    required String token,
+    required String refreshToken,
+  });
+
+  Future<Result<AuthResponse?>> getCachedSession();
 }
