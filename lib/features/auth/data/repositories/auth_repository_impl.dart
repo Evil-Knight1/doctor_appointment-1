@@ -2,14 +2,16 @@ import 'package:dio/dio.dart';
 import 'package:doctor_appointment/core/errors/exceptions.dart';
 import 'package:doctor_appointment/core/errors/failures.dart';
 import 'package:doctor_appointment/core/utils/result.dart';
+import 'package:doctor_appointment/features/auth/data/datasources/auth_local_data_source.dart';
 import 'package:doctor_appointment/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:doctor_appointment/features/auth/domain/entities/auth_response.dart';
 import 'package:doctor_appointment/features/auth/domain/repositories/auth_repository.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
+  final AuthLocalDataSource localDataSource;
 
-  AuthRepositoryImpl(this.remoteDataSource);
+  AuthRepositoryImpl(this.remoteDataSource, this.localDataSource);
 
   @override
   Future<Result<AuthResponse>> login({
@@ -21,6 +23,7 @@ class AuthRepositoryImpl implements AuthRepository {
         email: email,
         password: password,
       );
+      await localDataSource.cacheAuthSession(response);
       return Result.success(response);
     } on ApiException catch (exception) {
       return Result.failure(
@@ -53,6 +56,7 @@ class AuthRepositoryImpl implements AuthRepository {
         gender: gender,
         address: address,
       );
+      await localDataSource.cacheAuthSession(response);
       return Result.success(response);
     } on ApiException catch (exception) {
       return Result.failure(

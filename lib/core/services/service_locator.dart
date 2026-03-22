@@ -3,6 +3,9 @@ import 'package:get_it/get_it.dart';
 import 'package:doctor_appointment/core/config/app_config.dart';
 import 'package:doctor_appointment/core/config/env.dart';
 import 'package:doctor_appointment/core/services/api_service.dart';
+import 'package:doctor_appointment/core/services/secure_storage_service.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:doctor_appointment/features/auth/data/datasources/auth_local_data_source.dart';
 import 'package:doctor_appointment/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:doctor_appointment/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:doctor_appointment/features/auth/domain/repositories/auth_repository.dart';
@@ -29,12 +32,24 @@ void setupServiceLocator() {
   );
 
   getIt.registerLazySingleton<ApiService>(() => ApiServiceImpl(getIt<Dio>()));
+  getIt.registerLazySingleton<FlutterSecureStorage>(
+    () => const FlutterSecureStorage(),
+  );
+  getIt.registerLazySingleton<SecureStorageService>(
+    () => SecureStorageServiceImpl(getIt<FlutterSecureStorage>()),
+  );
 
+  getIt.registerLazySingleton<AuthLocalDataSource>(
+    () => AuthLocalDataSourceImpl(getIt<SecureStorageService>()),
+  );
   getIt.registerLazySingleton<AuthRemoteDataSource>(
     () => AuthRemoteDataSourceImpl(getIt<ApiService>()),
   );
   getIt.registerLazySingleton<AuthRepository>(
-    () => AuthRepositoryImpl(getIt<AuthRemoteDataSource>()),
+    () => AuthRepositoryImpl(
+      getIt<AuthRemoteDataSource>(),
+      getIt<AuthLocalDataSource>(),
+    ),
   );
   getIt.registerLazySingleton(() => LoginUseCase(getIt<AuthRepository>()));
   getIt.registerLazySingleton(
