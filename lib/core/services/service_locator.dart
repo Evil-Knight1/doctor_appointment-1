@@ -15,6 +15,11 @@ import 'package:doctor_appointment/features/auth/domain/usecases/get_cached_sess
 import 'package:doctor_appointment/features/auth/domain/usecases/register_patient_usecase.dart';
 import 'package:doctor_appointment/features/auth/domain/usecases/refresh_token_usecase.dart';
 import 'package:doctor_appointment/features/auth/logic/auth_cubit.dart';
+import 'package:doctor_appointment/features/doctors/data/datasources/doctors_remote_data_source.dart';
+import 'package:doctor_appointment/features/doctors/data/repositories/doctors_repository_impl.dart';
+import 'package:doctor_appointment/features/doctors/domain/repositories/doctors_repository.dart';
+import 'package:doctor_appointment/features/doctors/domain/usecases/search_doctors_usecase.dart';
+import 'package:doctor_appointment/features/doctors/logic/doctors_cubit.dart';
 
 final getIt = GetIt.instance;
 
@@ -77,5 +82,18 @@ void setupServiceLocator() {
       loginUseCase: getIt<LoginUseCase>(),
       registerPatientUseCase: getIt<RegisterPatientUseCase>(),
     ),
+  );
+
+  getIt.registerLazySingleton<DoctorsRemoteDataSource>(
+    () => DoctorsRemoteDataSourceImpl(getIt<ApiService>()),
+  );
+  getIt.registerLazySingleton<DoctorsRepository>(
+    () => DoctorsRepositoryImpl(getIt<DoctorsRemoteDataSource>()),
+  );
+  getIt.registerLazySingleton(
+    () => SearchDoctorsUseCase(getIt<DoctorsRepository>()),
+  );
+  getIt.registerFactory(
+    () => DoctorsCubit(searchDoctorsUseCase: getIt<SearchDoctorsUseCase>()),
   );
 }
