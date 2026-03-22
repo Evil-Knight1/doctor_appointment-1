@@ -4,6 +4,14 @@ import 'package:doctor_appointment/features/profile/data/models/patient_profile_
 
 abstract class ProfileRemoteDataSource {
   Future<PatientProfileModel> getPatientProfile();
+
+  Future<PatientProfileModel> updatePatientProfile({
+    required String fullName,
+    required String phone,
+    DateTime? dateOfBirth,
+    String? gender,
+    String? address,
+  });
 }
 
 class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
@@ -14,6 +22,37 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
   @override
   Future<PatientProfileModel> getPatientProfile() async {
     final response = await apiService.get('/api/Patient/profile');
+    final success = response['success'] == true;
+    if (!success) {
+      throw ApiException(_extractMessage(response));
+    }
+
+    final data = response['data'];
+    if (data is Map<String, dynamic>) {
+      return PatientProfileModel.fromJson(data);
+    }
+
+    throw const ApiException('Unexpected response payload');
+  }
+
+  @override
+  Future<PatientProfileModel> updatePatientProfile({
+    required String fullName,
+    required String phone,
+    DateTime? dateOfBirth,
+    String? gender,
+    String? address,
+  }) async {
+    final response = await apiService.put(
+      '/api/Patient/profile',
+      data: {
+        'fullName': fullName,
+        'phone': phone,
+        'dateOfBirth': dateOfBirth?.toIso8601String(),
+        'gender': gender,
+        'address': address,
+      },
+    );
     final success = response['success'] == true;
     if (!success) {
       throw ApiException(_extractMessage(response));

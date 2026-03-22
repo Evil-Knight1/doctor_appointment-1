@@ -27,6 +27,34 @@ class ProfileRepositoryImpl implements ProfileRepository {
     }
   }
 
+  @override
+  Future<Result<PatientProfile>> updatePatientProfile({
+    required String fullName,
+    required String phone,
+    DateTime? dateOfBirth,
+    String? gender,
+    String? address,
+  }) async {
+    try {
+      final response = await remoteDataSource.updatePatientProfile(
+        fullName: fullName,
+        phone: phone,
+        dateOfBirth: dateOfBirth,
+        gender: gender,
+        address: address,
+      );
+      return Result.success(response);
+    } on ApiException catch (exception) {
+      return Result.failure(
+        ServerFailure(exception.message, statusCode: exception.statusCode),
+      );
+    } on DioException catch (exception) {
+      return Result.failure(_mapDioFailure(exception));
+    } catch (_) {
+      return Result.failure(const UnknownFailure('Unexpected error occurred'));
+    }
+  }
+
   Failure _mapDioFailure(DioException exception) {
     if (exception.type == DioExceptionType.connectionTimeout ||
         exception.type == DioExceptionType.sendTimeout ||
