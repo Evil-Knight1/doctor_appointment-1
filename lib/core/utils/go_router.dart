@@ -12,6 +12,8 @@ import 'package:doctor_appointment/features/home/presentation/views/category_det
 import 'package:doctor_appointment/features/home/presentation/views/home_view.dart';
 import 'package:doctor_appointment/features/home/data/models/doctor_model.dart';
 import 'package:doctor_appointment/features/profile/presentation/views/profile_view.dart';
+import 'package:doctor_appointment/features/profile/presentation/views/edit_profile_view.dart';
+import 'package:doctor_appointment/features/profile/domain/entities/patient_profile.dart';
 import 'package:doctor_appointment/features/splash/presentation/views/splash_view.dart';
 import 'package:doctor_appointment/features/on_boarding_view/presentation/views/on_boarding_view.dart';
 import 'package:doctor_appointment/core/services/service_locator.dart';
@@ -33,6 +35,7 @@ abstract class AppRouter {
   static const kPatientDetails = '/patientDetails';
   static const kAppointmentSuccess = '/appointmentSuccess';
   static const kAppointmentsView = '/appointmentsView';
+  static const kEditProfileView = '/editProfileView';
 
   static final router = GoRouter(
     routes: [
@@ -68,6 +71,13 @@ abstract class AppRouter {
       GoRoute(
         path: kProfileView,
         builder: (context, state) => const ProfileView(),
+      ),
+      GoRoute(
+        path: kEditProfileView,
+        builder: (context, state) {
+          final profile = state.extra as PatientProfile;
+          return EditProfileView(profile: profile);
+        },
       ),
       GoRoute(
         path: kCategoryDetailsView,
