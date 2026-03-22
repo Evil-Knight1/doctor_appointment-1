@@ -2,32 +2,16 @@ import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_images.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/core/utils/go_router.dart';
+import 'package:doctor_appointment/features/doctors/domain/entities/doctor.dart';
+import 'package:doctor_appointment/features/doctors/logic/doctors_cubit.dart';
+import 'package:doctor_appointment/features/doctors/logic/doctors_state.dart';
 import 'package:doctor_appointment/features/home/data/models/doctor_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class PopularDoctorsSection extends StatelessWidget {
   const PopularDoctorsSection({super.key});
-
-  static final List<DoctorModel> _doctors = [
-    DoctorModel(
-      name: 'Dr. Ayesha Rahman',
-      specialty: 'Dentist',
-      rating: 5.0,
-      reviews: 200,
-      fee: '\$15/hr',
-      imageAsset: Assets.imagesDrAyeshaRahman,
-      isFavorite: true,
-    ),
-    DoctorModel(
-      name: 'Dr. Noble Thorme',
-      specialty: 'Ophthalmologist',
-      rating: 4.8,
-      reviews: 180,
-      fee: '\$18/hr',
-      imageAsset: Assets.imagesDrNobleThorme,
-    ),
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -35,11 +19,51 @@ class PopularDoctorsSection extends StatelessWidget {
       children: [
         _buildSectionHeader(),
         SizedBox(height: 14.h),
-        ..._doctors.map(
-          (doctor) => Padding(
-            padding: EdgeInsets.only(bottom: 12.h),
-            child: _PopularDoctorCard(doctor: doctor),
-          ),
+        BlocBuilder<DoctorsCubit, DoctorsState>(
+          builder: (context, state) {
+            if (state is DoctorsLoading) {
+              return Padding(
+                padding: EdgeInsets.symmetric(vertical: 12.h),
+                child: const Center(child: CircularProgressIndicator()),
+              );
+            }
+            if (state is DoctorsFailure) {
+              return Padding(
+                padding: EdgeInsets.symmetric(vertical: 8.h),
+                child: Text(
+                  state.message,
+                  style: AppStyles.styleRegular12.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              );
+            }
+            if (state is DoctorsSuccess) {
+              final doctors = _mapDoctors(state.page.items);
+              if (doctors.isEmpty) {
+                return Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8.h),
+                  child: Text(
+                    'No doctors found.',
+                    style: AppStyles.styleRegular12.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                );
+              }
+              return Column(
+                children: doctors
+                    .map(
+                      (doctor) => Padding(
+                        padding: EdgeInsets.only(bottom: 12.h),
+                        child: _PopularDoctorCard(doctor: doctor),
+                      ),
+                    )
+                    .toList(),
+              );
+            }
+            return const SizedBox.shrink();
+          },
         ),
       ],
     );
@@ -63,6 +87,34 @@ class PopularDoctorsSection extends StatelessWidget {
       ],
     );
   }
+}
+
+List<DoctorModel> _mapDoctors(List<Doctor> doctors) {
+  final images = [
+    Assets.imagesDrAyeshaRahman,
+    Assets.imagesDrNobleThorme,
+    Assets.imagesDrSarah,
+  ];
+
+  final sorted = [...doctors]
+    ..sort(
+      (a, b) => (b.averageRating ?? 0).compareTo(a.averageRating ?? 0),
+    );
+  final top = sorted.take(2).toList();
+
+  return top.asMap().entries.map((entry) {
+    final index = entry.key;
+    final doctor = entry.value;
+    return DoctorModel(
+      name: doctor.fullName,
+      specialty: doctor.specialization ?? 'General',
+      rating: doctor.averageRating ?? 0,
+      reviews: doctor.totalReviews,
+      fee: 'N/A',
+      imageAsset: images[index % images.length],
+      isFavorite: index == 0,
+    );
+  }).toList();
 }
 
 class _PopularDoctorCard extends StatelessWidget {

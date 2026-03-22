@@ -1,10 +1,15 @@
 import 'package:device_preview/device_preview.dart';
+import 'package:doctor_appointment/core/config/env.dart';
+import 'package:doctor_appointment/core/services/service_locator.dart';
 import 'package:doctor_appointment/core/utils/app_theme.dart';
 import 'package:doctor_appointment/core/utils/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await loadEnv();
+  setupServiceLocator();
   runApp(
     DevicePreview(
       enabled: true,

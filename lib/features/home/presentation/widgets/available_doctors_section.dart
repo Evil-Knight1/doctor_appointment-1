@@ -2,39 +2,16 @@ import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_images.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/core/utils/go_router.dart';
+import 'package:doctor_appointment/features/doctors/domain/entities/doctor.dart';
+import 'package:doctor_appointment/features/doctors/logic/doctors_cubit.dart';
+import 'package:doctor_appointment/features/doctors/logic/doctors_state.dart';
 import 'package:doctor_appointment/features/home/data/models/doctor_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AvailableDoctorsSection extends StatelessWidget {
   const AvailableDoctorsSection({super.key});
-
-  static final List<DoctorModel> _doctors = [
-    DoctorModel(
-      name: 'Dr. Sarah',
-      specialty: 'Dentist',
-      rating: 4.9,
-      reviews: 150,
-      fee: '\$20/hr',
-      imageAsset: Assets.imagesDrSarah,
-    ),
-    DoctorModel(
-      name: 'Dr. Noble Thorme',
-      specialty: 'ENT Specialist',
-      rating: 4.7,
-      reviews: 120,
-      fee: '\$22/hr',
-      imageAsset: Assets.imagesDrNobleThorme,
-    ),
-    DoctorModel(
-      name: 'Dr. Ayesha Rahman',
-      specialty: 'Ophthalmologist',
-      rating: 5.0,
-      reviews: 200,
-      fee: '\$15/hr',
-      imageAsset: Assets.imagesDrAyeshaRahman,
-    ),
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -42,15 +19,51 @@ class AvailableDoctorsSection extends StatelessWidget {
       children: [
         _buildSectionHeader(),
         SizedBox(height: 14.h),
-        SizedBox(
-          height: 180.h,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            itemCount: _doctors.length,
-            separatorBuilder: (_, __) => SizedBox(width: 12.w),
-            itemBuilder: (_, index) =>
-                _AvailableDoctorCard(doctor: _doctors[index]),
-          ),
+        BlocBuilder<DoctorsCubit, DoctorsState>(
+          builder: (context, state) {
+            if (state is DoctorsLoading) {
+              return Padding(
+                padding: EdgeInsets.symmetric(vertical: 12.h),
+                child: const Center(child: CircularProgressIndicator()),
+              );
+            }
+            if (state is DoctorsFailure) {
+              return Padding(
+                padding: EdgeInsets.symmetric(vertical: 8.h),
+                child: Text(
+                  state.message,
+                  style: AppStyles.styleRegular12.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              );
+            }
+            if (state is DoctorsSuccess) {
+              final doctors = _mapDoctors(state.page.items);
+              if (doctors.isEmpty) {
+                return Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8.h),
+                  child: Text(
+                    'No doctors found.',
+                    style: AppStyles.styleRegular12.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                );
+              }
+              return SizedBox(
+                height: 180.h,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: doctors.length,
+                  separatorBuilder: (_, __) => SizedBox(width: 12.w),
+                  itemBuilder: (_, index) =>
+                      _AvailableDoctorCard(doctor: doctors[index]),
+                ),
+              );
+            }
+            return const SizedBox.shrink();
+          },
         ),
       ],
     );
@@ -74,6 +87,27 @@ class AvailableDoctorsSection extends StatelessWidget {
       ],
     );
   }
+}
+
+List<DoctorModel> _mapDoctors(List<Doctor> doctors) {
+  final images = [
+    Assets.imagesDrSarah,
+    Assets.imagesDrNobleThorme,
+    Assets.imagesDrAyeshaRahman,
+  ];
+
+  return doctors.asMap().entries.map((entry) {
+    final index = entry.key;
+    final doctor = entry.value;
+    return DoctorModel(
+      name: doctor.fullName,
+      specialty: doctor.specialization ?? 'General',
+      rating: doctor.averageRating ?? 0,
+      reviews: doctor.totalReviews,
+      fee: 'N/A',
+      imageAsset: images[index % images.length],
+    );
+  }).toList();
 }
 
 class _AvailableDoctorCard extends StatelessWidget {

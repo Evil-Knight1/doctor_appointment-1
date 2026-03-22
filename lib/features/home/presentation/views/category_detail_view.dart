@@ -1,78 +1,50 @@
 import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_images.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
+import 'package:doctor_appointment/core/services/service_locator.dart';
+import 'package:doctor_appointment/features/doctors/domain/entities/doctor.dart';
+import 'package:doctor_appointment/features/doctors/logic/doctors_cubit.dart';
+import 'package:doctor_appointment/features/doctors/logic/doctors_state.dart';
 import 'package:doctor_appointment/features/home/data/models/doctor_model.dart';
 import 'package:doctor_appointment/features/home/presentation/widgets/category_doctor_card.dart';
 import 'package:doctor_appointment/features/home/presentation/widgets/filter_bottom_sheet.dart';
 import 'package:doctor_appointment/features/home/presentation/widgets/sort_bottom_sheet.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
-class CategoryDetailView extends StatelessWidget {
+class CategoryDetailView extends StatefulWidget {
   final String? categoryName;
 
   const CategoryDetailView({super.key, this.categoryName});
 
-  static final List<DoctorModel> _doctors = [
-    DoctorModel(
-      name: 'Dr. Ayesha Rahman',
-      specialty: 'Dentist',
-      rating: 5.0,
-      reviews: 200,
-      fee: '\$15/hr',
-      imageAsset: Assets.imagesDrAyeshaRahman,
-    ),
-    DoctorModel(
-      name: 'Estelle Vasquez',
-      specialty: 'Dentist',
-      rating: 5.0,
-      reviews: 200,
-      fee: '\$18/hr',
-      imageAsset: Assets.imagesDrSarah,
-    ),
-    DoctorModel(
-      name: 'Bob Stone',
-      specialty: 'Dentist',
-      rating: 5.0,
-      reviews: 200,
-      fee: '\$12/hr',
-      imageAsset: Assets.imagesDrNobleThorme,
-    ),
-    DoctorModel(
-      name: 'Jacob Graves',
-      specialty: 'Dentist',
-      rating: 5.0,
-      reviews: 200,
-      fee: '\$20/hr',
-      imageAsset: Assets.imagesDrAyeshaRahman,
-    ),
-    DoctorModel(
-      name: 'Meredith Grant',
-      specialty: 'Dentist',
-      rating: 5.0,
-      reviews: 200,
-      fee: '\$17/hr',
-      imageAsset: Assets.imagesDrSarah,
-    ),
-    DoctorModel(
-      name: 'Misty Gray',
-      specialty: 'Dentist',
-      rating: 5.0,
-      reviews: 200,
-      fee: '\$14/hr',
-      imageAsset: Assets.imagesDrNobleThorme,
-    ),
-    DoctorModel(
-      name: 'Margie Dawson',
-      specialty: 'Dentist',
-      rating: 5.0,
-      reviews: 200,
-      fee: '\$16/hr',
-      imageAsset: Assets.imagesDrAyeshaRahman,
-    ),
-  ];
+  @override
+  State<CategoryDetailView> createState() => _CategoryDetailViewState();
+}
+
+class _CategoryDetailViewState extends State<CategoryDetailView> {
+  late final DoctorsCubit _doctorsCubit;
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _doctorsCubit = getIt<DoctorsCubit>();
+    _doctorsCubit.fetchDoctors(
+      specialization: widget.categoryName,
+      pageNumber: 1,
+      pageSize: 10,
+    );
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _doctorsCubit.close();
+    super.dispose();
+  }
 
   void _showSortSheet(BuildContext context) {
     showModalBottomSheet(
@@ -88,30 +60,65 @@ class CategoryDetailView extends StatelessWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => FilterBottomSheet(categoryName: categoryName ?? ''),
+      builder: (_) => FilterBottomSheet(categoryName: widget.categoryName ?? ''),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: _buildAppBar(context),
-      body: Column(
-        children: [
-          _buildSearchAndFilter(context),
-          _buildResultsHeader(context),
-          Expanded(
-            child: ListView.separated(
-              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 4.h),
-              itemCount: _doctors.length,
-              separatorBuilder: (_, __) => SizedBox(height: 12.h),
-              itemBuilder: (_, index) =>
-                  CategoryDoctorCard(doctor: _doctors[index]),
-            ),
-          ),
-        ],
+    return BlocProvider.value(
+      value: _doctorsCubit,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: _buildAppBar(context),
+        body: Column(
+          children: [
+            _buildSearchAndFilter(context),
+            _buildResultsHeader(context),
+            Expanded(child: _buildDoctorsList()),
+          ],
+        ),
       ),
+    );
+  }
+
+  Widget _buildDoctorsList() {
+    return BlocBuilder<DoctorsCubit, DoctorsState>(
+      builder: (context, state) {
+        if (state is DoctorsLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (state is DoctorsFailure) {
+          return Center(
+            child: Text(
+              state.message,
+              style: AppStyles.styleRegular14.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
+          );
+        }
+        if (state is DoctorsSuccess) {
+          final doctors = _mapDoctors(state.page.items);
+          if (doctors.isEmpty) {
+            return Center(
+              child: Text(
+                'No doctors found.',
+                style: AppStyles.styleRegular14.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            );
+          }
+          return ListView.separated(
+            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 4.h),
+            itemCount: doctors.length,
+            separatorBuilder: (_, __) => SizedBox(height: 12.h),
+            itemBuilder: (_, index) => CategoryDoctorCard(doctor: doctors[index]),
+          );
+        }
+        return const SizedBox.shrink();
+      },
     );
   }
 
@@ -135,7 +142,7 @@ class CategoryDetailView extends StatelessWidget {
         ),
       ),
       title: Text(
-        categoryName ?? '',
+        widget.categoryName ?? '',
         style: AppStyles.styleSemiBold22.copyWith(fontSize: 18.sp),
       ),
     );
@@ -154,6 +161,7 @@ class CategoryDetailView extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12.r),
               ),
               child: TextField(
+                controller: _searchController,
                 decoration: InputDecoration(
                   hintText: 'Find the right doctor for you...',
                   hintStyle: AppStyles.styleRegular14.copyWith(
@@ -168,6 +176,14 @@ class CategoryDetailView extends StatelessWidget {
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.symmetric(vertical: 13.h),
                 ),
+                onSubmitted: (value) {
+                  _doctorsCubit.fetchDoctors(
+                    specialization: widget.categoryName,
+                    searchTerm: value.trim().isEmpty ? null : value.trim(),
+                    pageNumber: 1,
+                    pageSize: 10,
+                  );
+                },
               ),
             ),
           ),
@@ -181,7 +197,6 @@ class CategoryDetailView extends StatelessWidget {
                 color: AppColors.primary,
                 borderRadius: BorderRadius.circular(12.r),
               ),
-              // FIX: alignment بدل Center
               alignment: Alignment.center,
               child: SvgPicture.asset(Assets.imagesFilterIcon),
             ),
@@ -192,41 +207,66 @@ class CategoryDetailView extends StatelessWidget {
   }
 
   Widget _buildResultsHeader(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 4.h),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            '114 Found for "$categoryName"',
-            style: AppStyles.styleRegular14.copyWith(
-              color: AppColors.textSecondary,
-              fontSize: 12.sp,
-            ),
-          ),
-          // FIX: showModalBottomSheet بدل router.go
-          GestureDetector(
-            onTap: () => _showSortSheet(context),
-            child: Row(
-              children: [
-                Text(
-                  'Sort by',
-                  style: AppStyles.styleRegular14.copyWith(
-                    color: AppColors.primary,
-                    fontSize: 12.sp,
-                  ),
+    return BlocBuilder<DoctorsCubit, DoctorsState>(
+      builder: (context, state) {
+        final totalCount = state is DoctorsSuccess ? state.page.totalCount : 0;
+        return Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 4.h),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '$totalCount Found for "${widget.categoryName ?? ''}"',
+                style: AppStyles.styleRegular14.copyWith(
+                  color: AppColors.textSecondary,
+                  fontSize: 12.sp,
                 ),
-                SizedBox(width: 4.w),
-                Icon(
-                  Icons.swap_vert_rounded,
-                  color: AppColors.primary,
-                  size: 16.sp,
+              ),
+              GestureDetector(
+                onTap: () => _showSortSheet(context),
+                child: Row(
+                  children: [
+                    Text(
+                      'Sort by',
+                      style: AppStyles.styleRegular14.copyWith(
+                        color: AppColors.primary,
+                        fontSize: 12.sp,
+                      ),
+                    ),
+                    SizedBox(width: 4.w),
+                    Icon(
+                      Icons.swap_vert_rounded,
+                      color: AppColors.primary,
+                      size: 16.sp,
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
+}
+
+List<DoctorModel> _mapDoctors(List<Doctor> doctors) {
+  final images = [
+    Assets.imagesDrAyeshaRahman,
+    Assets.imagesDrNobleThorme,
+    Assets.imagesDrSarah,
+  ];
+
+  return doctors.asMap().entries.map((entry) {
+    final index = entry.key;
+    final doctor = entry.value;
+    return DoctorModel(
+      name: doctor.fullName,
+      specialty: doctor.specialization ?? 'General',
+      rating: doctor.averageRating ?? 0,
+      reviews: doctor.totalReviews,
+      fee: 'N/A',
+      imageAsset: images[index % images.length],
+    );
+  }).toList();
 }
