@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:doctor_appointment/core/config/app_config.dart';
 import 'package:doctor_appointment/core/config/env.dart';
 import 'package:doctor_appointment/core/services/api_service.dart';
+import 'package:doctor_appointment/core/services/auth_token_interceptor.dart';
 import 'package:doctor_appointment/core/services/secure_storage_service.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:doctor_appointment/features/auth/data/datasources/auth_local_data_source.dart';
@@ -47,6 +48,14 @@ void setupServiceLocator() {
   getIt.registerLazySingleton<AuthRemoteDataSource>(
     () => AuthRemoteDataSourceImpl(getIt<ApiService>()),
   );
+  getIt.registerLazySingleton<AuthTokenInterceptor>(
+    () => AuthTokenInterceptor(
+      localDataSource: getIt<AuthLocalDataSource>(),
+      remoteDataSource: getIt<AuthRemoteDataSource>(),
+      dio: getIt<Dio>(),
+    ),
+  );
+  getIt<Dio>().interceptors.add(getIt<AuthTokenInterceptor>());
   getIt.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(
       getIt<AuthRemoteDataSource>(),
