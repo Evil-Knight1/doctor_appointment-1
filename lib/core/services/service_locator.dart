@@ -24,6 +24,7 @@ import 'package:doctor_appointment/features/profile/data/datasources/profile_rem
 import 'package:doctor_appointment/features/profile/data/repositories/profile_repository_impl.dart';
 import 'package:doctor_appointment/features/profile/domain/repositories/profile_repository.dart';
 import 'package:doctor_appointment/features/profile/domain/usecases/get_patient_profile_usecase.dart';
+import 'package:doctor_appointment/features/profile/domain/usecases/update_patient_profile_usecase.dart';
 import 'package:doctor_appointment/features/profile/logic/profile_cubit.dart';
 
 final getIt = GetIt.instance;
@@ -111,9 +112,13 @@ void setupServiceLocator() {
   getIt.registerLazySingleton(
     () => GetPatientProfileUseCase(getIt<ProfileRepository>()),
   );
+  getIt.registerLazySingleton(
+    () => UpdatePatientProfileUseCase(getIt<ProfileRepository>()),
+  );
   getIt.registerFactory(
     () => ProfileCubit(
       getPatientProfileUseCase: getIt<GetPatientProfileUseCase>(),
+      updatePatientProfileUseCase: getIt<UpdatePatientProfileUseCase>(),
     ),
   );
 }
