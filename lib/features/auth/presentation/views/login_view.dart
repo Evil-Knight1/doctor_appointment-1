@@ -35,9 +35,9 @@ class _LoginViewState extends State<LoginView> {
     return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) {
         if (state is AuthFailure) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.message)));
         }
         if (state is AuthSuccess) {
           context.go(AppRouter.kRoot);
@@ -116,10 +116,9 @@ class _LoginViewState extends State<LoginView> {
                                       return;
                                     }
                                     context.read<AuthCubit>().login(
-                                          email: _emailController.text.trim(),
-                                          password:
-                                              _passwordController.text.trim(),
-                                        );
+                                      email: _emailController.text.trim(),
+                                      password: _passwordController.text.trim(),
+                                    );
                                   },
                             buttonColor: const Color(0xff236DEC),
                             textStyle: AppStyles.styleSemiBold16,
