@@ -30,7 +30,9 @@ import 'package:doctor_appointment/features/appointment/data/datasources/appoint
 import 'package:doctor_appointment/features/appointment/data/repositories/appointment_repository_impl.dart';
 import 'package:doctor_appointment/features/appointment/domain/repositories/appointment_repository.dart';
 import 'package:doctor_appointment/features/appointment/domain/usecases/create_appointment_usecase.dart';
+import 'package:doctor_appointment/features/appointment/domain/usecases/get_my_appointments_usecase.dart';
 import 'package:doctor_appointment/features/appointment/logic/appointment_cubit.dart';
+import 'package:doctor_appointment/features/appointment/logic/appointments_cubit.dart';
 
 final getIt = GetIt.instance;
 
@@ -136,9 +138,17 @@ void setupServiceLocator() {
   getIt.registerLazySingleton(
     () => CreateAppointmentUseCase(getIt<AppointmentRepository>()),
   );
+  getIt.registerLazySingleton(
+    () => GetMyAppointmentsUseCase(getIt<AppointmentRepository>()),
+  );
   getIt.registerFactory(
     () => AppointmentCubit(
       createAppointmentUseCase: getIt<CreateAppointmentUseCase>(),
+    ),
+  );
+  getIt.registerFactory(
+    () => AppointmentsCubit(
+      getMyAppointmentsUseCase: getIt<GetMyAppointmentsUseCase>(),
     ),
   );
 }
