@@ -11,6 +11,8 @@ abstract class AppointmentRemoteDataSource {
     int? paymentMethod,
     double? amount,
   });
+
+  Future<List<AppointmentModel>> getMyAppointments();
 }
 
 class AppointmentRemoteDataSourceImpl implements AppointmentRemoteDataSource {
@@ -47,6 +49,25 @@ class AppointmentRemoteDataSourceImpl implements AppointmentRemoteDataSource {
     final data = response['data'];
     if (data is Map<String, dynamic>) {
       return AppointmentModel.fromJson(data);
+    }
+
+    throw const ApiException('Unexpected response payload');
+  }
+
+  @override
+  Future<List<AppointmentModel>> getMyAppointments() async {
+    final response = await apiService.get('/api/Appointment/patient/my-appointments');
+    final success = response['success'] == true;
+    if (!success) {
+      throw ApiException(_extractMessage(response));
+    }
+
+    final data = response['data'];
+    if (data is List) {
+      return data
+          .whereType<Map<String, dynamic>>()
+          .map(AppointmentModel.fromJson)
+          .toList();
     }
 
     throw const ApiException('Unexpected response payload');

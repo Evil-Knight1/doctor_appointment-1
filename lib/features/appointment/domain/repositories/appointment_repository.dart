@@ -10,4 +10,6 @@ abstract class AppointmentRepository {
     int? paymentMethod,
     double? amount,
   });
+
+  Future<Result<List<Appointment>>> getMyAppointments();
 }

@@ -41,6 +41,22 @@ class AppointmentRepositoryImpl implements AppointmentRepository {
     }
   }
 
+  @override
+  Future<Result<List<Appointment>>> getMyAppointments() async {
+    try {
+      final response = await remoteDataSource.getMyAppointments();
+      return Result.success(response);
+    } on ApiException catch (exception) {
+      return Result.failure(
+        ServerFailure(exception.message, statusCode: exception.statusCode),
+      );
+    } on DioException catch (exception) {
+      return Result.failure(_mapDioFailure(exception));
+    } catch (_) {
+      return Result.failure(const UnknownFailure('Unexpected error occurred'));
+    }
+  }
+
   Failure _mapDioFailure(DioException exception) {
     if (exception.type == DioExceptionType.connectionTimeout ||
         exception.type == DioExceptionType.sendTimeout ||
