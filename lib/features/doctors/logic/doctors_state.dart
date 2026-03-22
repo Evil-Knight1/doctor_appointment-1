@@ -1,4 +1,4 @@
-import 'package:doctor_appointment/features/doctors/domain/entities/doctor.dart';
+import 'package:doctor_appointment/features/doctors/domain/entities/doctors_page.dart';
 
 sealed class DoctorsState {
   const DoctorsState();
@@ -13,9 +13,9 @@ class DoctorsLoading extends DoctorsState {
 }
 
 class DoctorsSuccess extends DoctorsState {
-  final List<Doctor> doctors;
+  final DoctorsPage page;
 
-  const DoctorsSuccess(this.doctors);
+  const DoctorsSuccess(this.page);
 }
 
 class DoctorsFailure extends DoctorsState {

@@ -39,7 +39,7 @@ class PopularDoctorsSection extends StatelessWidget {
               );
             }
             if (state is DoctorsSuccess) {
-              final doctors = _mapDoctors(state.doctors);
+              final doctors = _mapDoctors(state.page.items);
               if (doctors.isEmpty) {
                 return Padding(
                   padding: EdgeInsets.symmetric(vertical: 8.h),

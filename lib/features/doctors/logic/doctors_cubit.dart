@@ -29,7 +29,7 @@ class DoctorsCubit extends Cubit<DoctorsState> {
 
     switch (result) {
       case Success():
-        emit(DoctorsSuccess(result.data.items));
+        emit(DoctorsSuccess(result.data));
       case FailureResult():
         emit(DoctorsFailure(result.failure.message));
     }
