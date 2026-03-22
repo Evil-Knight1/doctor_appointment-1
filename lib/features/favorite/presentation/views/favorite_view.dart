@@ -16,6 +16,7 @@ class FavoriteView extends StatefulWidget {
 class _FavoriteViewState extends State<FavoriteView> {
   final List<DoctorModel> _favorites = [
     DoctorModel(
+      id: 1,
       name: 'Dr. Ayesha Rahman',
       specialty: 'Dentist',
       rating: 5.0,
@@ -25,6 +26,7 @@ class _FavoriteViewState extends State<FavoriteView> {
       isFavorite: true,
     ),
     DoctorModel(
+      id: 2,
       name: 'Dr. Noble Thorme',
       specialty: 'Ophthalmologist',
       rating: 4.8,
@@ -34,6 +36,7 @@ class _FavoriteViewState extends State<FavoriteView> {
       isFavorite: true,
     ),
     DoctorModel(
+      id: 3,
       name: 'Dr. Sarah',
       specialty: 'ENT Specialist',
       rating: 4.9,

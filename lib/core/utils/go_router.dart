@@ -2,6 +2,7 @@ import 'package:doctor_appointment/core/widgets/bottom_navigation_bar.dart';
 import 'package:doctor_appointment/features/appointment/presentation/views/appointment_success_view.dart';
 import 'package:doctor_appointment/features/appointment/presentation/views/new_appointment_view.dart';
 import 'package:doctor_appointment/features/appointment/presentation/views/patient_details_view.dart';
+import 'package:doctor_appointment/features/appointment/presentation/models/appointment_draft.dart';
 import 'package:doctor_appointment/features/auth/presentation/views/login_view.dart';
 import 'package:doctor_appointment/features/auth/presentation/views/signup_view.dart';
 import 'package:doctor_appointment/features/auth/logic/auth_cubit.dart';
@@ -102,7 +103,10 @@ abstract class AppRouter {
       ),
       GoRoute(
         path: kPatientDetails,
-        builder: (context, state) => const PatientDetailsView(),
+        builder: (context, state) {
+          final draft = state.extra as AppointmentDraft;
+          return PatientDetailsView(draft: draft);
+        },
       ),
       GoRoute(
         path: kAppointmentSuccess,
