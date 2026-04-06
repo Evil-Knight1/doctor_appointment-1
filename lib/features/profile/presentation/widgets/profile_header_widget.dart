@@ -4,7 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ProfileHeaderWidget extends StatelessWidget {
-  const ProfileHeaderWidget({super.key});
+  final String name;
+  final String email;
+
+  const ProfileHeaderWidget({
+    super.key,
+    required this.name,
+    required this.email,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -40,12 +47,12 @@ class ProfileHeaderWidget extends StatelessWidget {
         ),
         SizedBox(height: 12.h),
         Text(
-          'Laith Mahdi',
+          name,
           style: AppStyles.styleSemiBold22.copyWith(fontSize: 18.sp),
         ),
         SizedBox(height: 4.h),
         Text(
-          'laith.mahdi@email.com',
+          email,
           style: AppStyles.styleRegular14.copyWith(
             color: AppColors.textSecondary,
             fontSize: 13.sp,

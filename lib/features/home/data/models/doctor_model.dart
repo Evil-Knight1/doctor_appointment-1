@@ -1,4 +1,5 @@
 class DoctorModel {
+  final int id;
   final String name;
   final String specialty;
   final double rating;
@@ -8,6 +9,7 @@ class DoctorModel {
   final bool isFavorite;
 
   const DoctorModel({
+    required this.id,
     required this.name,
     required this.specialty,
     required this.rating,

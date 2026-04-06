@@ -2,6 +2,7 @@ import 'package:doctor_appointment/core/widgets/bottom_navigation_bar.dart';
 import 'package:doctor_appointment/features/appointment/presentation/views/appointment_success_view.dart';
 import 'package:doctor_appointment/features/appointment/presentation/views/new_appointment_view.dart';
 import 'package:doctor_appointment/features/appointment/presentation/views/patient_details_view.dart';
+import 'package:doctor_appointment/features/appointment/presentation/models/appointment_draft.dart';
 import 'package:doctor_appointment/features/auth/presentation/views/login_view.dart';
 import 'package:doctor_appointment/features/auth/presentation/views/signup_view.dart';
 import 'package:doctor_appointment/features/auth/logic/auth_cubit.dart';
@@ -12,6 +13,8 @@ import 'package:doctor_appointment/features/home/presentation/views/category_det
 import 'package:doctor_appointment/features/home/presentation/views/home_view.dart';
 import 'package:doctor_appointment/features/home/data/models/doctor_model.dart';
 import 'package:doctor_appointment/features/profile/presentation/views/profile_view.dart';
+import 'package:doctor_appointment/features/profile/presentation/views/edit_profile_view.dart';
+import 'package:doctor_appointment/features/profile/domain/entities/patient_profile.dart';
 import 'package:doctor_appointment/features/splash/presentation/views/splash_view.dart';
 import 'package:doctor_appointment/features/on_boarding_view/presentation/views/on_boarding_view.dart';
 import 'package:doctor_appointment/core/services/service_locator.dart';
@@ -33,6 +36,7 @@ abstract class AppRouter {
   static const kPatientDetails = '/patientDetails';
   static const kAppointmentSuccess = '/appointmentSuccess';
   static const kAppointmentsView = '/appointmentsView';
+  static const kEditProfileView = '/editProfileView';
 
   static final router = GoRouter(
     routes: [
@@ -70,6 +74,13 @@ abstract class AppRouter {
         builder: (context, state) => const ProfileView(),
       ),
       GoRoute(
+        path: kEditProfileView,
+        builder: (context, state) {
+          final profile = state.extra as PatientProfile;
+          return EditProfileView(profile: profile);
+        },
+      ),
+      GoRoute(
         path: kCategoryDetailsView,
         builder: (context, state) {
           final name = state.extra as String? ?? 'Category';
@@ -92,7 +103,10 @@ abstract class AppRouter {
       ),
       GoRoute(
         path: kPatientDetails,
-        builder: (context, state) => const PatientDetailsView(),
+        builder: (context, state) {
+          final draft = state.extra as AppointmentDraft;
+          return PatientDetailsView(draft: draft);
+        },
       ),
       GoRoute(
         path: kAppointmentSuccess,

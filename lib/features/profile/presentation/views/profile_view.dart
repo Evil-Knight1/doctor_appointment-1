@@ -1,9 +1,13 @@
 import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/core/utils/go_router.dart';
+import 'package:doctor_appointment/core/services/service_locator.dart';
+import 'package:doctor_appointment/features/profile/logic/profile_cubit.dart';
+import 'package:doctor_appointment/features/profile/logic/profile_state.dart';
 import 'package:doctor_appointment/features/profile/presentation/widgets/profile_header_widget.dart';
 import 'package:doctor_appointment/features/profile/presentation/widgets/profile_menu_item.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
@@ -17,111 +21,175 @@ class ProfileView extends StatefulWidget {
 class _ProfileViewState extends State<ProfileView> {
   bool _notificationsEnabled = true;
   String _selectedLanguage = 'English';
+  late final ProfileCubit _profileCubit;
+
+  @override
+  void initState() {
+    super.initState();
+    _profileCubit = getIt<ProfileCubit>();
+    _profileCubit.loadProfile();
+  }
+
+  @override
+  void dispose() {
+    _profileCubit.close();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.bg,
-      appBar: AppBar(
+    return BlocProvider.value(
+      value: _profileCubit,
+      child: Scaffold(
         backgroundColor: AppColors.bg,
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        title: Text(
-          'Profile',
-          style: AppStyles.styleSemiBold22.copyWith(fontSize: 18.sp),
+        appBar: AppBar(
+          backgroundColor: AppColors.bg,
+          elevation: 0,
+          automaticallyImplyLeading: false,
+          title: Text(
+            'Profile',
+            style: AppStyles.styleSemiBold22.copyWith(fontSize: 18.sp),
+          ),
         ),
-      ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 20.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const ProfileHeaderWidget(),
+        body: SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: 20.w),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              BlocBuilder<ProfileCubit, ProfileState>(
+                builder: (context, state) {
+                  if (state is ProfileLoading) {
+                    return Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20.h),
+                      child: const Center(child: CircularProgressIndicator()),
+                    );
+                  }
+                  if (state is ProfileSuccess) {
+                    return ProfileHeaderWidget(
+                      name: state.profile.fullName,
+                      email: state.profile.email,
+                    );
+                  }
+                  if (state is ProfileFailure) {
+                    return Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20.h),
+                      child: Text(
+                        state.message,
+                        style: AppStyles.styleRegular14.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    );
+                  }
+                  return const ProfileHeaderWidget(
+                    name: 'Your Name',
+                    email: 'your@email.com',
+                  );
+                },
+              ),
             _buildSectionLabel('Account'),
             SizedBox(height: 10.h),
-            ProfileMenuItem(
-              icon: Icons.person_outline_rounded,
-              title: 'Personal Information',
-              subtitle: 'Name, email, phone',
-              onTap: () {},
+            BlocBuilder<ProfileCubit, ProfileState>(
+              builder: (context, state) {
+                return ProfileMenuItem(
+                  icon: Icons.person_outline_rounded,
+                  title: 'Personal Information',
+                  subtitle: 'Name, email, phone',
+                  onTap: () async {
+                    if (state is! ProfileSuccess) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Profile not loaded')),
+                      );
+                      return;
+                    }
+                    final updated = await context.push<bool>(
+                      AppRouter.kEditProfileView,
+                      extra: state.profile,
+                    );
+                    if (updated == true) {
+                      _profileCubit.loadProfile();
+                    }
+                  },
+                );
+              },
             ),
-            SizedBox(height: 10.h),
-            ProfileMenuItem(
-              icon: Icons.lock_outline_rounded,
-              title: 'Change Password',
-              subtitle: 'Update your password',
-              onTap: () {},
-            ),
-            SizedBox(height: 20.h),
-            _buildSectionLabel('Preferences'),
-            SizedBox(height: 10.h),
-            ProfileMenuItem(
-              icon: Icons.language_rounded,
-              title: 'Language',
-              subtitle: _selectedLanguage,
-              onTap: () => _showLanguagePicker(context),
-            ),
-            SizedBox(height: 10.h),
-            ProfileMenuItem(
-              icon: Icons.notifications_outlined,
-              title: 'Notifications',
-              subtitle: _notificationsEnabled ? 'Enabled' : 'Disabled',
-              trailing: Switch(
-                value: _notificationsEnabled,
-                onChanged: (v) => setState(() => _notificationsEnabled = v),
-                activeThumbColor: AppColors.primary,
+              SizedBox(height: 10.h),
+              ProfileMenuItem(
+                icon: Icons.lock_outline_rounded,
+                title: 'Change Password',
+                subtitle: 'Update your password',
+                onTap: () {},
               ),
-            ),
-            SizedBox(height: 20.h),
-            _buildSectionLabel('Support'),
-            SizedBox(height: 10.h),
-            ProfileMenuItem(
-              icon: Icons.help_outline_rounded,
-              title: 'Help & Support',
-              onTap: () {},
-            ),
-            SizedBox(height: 10.h),
-            ProfileMenuItem(
-              icon: Icons.privacy_tip_outlined,
-              title: 'Privacy Policy',
-              onTap: () {},
-            ),
-            SizedBox(height: 20.h),
-            // Logout Button
-            GestureDetector(
-              onTap: () => _showLogoutDialog(context),
-              child: Container(
-                width: double.infinity,
-                padding: EdgeInsets.symmetric(vertical: 14.h),
-                decoration: BoxDecoration(
-                  color: AppColors.accent.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(14.r),
-                  border: Border.all(
-                    color: AppColors.accent.withValues(alpha: 0.3),
+              SizedBox(height: 20.h),
+              _buildSectionLabel('Preferences'),
+              SizedBox(height: 10.h),
+              ProfileMenuItem(
+                icon: Icons.language_rounded,
+                title: 'Language',
+                subtitle: _selectedLanguage,
+                onTap: () => _showLanguagePicker(context),
+              ),
+              SizedBox(height: 10.h),
+              ProfileMenuItem(
+                icon: Icons.notifications_outlined,
+                title: 'Notifications',
+                subtitle: _notificationsEnabled ? 'Enabled' : 'Disabled',
+                trailing: Switch(
+                  value: _notificationsEnabled,
+                  onChanged: (v) => setState(() => _notificationsEnabled = v),
+                  activeThumbColor: AppColors.primary,
+                ),
+              ),
+              SizedBox(height: 20.h),
+              _buildSectionLabel('Support'),
+              SizedBox(height: 10.h),
+              ProfileMenuItem(
+                icon: Icons.help_outline_rounded,
+                title: 'Help & Support',
+                onTap: () {},
+              ),
+              SizedBox(height: 10.h),
+              ProfileMenuItem(
+                icon: Icons.privacy_tip_outlined,
+                title: 'Privacy Policy',
+                onTap: () {},
+              ),
+              SizedBox(height: 20.h),
+              GestureDetector(
+                onTap: () => _showLogoutDialog(context),
+                child: Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.symmetric(vertical: 14.h),
+                  decoration: BoxDecoration(
+                    color: AppColors.accent.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(14.r),
+                    border: Border.all(
+                      color: AppColors.accent.withValues(alpha: 0.3),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.logout_rounded,
+                        color: AppColors.accent,
+                        size: 20.sp,
+                      ),
+                      SizedBox(width: 8.w),
+                      Text(
+                        'Log Out',
+                        style: AppStyles.styleMedium14.copyWith(
+                          color: AppColors.accent,
+                          fontSize: 15.sp,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.logout_rounded,
-                      color: AppColors.accent,
-                      size: 20.sp,
-                    ),
-                    SizedBox(width: 8.w),
-                    Text(
-                      'Log Out',
-                      style: AppStyles.styleMedium14.copyWith(
-                        color: AppColors.accent,
-                        fontSize: 15.sp,
-                      ),
-                    ),
-                  ],
-                ),
               ),
-            ),
-            SizedBox(height: 32.h),
-          ],
+              SizedBox(height: 32.h),
+            ],
+          ),
         ),
       ),
     );

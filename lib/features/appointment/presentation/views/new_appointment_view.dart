@@ -1,6 +1,8 @@
 import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/features/home/data/models/doctor_model.dart';
+import 'package:doctor_appointment/features/appointment/presentation/models/appointment_draft.dart';
+import 'package:doctor_appointment/core/utils/go_router.dart';
 import 'package:doctor_appointment/features/appointment/presentation/widgets/date_picker_widget.dart';
 import 'package:doctor_appointment/features/appointment/presentation/widgets/consultation_type_widget.dart';
 import 'package:doctor_appointment/features/appointment/presentation/widgets/available_slots_widget.dart';
@@ -116,8 +118,15 @@ class _NewAppointmentViewState extends State<NewAppointmentView> {
         padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 32.h),
         color: Colors.white,
         child: ElevatedButton(
-          onPressed: () =>
-              context.push('/patientDetails', extra: widget.doctor),
+          onPressed: () {
+            final draft = AppointmentDraft(
+              doctor: widget.doctor,
+              date: _selectedDate,
+              time: _selectedTime,
+              consultationType: _selectedConsultation,
+            );
+            context.push(AppRouter.kPatientDetails, extra: draft);
+          },
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primary,
             shape: RoundedRectangleBorder(

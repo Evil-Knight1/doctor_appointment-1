@@ -261,6 +261,7 @@ List<DoctorModel> _mapDoctors(List<Doctor> doctors) {
     final index = entry.key;
     final doctor = entry.value;
     return DoctorModel(
+      id: doctor.id,
       name: doctor.fullName,
       specialty: doctor.specialization ?? 'General',
       rating: doctor.averageRating ?? 0,
