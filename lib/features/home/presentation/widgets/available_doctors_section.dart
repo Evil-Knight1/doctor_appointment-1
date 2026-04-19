@@ -56,7 +56,7 @@ class AvailableDoctorsSection extends StatelessWidget {
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   itemCount: doctors.length,
-                  separatorBuilder: (_, __) => SizedBox(width: 12.w),
+                  separatorBuilder: (_, _) => SizedBox(width: 12.w),
                   itemBuilder: (_, index) =>
                       _AvailableDoctorCard(doctor: doctors[index]),
                 ),
@@ -100,6 +100,7 @@ List<DoctorModel> _mapDoctors(List<Doctor> doctors) {
     final index = entry.key;
     final doctor = entry.value;
     return DoctorModel(
+      id: doctor.id,
       name: doctor.fullName,
       specialty: doctor.specialization ?? 'General',
       rating: doctor.averageRating ?? 0,

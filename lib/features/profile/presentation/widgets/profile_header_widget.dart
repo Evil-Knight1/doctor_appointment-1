@@ -6,7 +6,14 @@ import 'dart:convert';
 import 'package:doctor_appointment/core/services/shared_preferences_helper.dart';
 
 class ProfileHeaderWidget extends StatelessWidget {
-  const ProfileHeaderWidget({super.key});
+  final String name;
+  final String email;
+
+  const ProfileHeaderWidget({
+    super.key,
+    required this.name,
+    required this.email,
+  });
 
   @override
   Widget build(BuildContext context) {

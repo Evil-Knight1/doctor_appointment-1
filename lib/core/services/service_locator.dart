@@ -20,6 +20,19 @@ import 'package:doctor_appointment/features/doctors/data/repositories/doctors_re
 import 'package:doctor_appointment/features/doctors/domain/repositories/doctors_repository.dart';
 import 'package:doctor_appointment/features/doctors/domain/usecases/search_doctors_usecase.dart';
 import 'package:doctor_appointment/features/doctors/logic/doctors_cubit.dart';
+import 'package:doctor_appointment/features/profile/data/datasources/profile_remote_data_source.dart';
+import 'package:doctor_appointment/features/profile/data/repositories/profile_repository_impl.dart';
+import 'package:doctor_appointment/features/profile/domain/repositories/profile_repository.dart';
+import 'package:doctor_appointment/features/profile/domain/usecases/get_patient_profile_usecase.dart';
+import 'package:doctor_appointment/features/profile/domain/usecases/update_patient_profile_usecase.dart';
+import 'package:doctor_appointment/features/profile/logic/profile_cubit.dart';
+import 'package:doctor_appointment/features/appointment/data/datasources/appointment_remote_data_source.dart';
+import 'package:doctor_appointment/features/appointment/data/repositories/appointment_repository_impl.dart';
+import 'package:doctor_appointment/features/appointment/domain/repositories/appointment_repository.dart';
+import 'package:doctor_appointment/features/appointment/domain/usecases/create_appointment_usecase.dart';
+import 'package:doctor_appointment/features/appointment/domain/usecases/get_my_appointments_usecase.dart';
+import 'package:doctor_appointment/features/appointment/logic/appointment_cubit.dart';
+import 'package:doctor_appointment/features/appointment/logic/appointments_cubit.dart';
 
 final getIt = GetIt.instance;
 
@@ -95,5 +108,47 @@ void setupServiceLocator() {
   );
   getIt.registerFactory(
     () => DoctorsCubit(searchDoctorsUseCase: getIt<SearchDoctorsUseCase>()),
+  );
+
+  getIt.registerLazySingleton<ProfileRemoteDataSource>(
+    () => ProfileRemoteDataSourceImpl(getIt<ApiService>()),
+  );
+  getIt.registerLazySingleton<ProfileRepository>(
+    () => ProfileRepositoryImpl(getIt<ProfileRemoteDataSource>()),
+  );
+  getIt.registerLazySingleton(
+    () => GetPatientProfileUseCase(getIt<ProfileRepository>()),
+  );
+  getIt.registerLazySingleton(
+    () => UpdatePatientProfileUseCase(getIt<ProfileRepository>()),
+  );
+  getIt.registerFactory(
+    () => ProfileCubit(
+      getPatientProfileUseCase: getIt<GetPatientProfileUseCase>(),
+      updatePatientProfileUseCase: getIt<UpdatePatientProfileUseCase>(),
+    ),
+  );
+
+  getIt.registerLazySingleton<AppointmentRemoteDataSource>(
+    () => AppointmentRemoteDataSourceImpl(getIt<ApiService>()),
+  );
+  getIt.registerLazySingleton<AppointmentRepository>(
+    () => AppointmentRepositoryImpl(getIt<AppointmentRemoteDataSource>()),
+  );
+  getIt.registerLazySingleton(
+    () => CreateAppointmentUseCase(getIt<AppointmentRepository>()),
+  );
+  getIt.registerLazySingleton(
+    () => GetMyAppointmentsUseCase(getIt<AppointmentRepository>()),
+  );
+  getIt.registerFactory(
+    () => AppointmentCubit(
+      createAppointmentUseCase: getIt<CreateAppointmentUseCase>(),
+    ),
+  );
+  getIt.registerFactory(
+    () => AppointmentsCubit(
+      getMyAppointmentsUseCase: getIt<GetMyAppointmentsUseCase>(),
+    ),
   );
 }

@@ -60,7 +60,8 @@ class _CategoryDetailViewState extends State<CategoryDetailView> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => FilterBottomSheet(categoryName: widget.categoryName ?? ''),
+      builder: (_) =>
+          FilterBottomSheet(categoryName: widget.categoryName ?? ''),
     );
   }
 
@@ -113,8 +114,9 @@ class _CategoryDetailViewState extends State<CategoryDetailView> {
           return ListView.separated(
             padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 4.h),
             itemCount: doctors.length,
-            separatorBuilder: (_, __) => SizedBox(height: 12.h),
-            itemBuilder: (_, index) => CategoryDoctorCard(doctor: doctors[index]),
+            separatorBuilder: (_, _) => SizedBox(height: 12.h),
+            itemBuilder: (_, index) =>
+                CategoryDoctorCard(doctor: doctors[index]),
           );
         }
         return const SizedBox.shrink();
@@ -261,6 +263,7 @@ List<DoctorModel> _mapDoctors(List<Doctor> doctors) {
     final index = entry.key;
     final doctor = entry.value;
     return DoctorModel(
+      id: doctor.id,
       name: doctor.fullName,
       specialty: doctor.specialization ?? 'General',
       rating: doctor.averageRating ?? 0,

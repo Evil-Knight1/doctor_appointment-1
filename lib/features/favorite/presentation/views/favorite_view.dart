@@ -12,30 +12,36 @@ class FavoriteView extends StatelessWidget {
   Widget build(BuildContext context) {
     return ValueListenableBuilder<int>(
       valueListenable: SharedPreferencesHelper.favoritesVersion,
-      builder: (context, _, __) {
-        final _favorites = SharedPreferencesHelper.getFavoriteDoctors();
+      builder: (context, _, _) {
+        final favorites = SharedPreferencesHelper.getFavoriteDoctors();
         return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        title: Text(
-          'Favorites',
-          style: AppStyles.styleSemiBold22.copyWith(fontSize: 18.sp),
-        ),
-      ),
-      body: _favorites.isEmpty
-          ? _buildEmptyState()
-          : ListView.separated(
-              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
-              itemCount: _favorites.length,
-              separatorBuilder: (_, __) => SizedBox(height: 12.h),
-              itemBuilder: (_, index) => FavoriteDoctorCard(
-                doctor: _favorites[index],
-                onRemove: () => SharedPreferencesHelper.toggleFavoriteDoctor(_favorites[index]),
-              ),
+          backgroundColor: Colors.white,
+          appBar: AppBar(
+            backgroundColor: Colors.white,
+            elevation: 0,
+            automaticallyImplyLeading: false,
+            title: Text(
+              'Favorites',
+              style: AppStyles.styleSemiBold22.copyWith(fontSize: 18.sp),
             ),
+          ),
+          body: favorites.isEmpty
+              ? _buildEmptyState()
+              : ListView.separated(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 20.w,
+                    vertical: 16.h,
+                  ),
+                  itemCount: favorites.length,
+                  separatorBuilder: (_, _) => SizedBox(height: 12.h),
+                  itemBuilder: (_, index) => FavoriteDoctorCard(
+                    doctor: favorites[index],
+                    onRemove: () =>
+                        SharedPreferencesHelper.toggleFavoriteDoctor(
+                          favorites[index],
+                        ),
+                  ),
+                ),
         );
       },
     );

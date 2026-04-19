@@ -98,15 +98,14 @@ List<DoctorModel> _mapDoctors(List<Doctor> doctors) {
   ];
 
   final sorted = [...doctors]
-    ..sort(
-      (a, b) => (b.averageRating ?? 0).compareTo(a.averageRating ?? 0),
-    );
+    ..sort((a, b) => (b.averageRating ?? 0).compareTo(a.averageRating ?? 0));
   final top = sorted.take(2).toList();
 
   return top.asMap().entries.map((entry) {
     final index = entry.key;
     final doctor = entry.value;
     return DoctorModel(
+      id: doctor.id,
       name: doctor.fullName,
       specialty: doctor.specialization ?? 'General',
       rating: doctor.averageRating ?? 0,
@@ -158,7 +157,7 @@ class _PopularDoctorCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                   Text(
+                  Text(
                     doctor.name,
                     style: AppStyles.styleMedium14.copyWith(fontSize: 15.sp),
                   ),
@@ -195,13 +194,22 @@ class _PopularDoctorCard extends StatelessWidget {
               children: [
                 ValueListenableBuilder<int>(
                   valueListenable: SharedPreferencesHelper.favoritesVersion,
-                  builder: (context, _, __) {
-                    final isFavorite = SharedPreferencesHelper.isDoctorFavorite(doctor.name);
+                  builder: (context, _, _) {
+                    final isFavorite = SharedPreferencesHelper.isDoctorFavorite(
+                      doctor.name,
+                    );
                     return GestureDetector(
-                      onTap: () async => await SharedPreferencesHelper.toggleFavoriteDoctor(doctor),
+                      onTap: () async =>
+                          await SharedPreferencesHelper.toggleFavoriteDoctor(
+                            doctor,
+                          ),
                       child: Icon(
-                        isFavorite ? Icons.favorite_rounded : Icons.favorite_border,
-                        color: isFavorite ? AppColors.accent : AppColors.textLight,
+                        isFavorite
+                            ? Icons.favorite_rounded
+                            : Icons.favorite_border,
+                        color: isFavorite
+                            ? AppColors.accent
+                            : AppColors.textLight,
                         size: 20.sp,
                       ),
                     );
