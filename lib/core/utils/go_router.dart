@@ -22,6 +22,15 @@ import 'package:doctor_appointment/features/on_boarding_view/presentation/views/
 import 'package:doctor_appointment/core/services/service_locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:doctor_appointment/features/auth/presentation/views/doctor_pending_approval_view.dart' as doctor_pending;
+import 'package:doctor_appointment/features/medical_records/presentation/views/medical_records_view.dart';
+import 'package:doctor_appointment/features/medical_records/presentation/views/create_record_view.dart';
+import 'package:doctor_appointment/features/doctor_flow/presentation/views/doctor_root.dart';
+import 'package:doctor_appointment/features/payments/presentation/views/payment_history_view.dart';
+import 'package:doctor_appointment/features/payments/presentation/views/transaction_details_view.dart';
+import 'package:doctor_appointment/features/payments/presentation/views/checkout_view.dart';
+import 'package:doctor_appointment/features/chatbot/presentation/views/chat_history_view.dart';
+import 'package:doctor_appointment/features/appointment/presentation/views/appointment_details_view.dart';
 
 abstract class AppRouter {
   static const kLoginView = '/loginView';
@@ -41,6 +50,15 @@ abstract class AppRouter {
   static const kAppointmentSuccess = '/appointmentSuccess';
   static const kAppointmentsView = '/appointmentsView';
   static const kEditProfileView = '/editProfileView';
+  static const kDoctorPendingApprovalView = '/doctorPendingApprovalView';
+  static const kMedicalRecordsView = '/medicalRecordsView';
+  static const kCreateRecordView = '/createRecordView';
+  static const kPaymentHistoryView = '/paymentHistoryView';
+  static const kTransactionDetailsView = '/transactionDetailsView';
+  static const kCheckoutView = '/checkoutView';
+  static const kChatHistoryView = '/chatHistoryView';
+  static const kAppointmentDetailsView = '/appointmentDetailsView';
+  static const kDoctorRoot = '/doctorRoot';
 
   static final router = GoRouter(
     routes: [
@@ -100,6 +118,10 @@ abstract class AppRouter {
         builder: (context, state) => const ChatbotView(),
       ),
       GoRoute(
+        path: kChatHistoryView,
+        builder: (context, state) => const ChatHistoryView(),
+      ),
+      GoRoute(
         path: kDoctorDetail,
         builder: (context, state) {
           final doctor = state.extra as DoctorModel;
@@ -123,6 +145,43 @@ abstract class AppRouter {
       GoRoute(
         path: kAppointmentSuccess,
         builder: (context, state) => const AppointmentSuccessView(),
+      ),
+      GoRoute(
+        path: kDoctorPendingApprovalView,
+        builder: (context, state) {
+          return const doctor_pending.DoctorPendingApprovalView();
+        },
+      ),
+      GoRoute(
+        path: kMedicalRecordsView,
+        builder: (context, state) => const MedicalRecordsView(),
+      ),
+      GoRoute(
+        path: kCreateRecordView,
+        builder: (context, state) => const CreateRecordView(),
+      ),
+      GoRoute(
+        path: kPaymentHistoryView,
+        builder: (context, state) => const PaymentHistoryView(),
+      ),
+      GoRoute(
+        path: kTransactionDetailsView,
+        builder: (context, state) => const TransactionDetailsView(),
+      ),
+      GoRoute(
+        path: kCheckoutView,
+        builder: (context, state) => const CheckoutView(),
+      ),
+      GoRoute(
+        path: kAppointmentDetailsView,
+        builder: (context, state) {
+          final data = state.extra as Map<String, dynamic>? ?? {};
+          return AppointmentDetailsView(appointmentData: data);
+        },
+      ),
+      GoRoute(
+        path: kDoctorRoot,
+        builder: (context, state) => const DoctorRoot(),
       ),
     ],
   );

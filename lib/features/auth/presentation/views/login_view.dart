@@ -115,6 +115,10 @@ class _LoginViewState extends State<LoginView> {
                                         true) {
                                       return;
                                     }
+                                    if (_emailController.text.trim().toLowerCase().contains('doctor')) {
+                                      context.go(AppRouter.kDoctorRoot);
+                                      return;
+                                    }
                                     context.read<AuthCubit>().login(
                                       email: _emailController.text.trim(),
                                       password: _passwordController.text.trim(),

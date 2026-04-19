@@ -18,6 +18,7 @@ class SignUpView extends StatefulWidget {
 
 class _SignUpViewState extends State<SignUpView> {
   final _formKey = GlobalKey<FormState>();
+  bool _isPatient = true;
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
@@ -79,6 +80,53 @@ class _SignUpViewState extends State<SignUpView> {
                           style: AppStyles.styleRegular14,
                         ),
                         SizedBox(height: 24.h), // 48 ? 24
+
+                        Row(
+                          children: [
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () => setState(() => _isPatient = true),
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(vertical: 12.h),
+                                  decoration: BoxDecoration(
+                                    color: _isPatient ? const Color(0xff236DEC) : Colors.transparent,
+                                    border: Border.all(color: _isPatient ? const Color(0xff236DEC) : const Color(0xffE2E2E2)),
+                                    borderRadius: BorderRadius.circular(8.r),
+                                  ),
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    'Patient',
+                                    style: AppStyles.styleMedium14.copyWith(
+                                      color: _isPatient ? Colors.white : const Color(0xff949D9E),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 12.w),
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () => setState(() => _isPatient = false),
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(vertical: 12.h),
+                                  decoration: BoxDecoration(
+                                    color: !_isPatient ? const Color(0xff236DEC) : Colors.transparent,
+                                    border: Border.all(color: !_isPatient ? const Color(0xff236DEC) : const Color(0xffE2E2E2)),
+                                    borderRadius: BorderRadius.circular(8.r),
+                                  ),
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    'Doctor',
+                                    style: AppStyles.styleMedium14.copyWith(
+                                      color: !_isPatient ? Colors.white : const Color(0xff949D9E),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 24.h),
 
                         Text('Full Name', style: AppStyles.styleMedium14),
                         SizedBox(height: 8.h),
@@ -148,6 +196,10 @@ class _SignUpViewState extends State<SignUpView> {
                                           content: Text('Passwords do not match'),
                                         ),
                                       );
+                                      return;
+                                    }
+                                    if (!_isPatient) {
+                                      context.push(AppRouter.kDoctorPendingApprovalView);
                                       return;
                                     }
                                     context.read<AuthCubit>().registerPatient(

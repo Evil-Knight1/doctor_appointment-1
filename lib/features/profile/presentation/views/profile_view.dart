@@ -1,10 +1,10 @@
 import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/core/utils/go_router.dart';
-import 'package:doctor_appointment/core/services/shared_preferences_helper.dart';
 import 'package:doctor_appointment/core/services/service_locator.dart';
 import 'package:doctor_appointment/features/profile/logic/profile_cubit.dart';
 import 'package:doctor_appointment/features/profile/logic/profile_state.dart';
+import 'package:doctor_appointment/core/services/shared_preferences_helper.dart';
 import 'package:doctor_appointment/features/profile/presentation/widgets/profile_header_widget.dart';
 import 'package:doctor_appointment/features/profile/presentation/widgets/profile_menu_item.dart';
 import 'package:flutter/material.dart';
@@ -88,38 +88,54 @@ class _ProfileViewState extends State<ProfileView> {
                   );
                 },
               ),
-            _buildSectionLabel('Account'),
-            SizedBox(height: 10.h),
-            BlocBuilder<ProfileCubit, ProfileState>(
-              builder: (context, state) {
-                return ProfileMenuItem(
-                  icon: Icons.person_outline_rounded,
-                  title: 'Personal Information',
-                  subtitle: 'Name, email, phone',
-                  onTap: () async {
-                    if (state is! ProfileSuccess) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Profile not loaded')),
+              _buildSectionLabel('Account'),
+              SizedBox(height: 10.h),
+              BlocBuilder<ProfileCubit, ProfileState>(
+                builder: (context, state) {
+                  return ProfileMenuItem(
+                    icon: Icons.person_outline_rounded,
+                    title: 'Personal Information',
+                    subtitle: 'Name, email, phone',
+                    onTap: () async {
+                      if (state is! ProfileSuccess) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Profile not loaded')),
+                        );
+                        return;
+                      }
+                      final updated = await context.push<bool>(
+                        AppRouter.kEditProfileView,
+                        extra: state.profile,
                       );
-                      return;
-                    }
-                    final updated = await context.push<bool>(
-                      AppRouter.kEditProfileView,
-                      extra: state.profile,
-                    );
-                    if (updated == true) {
-                      _profileCubit.loadProfile();
-                    }
-                  },
-                );
-              },
-            ),
+                      if (updated == true) {
+                        _profileCubit.loadProfile();
+                      }
+                    },
+                  );
+                },
+              ),
               SizedBox(height: 10.h),
               ProfileMenuItem(
                 icon: Icons.lock_outline_rounded,
                 title: 'Change Password',
                 subtitle: 'Update your password',
                 onTap: () {},
+              ),
+              SizedBox(height: 20.h),
+              _buildSectionLabel('Health'),
+              SizedBox(height: 10.h),
+              ProfileMenuItem(
+                icon: Icons.description_outlined,
+                title: 'Medical Records',
+                subtitle: 'View your health documents',
+                onTap: () => context.push(AppRouter.kMedicalRecordsView),
+              ),
+              SizedBox(height: 10.h),
+              ProfileMenuItem(
+                icon: Icons.payment_rounded,
+                title: 'Payment History',
+                subtitle: 'Check past transactions',
+                onTap: () => context.push(AppRouter.kPaymentHistoryView),
               ),
               SizedBox(height: 20.h),
               _buildSectionLabel('Preferences'),

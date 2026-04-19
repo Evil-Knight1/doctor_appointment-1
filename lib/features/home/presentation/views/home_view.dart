@@ -46,7 +46,7 @@ class _HomeViewState extends State<HomeView> {
       child: Scaffold(
         backgroundColor: Colors.white,
         floatingActionButton: FloatingActionButton(
-          onPressed: () => context.push(AppRouter.kChatbotView),
+          onPressed: () => context.push(AppRouter.kChatHistoryView),
           backgroundColor: AppColors.primary,
           child: const Icon(Icons.smart_toy_rounded, color: Colors.white),
         ),
