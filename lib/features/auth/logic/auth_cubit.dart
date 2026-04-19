@@ -1,5 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:doctor_appointment/core/utils/result.dart';
+import 'package:doctor_appointment/core/services/shared_preferences_helper.dart';
+import 'dart:convert';
+import 'package:doctor_appointment/features/auth/domain/entities/auth_response.dart';
 import 'package:doctor_appointment/features/auth/domain/usecases/login_usecase.dart';
 import 'package:doctor_appointment/features/auth/domain/usecases/register_patient_usecase.dart';
 import 'package:doctor_appointment/features/auth/logic/auth_state.dart';
@@ -24,6 +27,7 @@ class AuthCubit extends Cubit<AuthState> {
 
     switch (result) {
       case Success():
+        await _saveUserData(result.data);
         emit(AuthSuccess(result.data));
       case FailureResult():
         emit(AuthFailure(result.failure.message));
@@ -54,9 +58,23 @@ class AuthCubit extends Cubit<AuthState> {
 
     switch (result) {
       case Success():
+        await _saveUserData(result.data);
         emit(AuthSuccess(result.data));
       case FailureResult():
         emit(AuthFailure(result.failure.message));
     }
+  }
+
+  Future<void> _saveUserData(AuthResponse data) async {
+    await SharedPreferencesHelper.saveToken(data.token);
+    final userJson = {
+      'token': data.token,
+      'refreshToken': data.refreshToken,
+      'email': data.email,
+      'role': data.role,
+      'userId': data.userId,
+      'expiresAt': data.expiresAt.toIso8601String(),
+    };
+    await SharedPreferencesHelper.saveUserData(jsonEncode(userJson));
   }
 }

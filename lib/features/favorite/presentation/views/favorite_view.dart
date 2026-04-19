@@ -1,56 +1,20 @@
 import 'package:doctor_appointment/core/utils/app_colors.dart';
-import 'package:doctor_appointment/core/utils/app_images.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
-import 'package:doctor_appointment/features/home/data/models/doctor_model.dart';
+import 'package:doctor_appointment/core/services/shared_preferences_helper.dart';
 import 'package:doctor_appointment/features/favorite/presentation/widgets/favorite_doctor_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class FavoriteView extends StatefulWidget {
+class FavoriteView extends StatelessWidget {
   const FavoriteView({super.key});
 
   @override
-  State<FavoriteView> createState() => _FavoriteViewState();
-}
-
-class _FavoriteViewState extends State<FavoriteView> {
-  final List<DoctorModel> _favorites = [
-    DoctorModel(
-      name: 'Dr. Ayesha Rahman',
-      specialty: 'Dentist',
-      rating: 5.0,
-      reviews: 200,
-      fee: '\$15/hr',
-      imageAsset: Assets.imagesDrAyeshaRahman,
-      isFavorite: true,
-    ),
-    DoctorModel(
-      name: 'Dr. Noble Thorme',
-      specialty: 'Ophthalmologist',
-      rating: 4.8,
-      reviews: 180,
-      fee: '\$18/hr',
-      imageAsset: Assets.imagesDrNobleThorme,
-      isFavorite: true,
-    ),
-    DoctorModel(
-      name: 'Dr. Sarah',
-      specialty: 'ENT Specialist',
-      rating: 4.9,
-      reviews: 150,
-      fee: '\$20/hr',
-      imageAsset: Assets.imagesDrSarah,
-      isFavorite: true,
-    ),
-  ];
-
-  void _removeFromFavorites(int index) {
-    setState(() => _favorites.removeAt(index));
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ValueListenableBuilder<int>(
+      valueListenable: SharedPreferencesHelper.favoritesVersion,
+      builder: (context, _, __) {
+        final _favorites = SharedPreferencesHelper.getFavoriteDoctors();
+        return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -69,9 +33,11 @@ class _FavoriteViewState extends State<FavoriteView> {
               separatorBuilder: (_, __) => SizedBox(height: 12.h),
               itemBuilder: (_, index) => FavoriteDoctorCard(
                 doctor: _favorites[index],
-                onRemove: () => _removeFromFavorites(index),
+                onRemove: () => SharedPreferencesHelper.toggleFavoriteDoctor(_favorites[index]),
               ),
             ),
+        );
+      },
     );
   }
 

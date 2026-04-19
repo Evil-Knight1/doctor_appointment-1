@@ -4,6 +4,7 @@ import 'package:doctor_appointment/features/home/data/models/doctor_model.dart';
 import 'package:doctor_appointment/features/doctor_details/presentation/widgets/doctor_info_widget.dart';
 import 'package:doctor_appointment/features/doctor_details/presentation/widgets/doctor_stats_widget.dart';
 import 'package:doctor_appointment/features/doctor_details/presentation/widgets/doctor_working_time_widget.dart';
+import 'package:doctor_appointment/core/services/shared_preferences_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -71,6 +72,32 @@ class DoctorDetailsView extends StatelessWidget {
                 color: AppColors.textPrimary,
               ),
             ),
+          ),
+        ),
+        Positioned(
+          top: 48.h,
+          right: 20.w,
+          child: ValueListenableBuilder<int>(
+            valueListenable: SharedPreferencesHelper.favoritesVersion,
+            builder: (context, _, __) {
+              final isFav = SharedPreferencesHelper.isDoctorFavorite(doctor.name);
+              return GestureDetector(
+                onTap: () async => await SharedPreferencesHelper.toggleFavoriteDoctor(doctor),
+                child: Container(
+                  width: 36.w,
+                  height: 36.h,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10.r),
+                  ),
+                  child: Icon(
+                    isFav ? Icons.favorite_rounded : Icons.favorite_border,
+                    size: 20.sp,
+                    color: isFav ? AppColors.accent : AppColors.textPrimary,
+                  ),
+                ),
+              );
+            },
           ),
         ),
         Positioned(

@@ -1,6 +1,7 @@
 import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/core/utils/go_router.dart';
+import 'package:doctor_appointment/core/services/shared_preferences_helper.dart';
 import 'package:doctor_appointment/features/profile/presentation/widgets/profile_header_widget.dart';
 import 'package:doctor_appointment/features/profile/presentation/widgets/profile_menu_item.dart';
 import 'package:flutter/material.dart';
@@ -225,7 +226,12 @@ class _ProfileViewState extends State<ProfileView> {
             ),
           ),
           TextButton(
-            onPressed: () => context.go(AppRouter.kLoginView),
+            onPressed: () async {
+              await SharedPreferencesHelper.clearAll();
+              if (context.mounted) {
+                context.go(AppRouter.kLoginView);
+              }
+            },
             child: Text(
               'Log Out',
               style: AppStyles.styleMedium14.copyWith(color: AppColors.accent),

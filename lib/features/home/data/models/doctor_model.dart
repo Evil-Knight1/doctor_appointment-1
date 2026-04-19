@@ -16,4 +16,28 @@ class DoctorModel {
     required this.imageAsset,
     this.isFavorite = false,
   });
+
+  factory DoctorModel.fromJson(Map<String, dynamic> json) {
+    return DoctorModel(
+      name: json['name'] ?? '',
+      specialty: json['specialty'] ?? '',
+      rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
+      reviews: json['reviews'] as int? ?? 0,
+      fee: json['fee'] ?? '',
+      imageAsset: json['imageAsset'] ?? '',
+      isFavorite: json['isFavorite'] ?? false,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'specialty': specialty,
+      'rating': rating,
+      'reviews': reviews,
+      'fee': fee,
+      'imageAsset': imageAsset,
+      'isFavorite': isFavorite,
+    };
+  }
 }

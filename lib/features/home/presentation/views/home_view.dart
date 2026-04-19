@@ -8,11 +8,14 @@ import 'package:doctor_appointment/features/home/presentation/widgets/popular_do
 import 'package:doctor_appointment/features/home/presentation/widgets/search_bar_widget.dart';
 import 'package:doctor_appointment/features/doctors/logic/doctors_cubit.dart';
 import 'package:doctor_appointment/core/services/service_locator.dart';
-
+import 'package:doctor_appointment/core/utils/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
+import 'dart:convert';
+import 'package:doctor_appointment/core/services/shared_preferences_helper.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -33,7 +36,6 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   void dispose() {
-    _doctorsCubit.close();
     super.dispose();
   }
 
@@ -43,6 +45,11 @@ class _HomeViewState extends State<HomeView> {
       value: _doctorsCubit,
       child: Scaffold(
         backgroundColor: Colors.white,
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => context.push(AppRouter.kChatbotView),
+          backgroundColor: AppColors.primary,
+          child: const Icon(Icons.smart_toy_rounded, color: Colors.white),
+        ),
         body: SafeArea(
           child: SingleChildScrollView(
             padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -71,16 +78,30 @@ class _HomeViewState extends State<HomeView> {
   }
 
   Widget _buildHeader() {
+    String name = 'Guest';
+    final userDataString = SharedPreferencesHelper.getUserData();
+    if (userDataString != null) {
+      try {
+        final userData = jsonDecode(userDataString);
+        final email = userData['email'] ?? 'email@example.com';
+        name =
+            userData['fullName'] ??
+            userData['name'] ??
+            userData['userName'] ??
+            email.split('@').first;
+      } catch (e) {}
+    }
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Hello, Laith Mahdi', style: AppStyles.styleSemiBold22),
+            Text('Hello, $name', style: AppStyles.styleSemiBold22),
             SizedBox(height: 2.h),
             Text(
-              'Good Morning',
+              _getGreeting(),
               style: AppStyles.styleRegular14.copyWith(
                 color: AppColors.textSecondary,
               ),
@@ -95,5 +116,12 @@ class _HomeViewState extends State<HomeView> {
         ),
       ],
     );
+  }
+
+  String _getGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) return 'Good Morning';
+    if (hour < 17) return 'Good Afternoon';
+    return 'Good Evening';
   }
 }

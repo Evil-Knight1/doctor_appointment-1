@@ -1,9 +1,11 @@
 import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_images.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
+import 'package:doctor_appointment/core/utils/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 
 class DoctorSpecialtiesSection extends StatelessWidget {
   const DoctorSpecialtiesSection({super.key});
@@ -19,13 +21,16 @@ class DoctorSpecialtiesSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        _buildSectionHeader(),
+        _buildSectionHeader(context),
         SizedBox(height: 14.h),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: _specialties
               .map(
-                (s) => _SpecialtyItem(label: s['label']!, asset: s['asset']!),
+                (s) => GestureDetector(
+                  onTap: () => context.push(AppRouter.kCategoryDetailsView, extra: s['label']!.replaceAll('\n', ' ')),
+                  child: _SpecialtyItem(label: s['label']!, asset: s['asset']!),
+                ),
               )
               .toList(),
         ),
@@ -33,7 +38,7 @@ class DoctorSpecialtiesSection extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionHeader() {
+  Widget _buildSectionHeader(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -41,9 +46,12 @@ class DoctorSpecialtiesSection extends StatelessWidget {
           'Doctor Specialties',
           style: AppStyles.styleSemiBold22.copyWith(fontSize: 16.sp),
         ),
-        Text(
-          'See all',
-          style: AppStyles.styleRegular14.copyWith(color: AppColors.primary),
+        GestureDetector(
+          onTap: () => context.push(AppRouter.kSpecialtiesView),
+          child: Text(
+            'See all',
+            style: AppStyles.styleRegular14.copyWith(color: AppColors.primary),
+          ),
         ),
       ],
     );

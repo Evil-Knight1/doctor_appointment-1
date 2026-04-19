@@ -21,4 +21,15 @@ class AuthResponseModel extends AuthResponse {
           DateTime.fromMillisecondsSinceEpoch(0),
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'token': token,
+      'refreshToken': refreshToken,
+      'email': email,
+      'role': role,
+      'userId': userId,
+      'expiresAt': expiresAt.toIso8601String(),
+    };
+  }
 }

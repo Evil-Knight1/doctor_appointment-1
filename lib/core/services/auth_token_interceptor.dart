@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:doctor_appointment/features/auth/data/datasources/auth_local_data_source.dart';
 import 'package:doctor_appointment/features/auth/data/datasources/auth_remote_data_source.dart';
+import 'package:doctor_appointment/core/services/shared_preferences_helper.dart';
 
 class AuthTokenInterceptor extends Interceptor {
   final AuthLocalDataSource localDataSource;
@@ -23,8 +24,9 @@ class AuthTokenInterceptor extends Interceptor {
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
+    final sharedPrefsToken = SharedPreferencesHelper.getToken();
     final session = await localDataSource.getCachedSession();
-    final token = session?.token ?? '';
+    final token = sharedPrefsToken ?? session?.token ?? '';
     if (token.isNotEmpty) {
       options.headers['Authorization'] = 'Bearer $token';
     }
@@ -93,8 +95,9 @@ class AuthTokenInterceptor extends Interceptor {
   Future<Response<dynamic>?> _retryWithUpdatedToken(
     RequestOptions requestOptions,
   ) async {
+    final sharedPrefsToken = SharedPreferencesHelper.getToken();
     final session = await localDataSource.getCachedSession();
-    final token = session?.token ?? '';
+    final token = sharedPrefsToken ?? session?.token ?? '';
     if (token.isEmpty) {
       return null;
     }

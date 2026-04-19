@@ -9,6 +9,7 @@ import 'package:doctor_appointment/features/home/data/models/doctor_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:doctor_appointment/core/services/shared_preferences_helper.dart';
 
 class PopularDoctorsSection extends StatelessWidget {
   const PopularDoctorsSection({super.key});
@@ -157,7 +158,7 @@ class _PopularDoctorCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                   Text(
                     doctor.name,
                     style: AppStyles.styleMedium14.copyWith(fontSize: 15.sp),
                   ),
@@ -192,12 +193,19 @@ class _PopularDoctorCard extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Icon(
-                  doctor.isFavorite ? Icons.favorite : Icons.favorite_border,
-                  color: doctor.isFavorite
-                      ? AppColors.accent
-                      : AppColors.textLight,
-                  size: 20.sp,
+                ValueListenableBuilder<int>(
+                  valueListenable: SharedPreferencesHelper.favoritesVersion,
+                  builder: (context, _, __) {
+                    final isFavorite = SharedPreferencesHelper.isDoctorFavorite(doctor.name);
+                    return GestureDetector(
+                      onTap: () async => await SharedPreferencesHelper.toggleFavoriteDoctor(doctor),
+                      child: Icon(
+                        isFavorite ? Icons.favorite_rounded : Icons.favorite_border,
+                        color: isFavorite ? AppColors.accent : AppColors.textLight,
+                        size: 20.sp,
+                      ),
+                    );
+                  },
                 ),
                 SizedBox(height: 8.h),
                 Text(

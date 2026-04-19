@@ -2,12 +2,27 @@ import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'dart:convert';
+import 'package:doctor_appointment/core/services/shared_preferences_helper.dart';
 
 class ProfileHeaderWidget extends StatelessWidget {
   const ProfileHeaderWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
+    String name = 'Guest User';
+    String email = 'email@example.com';
+    final userDataString = SharedPreferencesHelper.getUserData();
+    if (userDataString != null) {
+      try {
+        final userData = jsonDecode(userDataString);
+        email = userData['email'] ?? email;
+        name = userData['fullName'] ?? userData['name'] ?? userData['userName'] ?? email.split('@').first;
+      } catch (e) {
+        // Ignored
+      }
+    }
+
     return Column(
       children: [
         SizedBox(height: 16.h),
@@ -40,12 +55,12 @@ class ProfileHeaderWidget extends StatelessWidget {
         ),
         SizedBox(height: 12.h),
         Text(
-          'Laith Mahdi',
+          name,
           style: AppStyles.styleSemiBold22.copyWith(fontSize: 18.sp),
         ),
         SizedBox(height: 4.h),
         Text(
-          'laith.mahdi@email.com',
+          email,
           style: AppStyles.styleRegular14.copyWith(
             color: AppColors.textSecondary,
             fontSize: 13.sp,

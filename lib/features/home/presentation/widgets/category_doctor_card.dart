@@ -2,6 +2,7 @@ import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/core/utils/go_router.dart';
 import 'package:doctor_appointment/features/home/data/models/doctor_model.dart';
+import 'package:doctor_appointment/core/services/shared_preferences_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -80,10 +81,19 @@ class CategoryDoctorCard extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Icon(
-                  Icons.favorite_border,
-                  color: AppColors.textLight,
-                  size: 20.sp,
+                ValueListenableBuilder<int>(
+                  valueListenable: SharedPreferencesHelper.favoritesVersion,
+                  builder: (context, _, __) {
+                    final isFavorite = SharedPreferencesHelper.isDoctorFavorite(doctor.name);
+                    return GestureDetector(
+                      onTap: () async => await SharedPreferencesHelper.toggleFavoriteDoctor(doctor),
+                      child: Icon(
+                        isFavorite ? Icons.favorite_rounded : Icons.favorite_border,
+                        color: isFavorite ? AppColors.accent : AppColors.textLight,
+                        size: 20.sp,
+                      ),
+                    );
+                  },
                 ),
                 SizedBox(height: 12.h),
                 Text(

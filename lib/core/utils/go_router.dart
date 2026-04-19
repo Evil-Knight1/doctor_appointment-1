@@ -10,6 +10,8 @@ import 'package:doctor_appointment/features/doctor_details/presentation/views/do
 import 'package:doctor_appointment/features/favorite/presentation/views/favorite_view.dart';
 import 'package:doctor_appointment/features/home/presentation/views/category_detail_view.dart';
 import 'package:doctor_appointment/features/home/presentation/views/home_view.dart';
+import 'package:doctor_appointment/features/home/presentation/views/specialties_view.dart';
+import 'package:doctor_appointment/features/chatbot/presentation/views/chatbot_view.dart';
 import 'package:doctor_appointment/features/home/data/models/doctor_model.dart';
 import 'package:doctor_appointment/features/profile/presentation/views/profile_view.dart';
 import 'package:doctor_appointment/features/splash/presentation/views/splash_view.dart';
@@ -28,6 +30,8 @@ abstract class AppRouter {
   static const kCalendarView = '/calendarView';
   static const kProfileView = '/profileView';
   static const kCategoryDetailsView = '/categoryDetailsView';
+  static const kSpecialtiesView = '/specialtiesView';
+  static const kChatbotView = '/chatbotView';
   static const kDoctorDetail = '/doctorDetail';
   static const kNewAppointment = '/newAppointment';
   static const kPatientDetails = '/patientDetails';
@@ -75,6 +79,14 @@ abstract class AppRouter {
           final name = state.extra as String? ?? 'Category';
           return CategoryDetailView(categoryName: name);
         },
+      ),
+      GoRoute(
+        path: kSpecialtiesView,
+        builder: (context, state) => const SpecialtiesView(),
+      ),
+      GoRoute(
+        path: kChatbotView,
+        builder: (context, state) => const ChatbotView(),
       ),
       GoRoute(
         path: kDoctorDetail,
