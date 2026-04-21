@@ -61,7 +61,7 @@ class AppointmentCard extends StatelessWidget {
             width: 55.w,
             height: 55.w,
             fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => Container(
+            errorBuilder: (_, _, _) => Container(
               width: 55.w,
               height: 55.w,
               decoration: BoxDecoration(

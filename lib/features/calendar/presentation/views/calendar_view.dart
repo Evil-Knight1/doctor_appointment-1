@@ -111,7 +111,7 @@ class _CalendarViewState extends State<CalendarView>
           return ListView.separated(
             padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
             itemCount: items.length,
-            separatorBuilder: (_, __) => SizedBox(height: 14.h),
+            separatorBuilder: (_, _) => SizedBox(height: 14.h),
             itemBuilder: (_, index) {
               final card = _mapToCard(items[index], tab);
               return AppointmentCard(

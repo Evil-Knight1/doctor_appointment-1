@@ -69,7 +69,7 @@ class _FavoriteViewState extends State<FavoriteView> {
           : ListView.separated(
               padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
               itemCount: _favorites.length,
-              separatorBuilder: (_, __) => SizedBox(height: 12.h),
+              separatorBuilder: (_, _) => SizedBox(height: 12.h),
               itemBuilder: (_, index) => FavoriteDoctorCard(
                 doctor: _favorites[index],
                 onRemove: () => _removeFromFavorites(index),

@@ -49,7 +49,7 @@ class DoctorDetailsView extends StatelessWidget {
           child: Image.asset(
             doctor.imageAsset,
             fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) =>
+            errorBuilder: (_, _, _) =>
                 Icon(Icons.person, size: 80.sp, color: AppColors.primary),
           ),
         ),
