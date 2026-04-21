@@ -33,9 +33,12 @@ class _EditProfileViewState extends State<EditProfileView> {
     _profileCubit = getIt<ProfileCubit>();
     _nameController = TextEditingController(text: widget.profile.fullName);
     _phoneController = TextEditingController(text: widget.profile.phone);
-    _genderController = TextEditingController(text: widget.profile.gender ?? '');
-    _addressController =
-        TextEditingController(text: widget.profile.address ?? '');
+    _genderController = TextEditingController(
+      text: widget.profile.gender ?? '',
+    );
+    _addressController = TextEditingController(
+      text: widget.profile.address ?? '',
+    );
     _dateOfBirth = widget.profile.dateOfBirth;
   }
 
@@ -66,9 +69,9 @@ class _EditProfileViewState extends State<EditProfileView> {
         body: BlocConsumer<ProfileCubit, ProfileState>(
           listener: (context, state) {
             if (state is ProfileFailure) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.message)),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(state.message)));
             }
             if (state is ProfileSuccess) {
               context.pop(true);

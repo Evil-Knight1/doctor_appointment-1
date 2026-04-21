@@ -67,7 +67,8 @@ class AppointmentRepositoryImpl implements AppointmentRepository {
 
     final response = exception.response;
     final statusCode = response?.statusCode;
-    final message = _extractMessage(response?.data) ??
+    final message =
+        _extractMessage(response?.data) ??
         exception.message ??
         'Request failed';
 

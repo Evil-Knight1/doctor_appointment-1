@@ -46,10 +46,7 @@ class ProfileHeaderWidget extends StatelessWidget {
           ],
         ),
         SizedBox(height: 12.h),
-        Text(
-          name,
-          style: AppStyles.styleSemiBold22.copyWith(fontSize: 18.sp),
-        ),
+        Text(name, style: AppStyles.styleSemiBold22.copyWith(fontSize: 18.sp)),
         SizedBox(height: 4.h),
         Text(
           email,

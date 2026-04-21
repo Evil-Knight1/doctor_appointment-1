@@ -7,7 +7,7 @@ class AppointmentsCubit extends Cubit<AppointmentsState> {
   final GetMyAppointmentsUseCase getMyAppointmentsUseCase;
 
   AppointmentsCubit({required this.getMyAppointmentsUseCase})
-      : super(const AppointmentsInitial());
+    : super(const AppointmentsInitial());
 
   Future<void> loadAppointments() async {
     emit(const AppointmentsLoading());

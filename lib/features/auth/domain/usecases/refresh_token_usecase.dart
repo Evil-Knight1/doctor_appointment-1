@@ -19,8 +19,5 @@ class RefreshTokenParams {
   final String token;
   final String refreshToken;
 
-  const RefreshTokenParams({
-    required this.token,
-    required this.refreshToken,
-  });
+  const RefreshTokenParams({required this.token, required this.refreshToken});
 }

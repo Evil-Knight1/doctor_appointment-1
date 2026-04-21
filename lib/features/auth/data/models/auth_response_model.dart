@@ -17,7 +17,8 @@ class AuthResponseModel extends AuthResponse {
       email: json['email'] as String? ?? '',
       role: json['role'] as String? ?? '',
       userId: json['userId'] as int? ?? 0,
-      expiresAt: DateTime.tryParse(json['expiresAt'] as String? ?? '') ??
+      expiresAt:
+          DateTime.tryParse(json['expiresAt'] as String? ?? '') ??
           DateTime.fromMillisecondsSinceEpoch(0),
     );
   }

@@ -16,9 +16,9 @@ class DoctorsPageModel extends DoctorsPage {
     final itemsRaw = json['items'];
     final items = itemsRaw is List
         ? itemsRaw
-            .whereType<Map<String, dynamic>>()
-            .map(DoctorApiModel.fromJson)
-            .toList()
+              .whereType<Map<String, dynamic>>()
+              .map(DoctorApiModel.fromJson)
+              .toList()
         : <DoctorApiModel>[];
 
     return DoctorsPageModel(

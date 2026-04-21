@@ -33,7 +33,7 @@ class DoctorApiModel extends Doctor {
       totalReviews: json['totalReviews'] as int? ?? 0,
       createdAt:
           DateTime.tryParse(json['createdAt'] as String? ?? '') ??
-              DateTime.fromMillisecondsSinceEpoch(0),
+          DateTime.fromMillisecondsSinceEpoch(0),
     );
   }
 }

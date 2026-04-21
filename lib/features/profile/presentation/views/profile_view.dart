@@ -87,32 +87,32 @@ class _ProfileViewState extends State<ProfileView> {
                   );
                 },
               ),
-            _buildSectionLabel('Account'),
-            SizedBox(height: 10.h),
-            BlocBuilder<ProfileCubit, ProfileState>(
-              builder: (context, state) {
-                return ProfileMenuItem(
-                  icon: Icons.person_outline_rounded,
-                  title: 'Personal Information',
-                  subtitle: 'Name, email, phone',
-                  onTap: () async {
-                    if (state is! ProfileSuccess) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Profile not loaded')),
+              _buildSectionLabel('Account'),
+              SizedBox(height: 10.h),
+              BlocBuilder<ProfileCubit, ProfileState>(
+                builder: (context, state) {
+                  return ProfileMenuItem(
+                    icon: Icons.person_outline_rounded,
+                    title: 'Personal Information',
+                    subtitle: 'Name, email, phone',
+                    onTap: () async {
+                      if (state is! ProfileSuccess) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Profile not loaded')),
+                        );
+                        return;
+                      }
+                      final updated = await context.push<bool>(
+                        AppRouter.kEditProfileView,
+                        extra: state.profile,
                       );
-                      return;
-                    }
-                    final updated = await context.push<bool>(
-                      AppRouter.kEditProfileView,
-                      extra: state.profile,
-                    );
-                    if (updated == true) {
-                      _profileCubit.loadProfile();
-                    }
-                  },
-                );
-              },
-            ),
+                      if (updated == true) {
+                        _profileCubit.loadProfile();
+                      }
+                    },
+                  );
+                },
+              ),
               SizedBox(height: 10.h),
               ProfileMenuItem(
                 icon: Icons.lock_outline_rounded,

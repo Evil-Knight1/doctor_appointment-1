@@ -97,9 +97,7 @@ List<DoctorModel> _mapDoctors(List<Doctor> doctors) {
   ];
 
   final sorted = [...doctors]
-    ..sort(
-      (a, b) => (b.averageRating ?? 0).compareTo(a.averageRating ?? 0),
-    );
+    ..sort((a, b) => (b.averageRating ?? 0).compareTo(a.averageRating ?? 0));
   final top = sorted.take(2).toList();
 
   return top.asMap().entries.map((entry) {

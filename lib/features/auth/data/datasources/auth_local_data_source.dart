@@ -46,7 +46,8 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
     final expiresAtRaw = await storage.read(key: _expiresAtKey);
 
     final userId = int.tryParse(userIdRaw ?? '') ?? 0;
-    final expiresAt = DateTime.tryParse(expiresAtRaw ?? '') ??
+    final expiresAt =
+        DateTime.tryParse(expiresAtRaw ?? '') ??
         DateTime.fromMillisecondsSinceEpoch(0);
 
     return AuthResponse(

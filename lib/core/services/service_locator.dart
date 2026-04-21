@@ -2,7 +2,9 @@ import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:doctor_appointment/core/config/app_config.dart';
 import 'package:doctor_appointment/core/config/env.dart';
+import 'package:doctor_appointment/core/security/app_permissions.dart';
 import 'package:doctor_appointment/core/services/api_service.dart';
+import 'package:doctor_appointment/core/services/location_service.dart';
 import 'package:doctor_appointment/core/services/auth_token_interceptor.dart';
 import 'package:doctor_appointment/core/services/secure_storage_service.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -33,6 +35,11 @@ import 'package:doctor_appointment/features/appointment/domain/usecases/create_a
 import 'package:doctor_appointment/features/appointment/domain/usecases/get_my_appointments_usecase.dart';
 import 'package:doctor_appointment/features/appointment/logic/appointment_cubit.dart';
 import 'package:doctor_appointment/features/appointment/logic/appointments_cubit.dart';
+import 'package:doctor_appointment/features/splash/logic/splash_cubit.dart';
+import 'package:doctor_appointment/features/home/logic/home_cubit.dart';
+import 'package:doctor_appointment/features/favorite/logic/favorite_cubit.dart';
+import 'package:doctor_appointment/features/doctor_details/logic/doctor_details_cubit.dart';
+import 'package:doctor_appointment/features/calendar/logic/calendar_cubit.dart';
 
 final getIt = GetIt.instance;
 
@@ -53,6 +60,9 @@ void setupServiceLocator() {
   );
 
   getIt.registerLazySingleton<ApiService>(() => ApiServiceImpl(getIt<Dio>()));
+  getIt.registerLazySingleton<AppPermissions>(() => AppPermissions());
+  getIt.registerLazySingleton<LocationService>(() => LocationServiceImpl());
+
   getIt.registerLazySingleton<FlutterSecureStorage>(
     () => const FlutterSecureStorage(),
   );
@@ -150,5 +160,21 @@ void setupServiceLocator() {
     () => AppointmentsCubit(
       getMyAppointmentsUseCase: getIt<GetMyAppointmentsUseCase>(),
     ),
+  );
+  getIt.registerFactory(
+    () => SplashCubit(
+      getCachedSessionUseCase: getIt<GetCachedSessionUseCase>(),
+      appPermissions: getIt<AppPermissions>(),
+    ),
+  );
+  getIt.registerFactory(() => HomeCubit());
+  getIt.registerFactory(
+    () => FavoriteCubit(appPermissions: getIt<AppPermissions>()),
+  );
+  getIt.registerFactory(
+    () => DoctorDetailsCubit(appPermissions: getIt<AppPermissions>()),
+  );
+  getIt.registerFactory(
+    () => CalendarCubit(appPermissions: getIt<AppPermissions>()),
   );
 }

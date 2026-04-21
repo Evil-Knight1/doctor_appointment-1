@@ -7,7 +7,7 @@ class DoctorsCubit extends Cubit<DoctorsState> {
   final SearchDoctorsUseCase searchDoctorsUseCase;
 
   DoctorsCubit({required this.searchDoctorsUseCase})
-      : super(const DoctorsInitial());
+    : super(const DoctorsInitial());
 
   Future<void> fetchDoctors({
     String? specialization,

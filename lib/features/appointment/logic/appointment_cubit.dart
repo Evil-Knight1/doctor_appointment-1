@@ -7,7 +7,7 @@ class AppointmentCubit extends Cubit<AppointmentState> {
   final CreateAppointmentUseCase createAppointmentUseCase;
 
   AppointmentCubit({required this.createAppointmentUseCase})
-      : super(const AppointmentInitial());
+    : super(const AppointmentInitial());
 
   Future<void> createAppointment({
     required int doctorId,

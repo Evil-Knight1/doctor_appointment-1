@@ -39,9 +39,9 @@ class _SignUpViewState extends State<SignUpView> {
     return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) {
         if (state is AuthFailure) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.message)));
         }
         if (state is AuthSuccess) {
           context.go(AppRouter.kRoot);
@@ -117,7 +117,10 @@ class _SignUpViewState extends State<SignUpView> {
                         ),
                         SizedBox(height: 16.h),
 
-                        Text('Confirm Password', style: AppStyles.styleMedium14),
+                        Text(
+                          'Confirm Password',
+                          style: AppStyles.styleMedium14,
+                        ),
                         SizedBox(height: 8.h),
                         CustomTextFormField(
                           hintText: 'Confirm your Password',
@@ -142,22 +145,23 @@ class _SignUpViewState extends State<SignUpView> {
                                     if (_passwordController.text.trim() !=
                                         _confirmPasswordController.text
                                             .trim()) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
                                         const SnackBar(
-                                          content: Text('Passwords do not match'),
+                                          content: Text(
+                                            'Passwords do not match',
+                                          ),
                                         ),
                                       );
                                       return;
                                     }
                                     context.read<AuthCubit>().registerPatient(
-                                          fullName:
-                                              _nameController.text.trim(),
-                                          email: _emailController.text.trim(),
-                                          phone: _phoneController.text.trim(),
-                                          password:
-                                              _passwordController.text.trim(),
-                                        );
+                                      fullName: _nameController.text.trim(),
+                                      email: _emailController.text.trim(),
+                                      phone: _phoneController.text.trim(),
+                                      password: _passwordController.text.trim(),
+                                    );
                                   },
                             buttonColor: const Color(0xff236DEC),
                             textStyle: AppStyles.styleSemiBold16,

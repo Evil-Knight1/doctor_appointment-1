@@ -56,7 +56,9 @@ class AppointmentRemoteDataSourceImpl implements AppointmentRemoteDataSource {
 
   @override
   Future<List<AppointmentModel>> getMyAppointments() async {
-    final response = await apiService.get('/api/Appointment/patient/my-appointments');
+    final response = await apiService.get(
+      '/api/Appointment/patient/my-appointments',
+    );
     final success = response['success'] == true;
     if (!success) {
       throw ApiException(_extractMessage(response));

@@ -60,7 +60,8 @@ class _CategoryDetailViewState extends State<CategoryDetailView> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => FilterBottomSheet(categoryName: widget.categoryName ?? ''),
+      builder: (_) =>
+          FilterBottomSheet(categoryName: widget.categoryName ?? ''),
     );
   }
 
@@ -114,7 +115,8 @@ class _CategoryDetailViewState extends State<CategoryDetailView> {
             padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 4.h),
             itemCount: doctors.length,
             separatorBuilder: (_, _) => SizedBox(height: 12.h),
-            itemBuilder: (_, index) => CategoryDoctorCard(doctor: doctors[index]),
+            itemBuilder: (_, index) =>
+                CategoryDoctorCard(doctor: doctors[index]),
           );
         }
         return const SizedBox.shrink();

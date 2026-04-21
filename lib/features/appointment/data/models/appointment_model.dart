@@ -30,8 +30,9 @@ class AppointmentModel extends Appointment {
       doctorName: json['doctorName'] as String? ?? '',
       startTime:
           DateTime.tryParse(json['startTime'] as String? ?? '') ??
-              DateTime.fromMillisecondsSinceEpoch(0),
-      endTime: DateTime.tryParse(json['endTime'] as String? ?? '') ??
+          DateTime.fromMillisecondsSinceEpoch(0),
+      endTime:
+          DateTime.tryParse(json['endTime'] as String? ?? '') ??
           DateTime.fromMillisecondsSinceEpoch(0),
       reason: json['reason'] as String? ?? '',
       status: json['status'] as int? ?? 0,
@@ -39,13 +40,12 @@ class AppointmentModel extends Appointment {
       paymentMethod: json['paymentMethod'] as int?,
       paymentStatus: json['paymentStatus'] as int?,
       paymentTransactionId: json['paymentTransactionId'] as String?,
-      paymentDate:
-          DateTime.tryParse(json['paymentDate'] as String? ?? ''),
+      paymentDate: DateTime.tryParse(json['paymentDate'] as String? ?? ''),
       amount: (json['amount'] as num?)?.toDouble(),
       doctorNotes: json['doctorNotes'] as String?,
       createdAt:
           DateTime.tryParse(json['createdAt'] as String? ?? '') ??
-              DateTime.fromMillisecondsSinceEpoch(0),
+          DateTime.fromMillisecondsSinceEpoch(0),
     );
   }
 }

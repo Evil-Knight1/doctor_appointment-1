@@ -11,7 +11,7 @@
 .svn/
 .swiftpm/
 migrate_working_dir/
-
+GradProject.postman_collection.josn
 # IntelliJ related
 *.iml
 *.ipr

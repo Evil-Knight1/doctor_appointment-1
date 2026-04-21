@@ -182,9 +182,9 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
         child: BlocConsumer<AppointmentCubit, AppointmentState>(
           listener: (context, state) {
             if (state is AppointmentFailure) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.message)),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(state.message)));
             }
             if (state is AppointmentSuccess) {
               context.push('/appointmentSuccess');
@@ -222,11 +222,11 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
     final endTime = startTime.add(const Duration(minutes: 30));
 
     context.read<AppointmentCubit>().createAppointment(
-          doctorId: widget.draft.doctor.id,
-          startTime: startTime,
-          endTime: endTime,
-          reason: reason,
-        );
+      doctorId: widget.draft.doctor.id,
+      startTime: startTime,
+      endTime: endTime,
+      reason: reason,
+    );
   }
 
   DateTime _buildStartTime(DateTime date, String time) {

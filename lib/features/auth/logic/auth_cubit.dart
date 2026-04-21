@@ -8,15 +8,10 @@ class AuthCubit extends Cubit<AuthState> {
   final LoginUseCase loginUseCase;
   final RegisterPatientUseCase registerPatientUseCase;
 
-  AuthCubit({
-    required this.loginUseCase,
-    required this.registerPatientUseCase,
-  }) : super(const AuthInitial());
+  AuthCubit({required this.loginUseCase, required this.registerPatientUseCase})
+    : super(const AuthInitial());
 
-  Future<void> login({
-    required String email,
-    required String password,
-  }) async {
+  Future<void> login({required String email, required String password}) async {
     emit(const AuthLoading());
     final result = await loginUseCase(
       LoginParams(email: email, password: password),
