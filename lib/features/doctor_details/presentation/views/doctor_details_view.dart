@@ -50,7 +50,7 @@ class DoctorDetailsView extends StatelessWidget {
           child: Image.asset(
             doctor.imageAsset,
             fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) =>
+            errorBuilder: (_, _, _) =>
                 Icon(Icons.person, size: 80.sp, color: AppColors.primary),
           ),
         ),
@@ -79,7 +79,7 @@ class DoctorDetailsView extends StatelessWidget {
           right: 20.w,
           child: ValueListenableBuilder<int>(
             valueListenable: SharedPreferencesHelper.favoritesVersion,
-            builder: (context, _, __) {
+            builder: (context, _, _) {
               final isFav = SharedPreferencesHelper.isDoctorFavorite(doctor.name);
               return GestureDetector(
                 onTap: () async => await SharedPreferencesHelper.toggleFavoriteDoctor(doctor),

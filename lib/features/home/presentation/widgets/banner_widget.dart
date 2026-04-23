@@ -53,7 +53,7 @@ class BannerWidget extends StatelessWidget {
             child: Image.asset(
               Assets.imagesDoctorsGroup,
               height: 140.h,
-              errorBuilder: (_, __, ___) => SizedBox(width: 120.w),
+              errorBuilder: (_, _, _) => SizedBox(width: 120.w),
             ),
           ),
           // Text content - constrained to avoid overflow

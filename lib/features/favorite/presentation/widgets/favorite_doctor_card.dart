@@ -43,7 +43,7 @@ class FavoriteDoctorCard extends StatelessWidget {
                 width: 65.w,
                 height: 65.h,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
+                errorBuilder: (_, _, _) => Container(
                   width: 65.w,
                   height: 65.h,
                   decoration: BoxDecoration(

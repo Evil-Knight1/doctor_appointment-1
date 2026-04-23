@@ -40,7 +40,7 @@ class _LoginViewState extends State<LoginView> {
           ).showSnackBar(SnackBar(content: Text(state.message)));
         }
         if (state is AuthSuccess) {
-          context.go(AppRouter.kRoot);
+          context.go(state.targetRoute);
         }
       },
       builder: (context, state) {
@@ -113,10 +113,6 @@ class _LoginViewState extends State<LoginView> {
                                 : () {
                                     if (_formKey.currentState?.validate() !=
                                         true) {
-                                      return;
-                                    }
-                                    if (_emailController.text.trim().toLowerCase().contains('doctor')) {
-                                      context.go(AppRouter.kDoctorRoot);
                                       return;
                                     }
                                     context.read<AuthCubit>().login(

@@ -83,7 +83,7 @@ class CategoryDoctorCard extends StatelessWidget {
               children: [
                 ValueListenableBuilder<int>(
                   valueListenable: SharedPreferencesHelper.favoritesVersion,
-                  builder: (context, _, __) {
+                  builder: (context, _, _) {
                     final isFavorite = SharedPreferencesHelper.isDoctorFavorite(doctor.name);
                     return GestureDetector(
                       onTap: () async => await SharedPreferencesHelper.toggleFavoriteDoctor(doctor),

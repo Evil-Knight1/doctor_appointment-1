@@ -28,7 +28,7 @@ class AuthCubit extends Cubit<AuthState> {
     switch (result) {
       case Success():
         await _saveUserData(result.data);
-        emit(AuthSuccess(result.data));
+        emit(AuthSuccess(result.data, role: _normalizeRole(result.data.role)));
       case FailureResult():
         emit(AuthFailure(result.failure.message));
     }
@@ -59,22 +59,28 @@ class AuthCubit extends Cubit<AuthState> {
     switch (result) {
       case Success():
         await _saveUserData(result.data);
-        emit(AuthSuccess(result.data));
+        emit(AuthSuccess(result.data, role: _normalizeRole(result.data.role)));
       case FailureResult():
         emit(AuthFailure(result.failure.message));
     }
   }
 
   Future<void> _saveUserData(AuthResponse data) async {
+    final normalizedRole = _normalizeRole(data.role);
     await SharedPreferencesHelper.saveToken(data.token);
     final userJson = {
       'token': data.token,
       'refreshToken': data.refreshToken,
       'email': data.email,
-      'role': data.role,
+      'role': normalizedRole,
       'userId': data.userId,
       'expiresAt': data.expiresAt.toIso8601String(),
     };
     await SharedPreferencesHelper.saveUserData(jsonEncode(userJson));
+  }
+
+  String _normalizeRole(String? role) {
+    final value = role?.trim().toLowerCase() ?? '';
+    return value == 'doctor' ? 'doctor' : 'patient';
   }
 }

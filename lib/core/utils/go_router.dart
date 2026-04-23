@@ -31,6 +31,7 @@ import 'package:doctor_appointment/features/payments/presentation/views/transact
 import 'package:doctor_appointment/features/payments/presentation/views/checkout_view.dart';
 import 'package:doctor_appointment/features/chatbot/presentation/views/chat_history_view.dart';
 import 'package:doctor_appointment/features/appointment/presentation/views/appointment_details_view.dart';
+import 'package:doctor_appointment/features/auth/presentation/views/doctor_signup_view.dart';
 
 abstract class AppRouter {
   static const kLoginView = '/loginView';
@@ -59,6 +60,7 @@ abstract class AppRouter {
   static const kChatHistoryView = '/chatHistoryView';
   static const kAppointmentDetailsView = '/appointmentDetailsView';
   static const kDoctorRoot = '/doctorRoot';
+  static const kDoctorSignUpView = '/doctorSignUpView';
 
   static final router = GoRouter(
     routes: [
@@ -182,6 +184,10 @@ abstract class AppRouter {
       GoRoute(
         path: kDoctorRoot,
         builder: (context, state) => const DoctorRoot(),
+      ),
+      GoRoute(
+        path: kDoctorSignUpView,
+        builder: (context, state) => const DoctorSignUpView(),
       ),
     ],
   );
