@@ -12,115 +12,112 @@ class DoctorDashboardView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => getIt<DoctorStatsCubit>()..fetchStats(),
-      child: Scaffold(
-        backgroundColor: AppColors.bg,
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          elevation: 0,
-          automaticallyImplyLeading: false,
-          title: Text(
-            'Dashboard',
-            style: AppStyles.styleSemiBold22.copyWith(fontSize: 18.sp),
-          ),
+    return Scaffold(
+      backgroundColor: AppColors.bg,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        automaticallyImplyLeading: false,
+        title: Text(
+          'Dashboard',
+          style: AppStyles.styleSemiBold22.copyWith(fontSize: 18.sp),
         ),
-        body: BlocBuilder<DoctorStatsCubit, DoctorStatsState>(
-          builder: (context, state) {
-            if (state is DoctorStatsLoading) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (state is DoctorStatsSuccess) {
-              final stats = state.stats;
-              return SingleChildScrollView(
-                padding: EdgeInsets.all(20.w),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Dashboard Overview',
-                      style: AppStyles.styleSemiBold22,
+      ),
+      body: BlocBuilder<DoctorStatsCubit, DoctorStatsState>(
+        builder: (context, state) {
+          if (state is DoctorStatsLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is DoctorStatsSuccess) {
+            final stats = state.stats;
+            return SingleChildScrollView(
+              padding: EdgeInsets.all(20.w),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Dashboard Overview',
+                    style: AppStyles.styleSemiBold22,
+                  ),
+                  SizedBox(height: 8.h),
+                  Text(
+                    'Here is what\'s happening today.',
+                    style: AppStyles.styleRegular14.copyWith(
+                      color: AppColors.textSecondary,
                     ),
-                    SizedBox(height: 8.h),
-                    Text(
-                      'Here is what\'s happening today.',
-                      style: AppStyles.styleRegular14.copyWith(
-                        color: AppColors.textSecondary,
+                  ),
+                  SizedBox(height: 24.h),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildStatCard(
+                          'Patients',
+                          stats.totalPatients.toString(),
+                          Icons.people_alt_rounded,
+                          AppColors.primary,
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 24.h),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildStatCard(
-                            'Patients',
-                            stats.totalPatients.toString(),
-                            Icons.people_alt_rounded,
-                            AppColors.primary,
-                          ),
+                      SizedBox(width: 16.w),
+                      Expanded(
+                        child: _buildStatCard(
+                          'Total Revenue',
+                          '\$${stats.totalRevenue.toStringAsFixed(0)}',
+                          Icons.attach_money_rounded,
+                          AppColors.green,
                         ),
-                        SizedBox(width: 16.w),
-                        Expanded(
-                          child: _buildStatCard(
-                            'Total Revenue',
-                            '\$${stats.totalRevenue.toStringAsFixed(0)}',
-                            Icons.attach_money_rounded,
-                            AppColors.green,
-                          ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 16.h),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildStatCard(
+                          'Appointments',
+                          stats.totalAppointments.toString(),
+                          Icons.calendar_today_rounded,
+                          Colors.orange,
                         ),
-                      ],
-                    ),
-                    SizedBox(height: 16.h),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildStatCard(
-                            'Appointments',
-                            stats.totalAppointments.toString(),
-                            Icons.calendar_today_rounded,
-                            Colors.orange,
-                          ),
+                      ),
+                      SizedBox(width: 16.w),
+                      Expanded(
+                        child: _buildStatCard(
+                          'Avg Rating',
+                          stats.averageRating.toStringAsFixed(1),
+                          Icons.star_rounded,
+                          Colors.amber,
                         ),
-                        SizedBox(width: 16.w),
-                        Expanded(
-                          child: _buildStatCard(
-                            'Avg Rating',
-                            stats.averageRating.toStringAsFixed(1),
-                            Icons.star_rounded,
-                            Colors.amber,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 24.h),
-                    Text(
-                      'Appointment Summary',
-                      style: AppStyles.styleSemiBold16,
-                    ),
-                    SizedBox(height: 12.h),
-                    _buildSummaryRow(
-                      'Completed',
-                      stats.completedAppointments,
-                      AppColors.green,
-                    ),
-                    _buildSummaryRow(
-                      'Pending',
-                      stats.pendingAppointments,
-                      Colors.orange,
-                    ),
-                    _buildSummaryRow(
-                      'Cancelled',
-                      stats.cancelledAppointments,
-                      Colors.red,
-                    ),
-                  ],
-                ),
-              );
-            } else if (state is DoctorStatsFailure) {
-              return Center(child: Text(state.message));
-            }
-            return const SizedBox.shrink();
-          },
-        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 24.h),
+                  Text(
+                    'Appointment Summary',
+                    style: AppStyles.styleSemiBold16,
+                  ),
+                  SizedBox(height: 12.h),
+                  _buildSummaryRow(
+                    'Completed',
+                    stats.completedAppointments,
+                    AppColors.green,
+                  ),
+                  _buildSummaryRow(
+                    'Pending',
+                    stats.pendingAppointments,
+                    Colors.orange,
+                  ),
+                  _buildSummaryRow(
+                    'Cancelled',
+                    stats.cancelledAppointments,
+                    Colors.red,
+                  ),
+                ],
+              ),
+            );
+          } else if (state is DoctorStatsFailure) {
+            return Center(child: Text(state.message));
+          }
+          return const SizedBox.shrink();
+        },
       ),
     );
   }

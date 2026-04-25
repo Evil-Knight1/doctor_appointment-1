@@ -5,15 +5,18 @@ import 'dart:convert';
 import 'package:doctor_appointment/features/auth/domain/entities/auth_response.dart';
 import 'package:doctor_appointment/features/auth/domain/usecases/login_usecase.dart';
 import 'package:doctor_appointment/features/auth/domain/usecases/register_patient_usecase.dart';
+import 'package:doctor_appointment/features/auth/domain/usecases/register_doctor_usecase.dart';
 import 'package:doctor_appointment/features/auth/logic/auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   final LoginUseCase loginUseCase;
   final RegisterPatientUseCase registerPatientUseCase;
+  final RegisterDoctorUseCase registerDoctorUseCase;
 
   AuthCubit({
     required this.loginUseCase,
     required this.registerPatientUseCase,
+    required this.registerDoctorUseCase,
   }) : super(const AuthInitial());
 
   Future<void> login({
@@ -53,6 +56,43 @@ class AuthCubit extends Cubit<AuthState> {
         dateOfBirth: dateOfBirth,
         gender: gender,
         address: address,
+      ),
+    );
+
+    switch (result) {
+      case Success():
+        await _saveUserData(result.data);
+        emit(AuthSuccess(result.data, role: _normalizeRole(result.data.role)));
+      case FailureResult():
+        emit(AuthFailure(result.failure.message));
+    }
+  }
+
+  Future<void> registerDoctor({
+    required String fullName,
+    required String email,
+    required String phone,
+    required String password,
+    required List<String> specializations,
+    required int experienceYears,
+    required String licenseId,
+    required String clinicAddress,
+    required String hospitalName,
+    String? bio,
+  }) async {
+    emit(const AuthLoading());
+    final result = await registerDoctorUseCase(
+      RegisterDoctorParams(
+        fullName: fullName,
+        email: email,
+        phone: phone,
+        password: password,
+        specializations: specializations,
+        experienceYears: experienceYears,
+        licenseId: licenseId,
+        clinicAddress: clinicAddress,
+        hospitalName: hospitalName,
+        bio: bio,
       ),
     );
 

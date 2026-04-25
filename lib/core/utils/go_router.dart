@@ -32,6 +32,13 @@ import 'package:doctor_appointment/features/payments/presentation/views/checkout
 import 'package:doctor_appointment/features/chatbot/presentation/views/chat_history_view.dart';
 import 'package:doctor_appointment/features/appointment/presentation/views/appointment_details_view.dart';
 import 'package:doctor_appointment/features/auth/presentation/views/doctor_signup_view.dart';
+import 'package:doctor_appointment/features/doctors/logic/specializations_cubit.dart';
+import 'package:doctor_appointment/features/doctor_flow/logic/doctor_stats_cubit.dart';
+import 'package:doctor_appointment/features/doctor_flow/logic/doctor_appointments_cubit.dart';
+import 'package:doctor_appointment/features/doctor_flow/logic/doctor_profile_cubit.dart';
+import 'package:doctor_appointment/features/doctors/logic/doctors_cubit.dart';
+import 'package:doctor_appointment/features/appointment/logic/appointments_cubit.dart';
+import 'package:doctor_appointment/features/profile/logic/profile_cubit.dart';
 
 abstract class AppRouter {
   static const kLoginView = '/loginView';
@@ -84,7 +91,24 @@ abstract class AppRouter {
           child: const SignUpView(),
         ),
       ),
-      GoRoute(path: kRoot, builder: (context, state) => const Root()),
+      GoRoute(
+        path: kRoot,
+        builder: (context, state) => MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (context) =>
+                  getIt<DoctorsCubit>()..fetchDoctors(pageNumber: 1, pageSize: 10, minRating: 3.5),
+            ),
+            BlocProvider(
+              create: (context) => getIt<AppointmentsCubit>()..loadAppointments(),
+            ),
+            BlocProvider(
+              create: (context) => getIt<ProfileCubit>()..loadProfile(),
+            ),
+          ],
+          child: const Root(),
+        ),
+      ),
       GoRoute(
         path: kFavoriteView,
         builder: (context, state) => const FavoriteView(),
@@ -183,11 +207,33 @@ abstract class AppRouter {
       ),
       GoRoute(
         path: kDoctorRoot,
-        builder: (context, state) => const DoctorRoot(),
+        builder: (context, state) => MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (context) => getIt<DoctorStatsCubit>()..fetchStats(),
+            ),
+            BlocProvider(
+              create: (context) =>
+                  getIt<DoctorAppointmentsCubit>()..fetchAppointments(),
+            ),
+            BlocProvider(
+              create: (context) => getIt<DoctorProfileCubit>()..fetchProfile(),
+            ),
+          ],
+          child: const DoctorRoot(),
+        ),
       ),
       GoRoute(
         path: kDoctorSignUpView,
-        builder: (context, state) => const DoctorSignUpView(),
+        builder: (context, state) => MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (context) => getIt<AuthCubit>()),
+            BlocProvider(
+              create: (context) => getIt<SpecializationsCubit>()..fetchSpecializations(),
+            ),
+          ],
+          child: const DoctorSignUpView(),
+        ),
       ),
     ],
   );

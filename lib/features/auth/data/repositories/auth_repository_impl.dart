@@ -102,6 +102,45 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 
+  @override
+  Future<Result<AuthResponse>> registerDoctor({
+    required String fullName,
+    required String email,
+    required String phone,
+    required String password,
+    required List<String> specializations,
+    required int experienceYears,
+    required String licenseId,
+    required String clinicAddress,
+    required String hospitalName,
+    String? bio,
+  }) async {
+    try {
+      final response = await remoteDataSource.registerDoctor(
+        fullName: fullName,
+        email: email,
+        phone: phone,
+        password: password,
+        specializations: specializations,
+        experienceYears: experienceYears,
+        licenseId: licenseId,
+        clinicAddress: clinicAddress,
+        hospitalName: hospitalName,
+        bio: bio,
+      );
+      await localDataSource.cacheAuthSession(response);
+      return Result.success(response);
+    } on ApiException catch (exception) {
+      return Result.failure(
+        ServerFailure(exception.message, statusCode: exception.statusCode),
+      );
+    } on DioException catch (exception) {
+      return Result.failure(_mapDioFailure(exception));
+    } catch (exception) {
+      return Result.failure(const UnknownFailure('Unexpected error occurred'));
+    }
+  }
+
   Failure _mapDioFailure(DioException exception) {
     if (exception.type == DioExceptionType.connectionTimeout ||
         exception.type == DioExceptionType.sendTimeout ||
@@ -115,6 +154,10 @@ class AuthRepositoryImpl implements AuthRepository {
     final message = _extractMessage(response?.data) ??
         exception.message ??
         'Request failed';
+
+    if (statusCode == 409) {
+      return const ServerFailure('This email or phone number is already taken');
+    }
 
     return ServerFailure(message, statusCode: statusCode);
   }

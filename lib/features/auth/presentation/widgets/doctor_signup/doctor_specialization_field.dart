@@ -100,21 +100,29 @@ class _DoctorSpecializationFieldState extends State<DoctorSpecializationField> {
                   });
                   widget.onStateChanged();
                 },
-                fieldViewBuilder:
-                    (context, controller, focusNode, onFieldSubmitted) {
-                      return TextField(
-                        controller: controller,
-                        focusNode: focusNode,
-                        decoration: InputDecoration(
-                          hintText: 'Search specializations...',
-                          prefixIcon: const Icon(Icons.search, size: 20),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12.r),
-                            borderSide: BorderSide(color: Colors.grey[200]!),
-                          ),
-                        ),
-                      );
-                    },
+                fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
+                  // Sync Autocomplete's controller with our state's controller
+                  // This ensures that when we call _controller.clear(), it clears the field.
+                  if (_controller.text != controller.text &&
+                      _controller.text.isEmpty) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      controller.clear();
+                    });
+                  }
+
+                  return TextField(
+                    controller: controller,
+                    focusNode: focusNode,
+                    decoration: InputDecoration(
+                      hintText: 'Search specializations...',
+                      prefixIcon: const Icon(Icons.search, size: 20),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12.r),
+                        borderSide: BorderSide(color: Colors.grey[200]!),
+                      ),
+                    ),
+                  );
+                },
               ),
               if (widget.selectedSpecializations.isNotEmpty) ...[
                 SizedBox(height: 12.h),

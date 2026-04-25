@@ -20,62 +20,55 @@ class CalendarView extends StatefulWidget {
 class _CalendarViewState extends State<CalendarView>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  late final AppointmentsCubit _appointmentsCubit;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this, initialIndex: 0);
-    _appointmentsCubit = getIt<AppointmentsCubit>();
-    _appointmentsCubit.loadAppointments();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
-    _appointmentsCubit.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: _appointmentsCubit,
-      child: Scaffold(
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
         backgroundColor: Colors.white,
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          elevation: 0,
-          automaticallyImplyLeading: false,
-          title: Text(
-            'Appointments',
-            style: AppStyles.styleSemiBold22.copyWith(fontSize: 18.sp),
-          ),
-          bottom: PreferredSize(
-            preferredSize: Size.fromHeight(44.h),
-            child: TabBar(
-              controller: _tabController,
-              labelColor: AppColors.primary,
-              unselectedLabelColor: AppColors.textSecondary,
-              indicatorColor: AppColors.primary,
-              indicatorSize: TabBarIndicatorSize.label,
-              labelStyle: AppStyles.styleMedium14.copyWith(fontSize: 13.sp),
-              tabs: const [
-                Tab(text: 'Upcoming'),
-                Tab(text: 'Completed'),
-                Tab(text: 'Cancelled'),
-              ],
-            ),
+        elevation: 0,
+        automaticallyImplyLeading: false,
+        title: Text(
+          'Appointments',
+          style: AppStyles.styleSemiBold22.copyWith(fontSize: 18.sp),
+        ),
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(44.h),
+          child: TabBar(
+            controller: _tabController,
+            labelColor: AppColors.primary,
+            unselectedLabelColor: AppColors.textSecondary,
+            indicatorColor: AppColors.primary,
+            indicatorSize: TabBarIndicatorSize.label,
+            labelStyle: AppStyles.styleMedium14.copyWith(fontSize: 13.sp),
+            tabs: const [
+              Tab(text: 'Upcoming'),
+              Tab(text: 'Completed'),
+              Tab(text: 'Cancelled'),
+            ],
           ),
         ),
-        body: TabBarView(
-          controller: _tabController,
-          children: [
-            _buildList(AppointmentTab.upcoming),
-            _buildList(AppointmentTab.completed),
-            _buildList(AppointmentTab.cancelled),
-          ],
-        ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          _buildList(AppointmentTab.upcoming),
+          _buildList(AppointmentTab.completed),
+          _buildList(AppointmentTab.cancelled),
+        ],
       ),
     );
   }

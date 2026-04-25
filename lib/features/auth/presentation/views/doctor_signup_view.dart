@@ -6,6 +6,9 @@ import 'package:doctor_appointment/features/auth/presentation/widgets/doctor_sig
 import 'package:doctor_appointment/features/auth/presentation/widgets/doctor_signup/doctor_signup_footer.dart';
 import 'package:doctor_appointment/features/auth/presentation/widgets/doctor_signup/doctor_signup_form.dart';
 import 'package:doctor_appointment/features/auth/presentation/widgets/doctor_signup/doctor_signup_header.dart';
+import 'package:doctor_appointment/features/auth/domain/usecases/register_patient_usecase.dart'; // Existing, might need to import doctor one later
+import 'package:doctor_appointment/features/auth/logic/auth_cubit.dart';
+import 'package:doctor_appointment/features/auth/logic/auth_state.dart';
 import 'package:doctor_appointment/features/doctors/logic/specializations_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -46,13 +49,10 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
 
   // --- Specializations ---
   final Set<String> _selectedSpecializations = {};
-  late final SpecializationsCubit _specializationsCubit;
 
   @override
   void initState() {
     super.initState();
-    _specializationsCubit = getIt<SpecializationsCubit>();
-    _specializationsCubit.fetchSpecializations();
   }
 
   @override
@@ -70,15 +70,22 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
     super.dispose();
   }
 
-  void _showLocationPicker() {
+  void _showLocationPicker({required bool forClinic}) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => _LocationPickerSheet(
+        title: forClinic
+            ? 'Select Clinic Location'
+            : 'Select Hospital Location',
         onLocationSelected: (address) {
           setState(() {
-            _clinicAddressController.text = address;
+            if (forClinic) {
+              _clinicAddressController.text = address;
+            } else {
+              _hospitalController.text = address;
+            }
           });
         },
       ),
@@ -89,95 +96,105 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
     if (_formKey.currentState?.validate() != true) return;
 
     if (_selectedSpecializations.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Please select at least one specialization'),
-          backgroundColor: const Color(0xFFEF4444),
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-        ),
-      );
+      _showErrorSnackBar('Please select at least one specialization');
       return;
     }
 
     if (_passwordController.text.trim() !=
         _confirmPasswordController.text.trim()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Passwords do not match'),
-          backgroundColor: const Color(0xFFEF4444),
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-        ),
-      );
+      _showErrorSnackBar('Passwords do not match');
       return;
     }
 
-    setState(() => _isSubmitting = true);
+    // Actual registration call via AuthCubit
+    context.read<AuthCubit>().registerDoctor(
+      fullName: _nameController.text.trim(),
+      email: _emailController.text.trim(),
+      phone: _phoneController.text.trim(),
+      password: _passwordController.text.trim(),
+      specializations: _selectedSpecializations.toList(),
+      experienceYears: int.tryParse(_yearsController.text) ?? 0,
+      licenseId: _licenseController.text.trim(),
+      clinicAddress: _clinicAddressController.text.trim(),
+      hospitalName: _hospitalController.text.trim(),
+      bio: _bioController.text.trim(),
+    );
+  }
 
-    Future.delayed(const Duration(milliseconds: 600), () {
-      if (mounted) {
-        setState(() => _isSubmitting = false);
-        context.push(AppRouter.kDoctorPendingApprovalView);
-      }
-    });
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: const Color(0xFFEF4444),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: _specializationsCubit,
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: SafeArea(
-          child: CustomScrollView(
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            slivers: [
-              SliverPadding(
-                padding: EdgeInsets.symmetric(horizontal: 24.w),
-                sliver: SliverToBoxAdapter(
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const DoctorSignUpHeader(),
-                        SizedBox(height: 20.h),
-                        const DoctorApprovalNotice(),
-                        SizedBox(height: 28.h),
-
-                        DoctorSignUpForm(
-                          formKey: _formKey,
-                          onShowLocationPicker: _showLocationPicker,
-                          nameController: _nameController,
-                          emailController: _emailController,
-                          phoneController: _phoneController,
-                          passwordController: _passwordController,
-                          confirmPasswordController: _confirmPasswordController,
-                          yearsController: _yearsController,
-                          licenseController: _licenseController,
-                          bioController: _bioController,
-                          clinicAddressController: _clinicAddressController,
-                          hospitalController: _hospitalController,
-                          selectedSpecializations: _selectedSpecializations,
-                        ),
-                        SizedBox(height: 32.h),
-
-                        DoctorSignUpFooter(
-                          isLoading: _isSubmitting,
-                          onSubmit: _submitForm,
-                        ),
-                      ],
+    return BlocListener<AuthCubit, AuthState>(
+        listener: (context, state) {
+          if (state is AuthLoading) {
+            setState(() => _isSubmitting = true);
+          } else if (state is AuthSuccess) {
+            setState(() => _isSubmitting = false);
+            context.push(AppRouter.kDoctorPendingApprovalView);
+          } else if (state is AuthFailure) {
+            setState(() => _isSubmitting = false);
+            _showErrorSnackBar(state.message);
+          }
+        },
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          body: SafeArea(
+            child: CustomScrollView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              slivers: [
+                SliverPadding(
+                  padding: EdgeInsets.symmetric(horizontal: 24.w),
+                  sliver: SliverToBoxAdapter(
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const DoctorSignUpHeader(),
+                          SizedBox(height: 20.h),
+                          const DoctorApprovalNotice(),
+                          SizedBox(height: 28.h),
+                          DoctorSignUpForm(
+                            formKey: _formKey,
+                            onShowClinicLocationPicker: () =>
+                                _showLocationPicker(forClinic: true),
+                            onShowHospitalLocationPicker: () =>
+                                _showLocationPicker(forClinic: false),
+                            nameController: _nameController,
+                            emailController: _emailController,
+                            phoneController: _phoneController,
+                            passwordController: _passwordController,
+                            confirmPasswordController:
+                                _confirmPasswordController,
+                            yearsController: _yearsController,
+                            licenseController: _licenseController,
+                            bioController: _bioController,
+                            clinicAddressController: _clinicAddressController,
+                            hospitalController: _hospitalController,
+                            selectedSpecializations: _selectedSpecializations,
+                          ),
+                          SizedBox(height: 32.h),
+                          DoctorSignUpFooter(
+                            isLoading: _isSubmitting,
+                            onSubmit: _submitForm,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
         ),
       ),
     );
@@ -185,8 +202,12 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
 }
 
 class _LocationPickerSheet extends StatefulWidget {
+  final String title;
   final Function(String) onLocationSelected;
-  const _LocationPickerSheet({required this.onLocationSelected});
+  const _LocationPickerSheet({
+    required this.title,
+    required this.onLocationSelected,
+  });
 
   @override
   State<_LocationPickerSheet> createState() => _LocationPickerSheetState();
@@ -194,8 +215,9 @@ class _LocationPickerSheet extends StatefulWidget {
 
 class _LocationPickerSheetState extends State<_LocationPickerSheet> {
   late MapController _controller;
+  final _searchController = TextEditingController();
   String _address = 'Loading...';
-  bool _isLoading = false;
+  bool _isSearching = false;
 
   @override
   void initState() {
@@ -203,7 +225,7 @@ class _LocationPickerSheetState extends State<_LocationPickerSheet> {
     _controller = MapController.withUserPosition(
       trackUserLocation: const UserTrackingOption(
         enableTracking: true,
-        unFollowUser: false,
+        unFollowUser: true, // Fix stiff map: allow user to move freely
       ),
     );
   }
@@ -211,7 +233,41 @@ class _LocationPickerSheetState extends State<_LocationPickerSheet> {
   @override
   void dispose() {
     _controller.dispose();
+    _searchController.dispose();
     super.dispose();
+  }
+
+  Future<void> _handleSearch() async {
+    final query = _searchController.text.trim();
+    if (query.isEmpty) return;
+
+    setState(() => _isSearching = true);
+    try {
+      List<geo.Location> locations = await geo.locationFromAddress(query);
+      if (locations.isNotEmpty) {
+        final loc = locations.first;
+        final point = GeoPoint(
+          latitude: loc.latitude,
+          longitude: loc.longitude,
+        );
+        await _controller.moveTo(point);
+        await _controller.addMarker(
+          point,
+          markerIcon: const MarkerIcon(
+            icon: Icon(Icons.location_on, color: Colors.blue, size: 48),
+          ),
+        );
+        _updateAddress(point);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Location not found')));
+      }
+    } finally {
+      if (mounted) setState(() => _isSearching = false);
+    }
   }
 
   Future<void> _updateAddress(GeoPoint position) async {
@@ -231,6 +287,7 @@ class _LocationPickerSheetState extends State<_LocationPickerSheet> {
     }
   }
 
+  bool _isLoading = false;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -255,10 +312,7 @@ class _LocationPickerSheetState extends State<_LocationPickerSheet> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Select Clinic Location',
-                  style: AppStyles.styleSemiBold18,
-                ),
+                Text(widget.title, style: AppStyles.styleSemiBold18),
                 IconButton(
                   icon: const Icon(Icons.close),
                   onPressed: () => Navigator.pop(context),
@@ -274,7 +328,8 @@ class _LocationPickerSheetState extends State<_LocationPickerSheet> {
                   osmOption: OSMOption(
                     userTrackingOption: const UserTrackingOption(
                       enableTracking: true,
-                      unFollowUser: false,
+                      unFollowUser:
+                          true, // Fix stiff map: allow user to move freely
                     ),
                     zoomOption: const ZoomOption(
                       initZoom: 15,
@@ -300,11 +355,17 @@ class _LocationPickerSheetState extends State<_LocationPickerSheet> {
                   ),
                   onGeoPointClicked: (geoPoint) async {
                     try {
-                      await _controller.removeMarkers([geoPoint]); // Avoid duplicates if needed, though addMarker usually handles it
+                      await _controller.removeMarkers(
+                        [geoPoint],
+                      ); // Avoid duplicates if needed, though addMarker usually handles it
                       await _controller.addMarker(
                         geoPoint,
                         markerIcon: const MarkerIcon(
-                          icon: Icon(Icons.location_on, color: Colors.blue, size: 48),
+                          icon: Icon(
+                            Icons.location_on,
+                            color: Colors.blue,
+                            size: 48,
+                          ),
                         ),
                       );
                       _updateAddress(geoPoint);
@@ -319,7 +380,11 @@ class _LocationPickerSheetState extends State<_LocationPickerSheet> {
                         await _controller.addMarker(
                           point,
                           markerIcon: const MarkerIcon(
-                            icon: Icon(Icons.person_pin_circle, color: Colors.blue, size: 56),
+                            icon: Icon(
+                              Icons.person_pin_circle,
+                              color: Colors.blue,
+                              size: 56,
+                            ),
                           ),
                         );
                         _updateAddress(point);
@@ -328,6 +393,49 @@ class _LocationPickerSheetState extends State<_LocationPickerSheet> {
                       }
                     }
                   },
+                ),
+                Positioned(
+                  top: 20.h,
+                  left: 20.w,
+                  right: 20.w,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 12.w),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12.r),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.1),
+                          blurRadius: 10,
+                          offset: const Offset(0, 5),
+                        ),
+                      ],
+                    ),
+                    child: TextField(
+                      controller: _searchController,
+                      decoration: InputDecoration(
+                        hintText: 'Search for a place...',
+                        hintStyle: AppStyles.styleRegular14,
+                        border: InputBorder.none,
+                        suffixIcon: _isSearching
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: Padding(
+                                  padding: EdgeInsets.all(12.0),
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                ),
+                              )
+                            : IconButton(
+                                icon: const Icon(Icons.search),
+                                onPressed: _handleSearch,
+                              ),
+                      ),
+                      onSubmitted: (_) => _handleSearch(),
+                    ),
+                  ),
                 ),
                 Positioned(
                   bottom: 100.h,
@@ -344,7 +452,9 @@ class _LocationPickerSheetState extends State<_LocationPickerSheet> {
                         debugPrint('Error getting current location: $e');
                         if (mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Could not get current location')),
+                            const SnackBar(
+                              content: Text('Could not get current location'),
+                            ),
                           );
                         }
                       }

@@ -1,3 +1,5 @@
+import 'package:doctor_appointment/core/logging/log_service.dart';
+import 'package:doctor_appointment/core/logging/api_logging_interceptor.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:doctor_appointment/core/config/app_config.dart';
@@ -13,6 +15,7 @@ import 'package:doctor_appointment/features/auth/domain/repositories/auth_reposi
 import 'package:doctor_appointment/features/auth/domain/usecases/login_usecase.dart';
 import 'package:doctor_appointment/features/auth/domain/usecases/get_cached_session_usecase.dart';
 import 'package:doctor_appointment/features/auth/domain/usecases/register_patient_usecase.dart';
+import 'package:doctor_appointment/features/auth/domain/usecases/register_doctor_usecase.dart';
 import 'package:doctor_appointment/features/auth/domain/usecases/refresh_token_usecase.dart';
 import 'package:doctor_appointment/features/auth/logic/auth_cubit.dart';
 import 'package:doctor_appointment/features/doctors/data/datasources/doctors_remote_data_source.dart';
@@ -42,7 +45,11 @@ import 'package:doctor_appointment/features/doctor_flow/data/datasources/doctor_
 import 'package:doctor_appointment/features/doctor_flow/data/repositories/doctor_stats_repository_impl.dart';
 import 'package:doctor_appointment/features/doctor_flow/domain/repositories/doctor_stats_repository.dart';
 import 'package:doctor_appointment/features/doctor_flow/domain/usecases/get_doctor_stats_usecase.dart';
+import 'package:doctor_appointment/features/doctor_flow/domain/usecases/get_doctor_profile_usecase.dart';
+import 'package:doctor_appointment/features/doctor_flow/domain/usecases/get_doctor_appointments_usecase.dart';
 import 'package:doctor_appointment/features/doctor_flow/logic/doctor_stats_cubit.dart';
+import 'package:doctor_appointment/features/doctor_flow/logic/doctor_profile_cubit.dart';
+import 'package:doctor_appointment/features/doctor_flow/logic/doctor_appointments_cubit.dart';
 
 final getIt = GetIt.instance;
 
@@ -52,6 +59,8 @@ void setupServiceLocator() {
     config.validate();
     return config;
   });
+
+  getIt.registerLazySingleton<LogService>(() => LogService());
 
   getIt.registerLazySingleton<Dio>(
     () => Dio(
@@ -83,7 +92,10 @@ void setupServiceLocator() {
       dio: getIt<Dio>(),
     ),
   );
-  getIt<Dio>().interceptors.add(getIt<AuthTokenInterceptor>());
+  getIt<Dio>().interceptors.addAll([
+    getIt<AuthTokenInterceptor>(),
+    ApiLoggingInterceptor(getIt<LogService>()),
+  ]);
   getIt.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(
       getIt<AuthRemoteDataSource>(),
@@ -100,10 +112,14 @@ void setupServiceLocator() {
   getIt.registerLazySingleton(
     () => RefreshTokenUseCase(getIt<AuthRepository>()),
   );
+  getIt.registerLazySingleton(
+    () => RegisterDoctorUseCase(getIt<AuthRepository>()),
+  );
   getIt.registerFactory(
     () => AuthCubit(
       loginUseCase: getIt<LoginUseCase>(),
       registerPatientUseCase: getIt<RegisterPatientUseCase>(),
+      registerDoctorUseCase: getIt<RegisterDoctorUseCase>(),
     ),
   );
 
@@ -188,9 +204,25 @@ void setupServiceLocator() {
   getIt.registerLazySingleton(
     () => GetDoctorStatsUseCase(getIt<DoctorStatsRepository>()),
   );
+  getIt.registerLazySingleton(
+    () => GetDoctorProfileUseCase(getIt<DoctorStatsRepository>()),
+  );
+  getIt.registerLazySingleton(
+    () => GetDoctorAppointmentsUseCase(getIt<DoctorStatsRepository>()),
+  );
   getIt.registerFactory(
     () => DoctorStatsCubit(
       getDoctorStatsUseCase: getIt<GetDoctorStatsUseCase>(),
+    ),
+  );
+  getIt.registerFactory(
+    () => DoctorProfileCubit(
+      getDoctorProfileUseCase: getIt<GetDoctorProfileUseCase>(),
+    ),
+  );
+  getIt.registerFactory(
+    () => DoctorAppointmentsCubit(
+      getDoctorAppointmentsUseCase: getIt<GetDoctorAppointmentsUseCase>(),
     ),
   );
 }

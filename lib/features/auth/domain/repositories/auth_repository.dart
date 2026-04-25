@@ -23,4 +23,17 @@ abstract class AuthRepository {
   });
 
   Future<Result<AuthResponse?>> getCachedSession();
+
+  Future<Result<AuthResponse>> registerDoctor({
+    required String fullName,
+    required String email,
+    required String phone,
+    required String password,
+    required List<String> specializations,
+    required int experienceYears,
+    required String licenseId,
+    required String clinicAddress,
+    required String hospitalName,
+    String? bio,
+  });
 }

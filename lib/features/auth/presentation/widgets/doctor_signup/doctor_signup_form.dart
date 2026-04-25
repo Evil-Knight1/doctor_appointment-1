@@ -8,7 +8,8 @@ import 'package:phone_form_field/phone_form_field.dart';
 
 class DoctorSignUpForm extends StatefulWidget {
   final GlobalKey<FormState> formKey;
-  final VoidCallback onShowLocationPicker;
+  final VoidCallback onShowClinicLocationPicker;
+  final VoidCallback onShowHospitalLocationPicker;
   final TextEditingController nameController;
   final TextEditingController emailController;
   final TextEditingController phoneController;
@@ -24,7 +25,8 @@ class DoctorSignUpForm extends StatefulWidget {
   const DoctorSignUpForm({
     super.key,
     required this.formKey,
-    required this.onShowLocationPicker,
+    required this.onShowClinicLocationPicker,
+    required this.onShowHospitalLocationPicker,
     required this.nameController,
     required this.emailController,
     required this.phoneController,
@@ -176,16 +178,25 @@ class _DoctorSignUpFormState extends State<DoctorSignUpForm> {
         SizedBox(height: 16.h),
         _buildLabel('Main Hospital'),
         SizedBox(height: 8.h),
-        CustomTextFormField(
-          hintText: 'e.g. Cairo Specialist Hospital',
-          controller: widget.hospitalController,
-          focusNode: _hospitalFocus,
+        GestureDetector(
+          onTap: widget.onShowHospitalLocationPicker,
+          child: AbsorbPointer(
+            child: CustomTextFormField(
+              hintText: 'e.g. Cairo Specialist Hospital',
+              controller: widget.hospitalController,
+              focusNode: _hospitalFocus,
+              suffixIcon: const Icon(
+                Icons.map_rounded,
+                color: AppColors.primary,
+              ),
+            ),
+          ),
         ),
         SizedBox(height: 16.h),
         _buildLabel('Clinic Address'),
         SizedBox(height: 8.h),
         GestureDetector(
-          onTap: widget.onShowLocationPicker,
+          onTap: widget.onShowClinicLocationPicker,
           child: AbsorbPointer(
             child: CustomTextFormField(
               hintText: 'Tap to select on map',

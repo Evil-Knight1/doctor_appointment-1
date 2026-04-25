@@ -25,21 +25,18 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  late final DoctorsCubit _doctorsCubit;
   final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    _doctorsCubit = getIt<DoctorsCubit>();
-    _doctorsCubit.fetchDoctors(pageNumber: 1, pageSize: 10, minRating: 3.5);
     _scrollController.addListener(_onScroll);
   }
 
   void _onScroll() {
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 200) {
-      _doctorsCubit.fetchNextPage(minRating: 3.5);
+      context.read<DoctorsCubit>().fetchNextPage(minRating: 3.5);
     }
   }
 
@@ -51,37 +48,34 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: _doctorsCubit,
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        floatingActionButton: FloatingActionButton(
-          onPressed: () => context.push(AppRouter.kChatHistoryView),
-          backgroundColor: AppColors.primary,
-          child: const Icon(Icons.smart_toy_rounded, color: Colors.white),
-        ),
-        body: SafeArea(
-          child: SingleChildScrollView(
-            controller: _scrollController,
-            padding: EdgeInsets.symmetric(horizontal: 20.w),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 16.h),
-                _buildHeader(),
-                SizedBox(height: 16.h),
-                const SearchBarWidget(),
-                SizedBox(height: 20.h),
-                const BannerWidget(),
-                SizedBox(height: 24.h),
-                const DoctorSpecialtiesSection(),
-                SizedBox(height: 24.h),
-                const PopularDoctorsSection(),
-                SizedBox(height: 24.h),
-                const AvailableDoctorsSection(),
-                SizedBox(height: 24.h),
-              ],
-            ),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => context.push(AppRouter.kChatHistoryView),
+        backgroundColor: AppColors.primary,
+        child: const Icon(Icons.smart_toy_rounded, color: Colors.white),
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          controller: _scrollController,
+          padding: EdgeInsets.symmetric(horizontal: 20.w),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 16.h),
+              _buildHeader(),
+              SizedBox(height: 16.h),
+              const SearchBarWidget(),
+              SizedBox(height: 20.h),
+              const BannerWidget(),
+              SizedBox(height: 24.h),
+              const DoctorSpecialtiesSection(),
+              SizedBox(height: 24.h),
+              const PopularDoctorsSection(),
+              SizedBox(height: 24.h),
+              const AvailableDoctorsSection(),
+              SizedBox(height: 24.h),
+            ],
           ),
         ),
       ),

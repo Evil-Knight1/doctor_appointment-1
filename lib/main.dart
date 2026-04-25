@@ -1,5 +1,6 @@
 import 'package:device_preview/device_preview.dart';
 import 'package:doctor_appointment/core/config/env.dart';
+import 'package:doctor_appointment/core/logging/log_service.dart';
 import 'package:doctor_appointment/core/services/service_locator.dart';
 import 'package:doctor_appointment/core/services/shared_preferences_helper.dart';
 import 'package:doctor_appointment/core/utils/app_theme.dart';
@@ -11,7 +12,11 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await loadEnv();
   await SharedPreferencesHelper.init();
+  // TODO: Remove these two lines after the first run to allow persistent login
+  await SharedPreferencesHelper.removeToken();
+  await SharedPreferencesHelper.removeUserData();
   setupServiceLocator();
+  await getIt<LogService>().init();
   runApp(
     // DevicePreview(
     //   enabled: true,

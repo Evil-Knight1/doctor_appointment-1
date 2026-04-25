@@ -22,6 +22,19 @@ abstract class AuthRemoteDataSource {
     required String token,
     required String refreshToken,
   });
+
+  Future<AuthResponseModel> registerDoctor({
+    required String fullName,
+    required String email,
+    required String phone,
+    required String password,
+    required List<String> specializations,
+    required int experienceYears,
+    required String licenseId,
+    required String clinicAddress,
+    required String hospitalName,
+    String? bio,
+  });
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -74,6 +87,37 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     final response = await apiService.post(
       '/api/Auth/refresh',
       data: {'token': token, 'refreshToken': refreshToken},
+    );
+    return _parseAuthResponse(response);
+  }
+
+  @override
+  Future<AuthResponseModel> registerDoctor({
+    required String fullName,
+    required String email,
+    required String phone,
+    required String password,
+    required List<String> specializations,
+    required int experienceYears,
+    required String licenseId,
+    required String clinicAddress,
+    required String hospitalName,
+    String? bio,
+  }) async {
+    final response = await apiService.post(
+      '/api/Auth/register/doctor',
+      data: {
+        'fullName': fullName,
+        'email': email,
+        'phone': phone,
+        'password': password,
+        'specializations': specializations,
+        'experienceYears': experienceYears,
+        'licenseId': licenseId,
+        'clinicAddress': clinicAddress,
+        'hospitalName': hospitalName,
+        'bio': bio,
+      },
     );
     return _parseAuthResponse(response);
   }
