@@ -26,6 +26,7 @@ class CategoryDetailView extends StatefulWidget {
 
 class _CategoryDetailViewState extends State<CategoryDetailView> {
   late final DoctorsCubit _doctorsCubit;
+  final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
 
   @override
@@ -37,13 +38,27 @@ class _CategoryDetailViewState extends State<CategoryDetailView> {
       pageNumber: 1,
       pageSize: 10,
     );
+    _scrollController.addListener(_onScroll);
   }
 
   @override
   void dispose() {
     _searchController.dispose();
+    _scrollController.dispose();
     _doctorsCubit.close();
     super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      _doctorsCubit.fetchNextPage(
+        specialization: widget.categoryName,
+        searchTerm: _searchController.text.trim().isEmpty
+            ? null
+            : _searchController.text.trim(),
+      );
+    }
   }
 
   void _showSortSheet(BuildContext context) {
@@ -99,8 +114,11 @@ class _CategoryDetailViewState extends State<CategoryDetailView> {
             ),
           );
         }
-        if (state is DoctorsSuccess) {
-          final doctors = _mapDoctors(state.page.items);
+        if (state is DoctorsSuccess || state is DoctorsPaginationLoading) {
+          final page = state is DoctorsSuccess ? state.page : (state as DoctorsPaginationLoading).lastPage;
+          final doctors = _mapDoctors(page.items);
+          final hasNextPage = page.hasNextPage;
+
           if (doctors.isEmpty) {
             return Center(
               child: Text(
@@ -112,11 +130,20 @@ class _CategoryDetailViewState extends State<CategoryDetailView> {
             );
           }
           return ListView.separated(
+            controller: _scrollController,
             padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 4.h),
-            itemCount: doctors.length,
+            itemCount: doctors.length + (hasNextPage ? 1 : 0),
             separatorBuilder: (_, _) => SizedBox(height: 12.h),
-            itemBuilder: (_, index) =>
-                CategoryDoctorCard(doctor: doctors[index]),
+            itemBuilder: (_, index) {
+              if (index < doctors.length) {
+                return CategoryDoctorCard(doctor: doctors[index]);
+              } else {
+                return Padding(
+                  padding: EdgeInsets.symmetric(vertical: 16.h),
+                  child: const Center(child: CircularProgressIndicator()),
+                );
+              }
+            },
           );
         }
         return const SizedBox.shrink();

@@ -47,7 +47,7 @@ class AvailableSlotsWidget extends StatelessWidget {
                 SizedBox(width: 4.w),
                 Text(
                   slot,
-                  style: AppStyles.styleRegular12.copyWith(
+                  style: AppStyles.styleMedium12.copyWith(
                     color: isSelected ? Colors.white : AppColors.textPrimary,
                   ),
                 ),

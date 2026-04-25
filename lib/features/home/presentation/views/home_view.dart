@@ -26,16 +26,26 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> {
   late final DoctorsCubit _doctorsCubit;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     _doctorsCubit = getIt<DoctorsCubit>();
-    _doctorsCubit.fetchDoctors(pageNumber: 1, pageSize: 10);
+    _doctorsCubit.fetchDoctors(pageNumber: 1, pageSize: 10, minRating: 3.5);
+    _scrollController.addListener(_onScroll);
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      _doctorsCubit.fetchNextPage(minRating: 3.5);
+    }
   }
 
   @override
   void dispose() {
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -52,6 +62,7 @@ class _HomeViewState extends State<HomeView> {
         ),
         body: SafeArea(
           child: SingleChildScrollView(
+            controller: _scrollController,
             padding: EdgeInsets.symmetric(horizontal: 20.w),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -89,7 +100,9 @@ class _HomeViewState extends State<HomeView> {
             userData['name'] ??
             userData['userName'] ??
             email.split('@').first;
-      } catch (e) {}
+      } catch (e) {
+        debugPrint('Error: $e');
+      }
     }
 
     return Row(

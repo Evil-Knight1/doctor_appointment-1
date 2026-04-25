@@ -21,6 +21,7 @@ class RegistrationTextField extends StatefulWidget {
     this.inputFormatters,
     this.textInputAction = TextInputAction.next,
     this.focusNode,
+    this.suffixIcon,
     this.onFieldSubmitted,
   });
 
@@ -36,6 +37,7 @@ class RegistrationTextField extends StatefulWidget {
   final List<TextInputFormatter>? inputFormatters;
   final TextInputAction textInputAction;
   final FocusNode? focusNode;
+  final Widget? suffixIcon;
   final void Function(String)? onFieldSubmitted;
 
   @override
@@ -78,7 +80,8 @@ class _RegistrationTextFieldState extends State<RegistrationTextField> {
           style: AppStyles.styleMedium14.copyWith(
             color: const Color(0xff1E252D),
           ),
-          validator: widget.validator ??
+          validator:
+              widget.validator ??
               (value) {
                 if (widget.isRequired &&
                     (value == null || value.trim().isEmpty)) {
@@ -106,7 +109,12 @@ class _RegistrationTextFieldState extends State<RegistrationTextField> {
             prefixIconConstraints: widget.prefixIcon != null
                 ? BoxConstraints(minWidth: 44.w, minHeight: 20.h)
                 : null,
-            suffixIcon: widget.isPassword
+            suffixIcon: widget.suffixIcon != null
+                ? Padding(
+                    padding: EdgeInsets.only(right: 14.w),
+                    child: widget.suffixIcon,
+                  )
+                : widget.isPassword
                 ? IconButton(
                     onPressed: () =>
                         setState(() => _obscureText = !_obscureText),
@@ -127,8 +135,10 @@ class _RegistrationTextFieldState extends State<RegistrationTextField> {
             enabledBorder: _buildBorder(const Color(0xFFE2E8F0)),
             focusedBorder: _buildBorder(const Color(0xff236DEC), width: 1.5),
             errorBorder: _buildBorder(const Color(0xFFEF4444)),
-            focusedErrorBorder:
-                _buildBorder(const Color(0xFFEF4444), width: 1.5),
+            focusedErrorBorder: _buildBorder(
+              const Color(0xFFEF4444),
+              width: 1.5,
+            ),
             errorStyle: AppStyles.styleRegular12.copyWith(
               color: const Color(0xFFEF4444),
             ),

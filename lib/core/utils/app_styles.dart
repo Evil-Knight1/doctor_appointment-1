@@ -35,10 +35,22 @@ abstract class AppStyles {
     fontFamily: 'Inter',
     color: Color(0xff1E252D),
   );
+  static TextStyle styleMedium12 = TextStyle(
+    fontSize: 12.sp,
+    fontWeight: FontWeight.w500,
+    fontFamily: 'Inter',
+    color: const Color(0xff1E252D),
+  );
   static TextStyle styleRegular12 = TextStyle(
     fontSize: 12.sp,
     fontWeight: FontWeight.w400,
     fontFamily: 'Inter',
-    color: Color(0xff1E252D),
+    color: const Color(0xff1E252D),
+  );
+  static TextStyle styleSemiBold18 = TextStyle(
+    fontSize: 18.sp,
+    fontWeight: FontWeight.w600,
+    fontFamily: 'Inter',
+    color: const Color(0xff1E252D),
   );
 }

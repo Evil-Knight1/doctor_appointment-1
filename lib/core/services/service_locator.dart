@@ -33,6 +33,16 @@ import 'package:doctor_appointment/features/appointment/domain/usecases/create_a
 import 'package:doctor_appointment/features/appointment/domain/usecases/get_my_appointments_usecase.dart';
 import 'package:doctor_appointment/features/appointment/logic/appointment_cubit.dart';
 import 'package:doctor_appointment/features/appointment/logic/appointments_cubit.dart';
+import 'package:doctor_appointment/features/doctors/data/datasources/specializations_remote_data_source.dart';
+import 'package:doctor_appointment/features/doctors/data/repositories/specializations_repository_impl.dart';
+import 'package:doctor_appointment/features/doctors/domain/repositories/specializations_repository.dart';
+import 'package:doctor_appointment/features/doctors/domain/usecases/get_specializations_usecase.dart';
+import 'package:doctor_appointment/features/doctors/logic/specializations_cubit.dart';
+import 'package:doctor_appointment/features/doctor_flow/data/datasources/doctor_stats_remote_data_source.dart';
+import 'package:doctor_appointment/features/doctor_flow/data/repositories/doctor_stats_repository_impl.dart';
+import 'package:doctor_appointment/features/doctor_flow/domain/repositories/doctor_stats_repository.dart';
+import 'package:doctor_appointment/features/doctor_flow/domain/usecases/get_doctor_stats_usecase.dart';
+import 'package:doctor_appointment/features/doctor_flow/logic/doctor_stats_cubit.dart';
 
 final getIt = GetIt.instance;
 
@@ -149,6 +159,38 @@ void setupServiceLocator() {
   getIt.registerFactory(
     () => AppointmentsCubit(
       getMyAppointmentsUseCase: getIt<GetMyAppointmentsUseCase>(),
+    ),
+  );
+
+  // Specializations
+  getIt.registerLazySingleton<SpecializationsRemoteDataSource>(
+    () => SpecializationsRemoteDataSourceImpl(getIt<ApiService>()),
+  );
+  getIt.registerLazySingleton<SpecializationsRepository>(
+    () => SpecializationsRepositoryImpl(getIt<SpecializationsRemoteDataSource>()),
+  );
+  getIt.registerLazySingleton(
+    () => GetSpecializationsUseCase(getIt<SpecializationsRepository>()),
+  );
+  getIt.registerFactory(
+    () => SpecializationsCubit(
+      getSpecializationsUseCase: getIt<GetSpecializationsUseCase>(),
+    ),
+  );
+
+  // Doctor Statistics
+  getIt.registerLazySingleton<DoctorStatsRemoteDataSource>(
+    () => DoctorStatsRemoteDataSourceImpl(getIt<ApiService>()),
+  );
+  getIt.registerLazySingleton<DoctorStatsRepository>(
+    () => DoctorStatsRepositoryImpl(getIt<DoctorStatsRemoteDataSource>()),
+  );
+  getIt.registerLazySingleton(
+    () => GetDoctorStatsUseCase(getIt<DoctorStatsRepository>()),
+  );
+  getIt.registerFactory(
+    () => DoctorStatsCubit(
+      getDoctorStatsUseCase: getIt<GetDoctorStatsUseCase>(),
     ),
   );
 }

@@ -13,10 +13,11 @@ void main() async {
   await SharedPreferencesHelper.init();
   setupServiceLocator();
   runApp(
-    DevicePreview(
-      enabled: true,
-      builder: (context) => const DoctorAppointment(),
-    ),
+    // DevicePreview(
+    //   enabled: true,
+    //child: const DoctorAppointment(),
+    // ),
+    const DoctorAppointment(),
   );
 }
 

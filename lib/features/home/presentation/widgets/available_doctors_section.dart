@@ -38,8 +38,11 @@ class AvailableDoctorsSection extends StatelessWidget {
                 ),
               );
             }
-            if (state is DoctorsSuccess) {
-              final doctors = _mapDoctors(state.page.items);
+            if (state is DoctorsSuccess || state is DoctorsPaginationLoading) {
+              final page = state is DoctorsSuccess ? state.page : (state as DoctorsPaginationLoading).lastPage;
+              final doctors = _mapDoctors(page.items);
+              final hasNextPage = page.hasNextPage;
+
               if (doctors.isEmpty) {
                 return Padding(
                   padding: EdgeInsets.symmetric(vertical: 8.h),
@@ -55,10 +58,19 @@ class AvailableDoctorsSection extends StatelessWidget {
                 height: 180.h,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
-                  itemCount: doctors.length,
+                  itemCount: doctors.length + (hasNextPage ? 1 : 0),
                   separatorBuilder: (_, _) => SizedBox(width: 12.w),
-                  itemBuilder: (_, index) =>
-                      _AvailableDoctorCard(doctor: doctors[index]),
+                  itemBuilder: (_, index) {
+                    if (index < doctors.length) {
+                      return _AvailableDoctorCard(doctor: doctors[index]);
+                    } else {
+                      return Container(
+                        width: 130.w,
+                        alignment: Alignment.center,
+                        child: const CircularProgressIndicator(),
+                      );
+                    }
+                  },
                 ),
               );
             }

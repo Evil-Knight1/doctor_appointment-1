@@ -23,7 +23,7 @@ class DoctorApiModel extends Doctor {
       fullName: json['fullName'] as String? ?? '',
       email: json['email'] as String? ?? '',
       phone: json['phone'] as String? ?? '',
-      specialization: json['specialization'] as String?,
+      specialization: (json['specialization'] as String?) ?? (json['specializationName'] as String?),
       bio: json['bio'] as String?,
       yearsOfExperience: json['yearsOfExperience'] as int?,
       clinicAddress: json['clinicAddress'] as String?,
