@@ -6,6 +6,7 @@ import 'package:doctor_appointment/features/on_boarding_view/presentation/widget
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:doctor_appointment/core/services/shared_preferences_helper.dart';
 
 class OnBoardingView extends StatefulWidget {
   const OnBoardingView({super.key});
@@ -130,9 +131,10 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                                   text: _currentIndex == pages.length - 1
                                       ? 'Get Started'
                                       : 'Next',
-                                  onPressed: () {
+                                  onPressed: () async {
                                     if (_currentIndex == pages.length - 1) {
-                                      context.go(AppRouter.kLoginView);
+                                      await SharedPreferencesHelper.saveHasSeenOnboarding(true);
+                                      if (context.mounted) context.go(AppRouter.kLoginView);
                                     } else {
                                       _pageController.nextPage(
                                         duration: const Duration(
@@ -166,8 +168,9 @@ class _OnBoardingViewState extends State<OnBoardingView> {
             right: 20.w,
             child: SafeArea(
               child: TextButton(
-                onPressed: () {
-                  context.go(AppRouter.kHomeView);
+                onPressed: () async {
+                  await SharedPreferencesHelper.saveHasSeenOnboarding(true);
+                  if (context.mounted) context.go(AppRouter.kLoginView);
                 },
                 child: Text(
                   'Skip',

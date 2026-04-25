@@ -10,6 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:phone_form_field/phone_form_field.dart';
+import 'package:doctor_appointment/features/auth/presentation/widgets/patient_signup/location_picker_dialog.dart';
 
 class SignUpView extends StatefulWidget {
   const SignUpView({super.key});
@@ -24,7 +26,7 @@ class _SignUpViewState extends State<SignUpView> {
   // --- Controllers ---
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
-  final _phoneController = TextEditingController();
+  final _phoneController = PhoneController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final _addressController = TextEditingController();
@@ -77,7 +79,7 @@ class _SignUpViewState extends State<SignUpView> {
     context.read<AuthCubit>().registerPatient(
       fullName: _nameController.text.trim(),
       email: _emailController.text.trim(),
-      phone: _phoneController.text.trim(),
+      phone: _phoneController.value!.international,
       password: _passwordController.text.trim(),
       dateOfBirth: _dateOfBirth,
       gender: _selectedGender,
@@ -187,17 +189,42 @@ class _SignUpViewState extends State<SignUpView> {
                           ),
                           SizedBox(height: 16.h),
 
-                          RegistrationTextField(
-                            label: 'Phone Number',
-                            hintText: '+216 XX XXX XXX',
+                          PhoneFormField(
                             controller: _phoneController,
-                            keyboardType: TextInputType.phone,
-                            prefixIcon: Icons.phone_outlined,
-                            focusNode: _phoneFocus,
-                            textInputAction: TextInputAction.next,
-                            onFieldSubmitted: (_) => FocusScope.of(
-                              context,
-                            ).requestFocus(_passwordFocus),
+                            decoration: InputDecoration(
+                              labelText: 'Phone Number',
+                              hintText: 'e.g. +216 XX XXX XXX',
+                              prefixIcon: const Icon(Icons.phone_outlined),
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: 16.w,
+                                vertical: 16.h,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(14.r),
+                                borderSide: const BorderSide(
+                                  color: Color(0xFFE2E8F0),
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(14.r),
+                                borderSide: const BorderSide(
+                                  color: Color(0xFFE2E8F0),
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(14.r),
+                                borderSide: const BorderSide(
+                                  color: Color(0xff236DEC),
+                                  width: 2,
+                                ),
+                              ),
+                              errorBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(14.r),
+                                borderSide: const BorderSide(
+                                  color: Color(0xFFEF4444),
+                                ),
+                              ),
+                            ),
                           ),
                           SizedBox(height: 16.h),
 
@@ -280,15 +307,30 @@ class _SignUpViewState extends State<SignUpView> {
                           ),
                           SizedBox(height: 16.h),
 
-                          RegistrationTextField(
-                            label: 'Address',
-                            hintText: 'Your home address',
-                            controller: _addressController,
-                            keyboardType: TextInputType.streetAddress,
-                            prefixIcon: Icons.location_on_outlined,
-                            isRequired: false,
-                            focusNode: _addressFocus,
-                            textInputAction: TextInputAction.done,
+                          GestureDetector(
+                            onTap: () async {
+                              final address = await showDialog<String>(
+                                context: context,
+                                builder: (context) =>
+                                    const LocationPickerDialog(),
+                              );
+                              if (address != null && address.isNotEmpty) {
+                                setState(() {
+                                  _addressController.text = address;
+                                });
+                              }
+                            },
+                            child: AbsorbPointer(
+                              child: RegistrationTextField(
+                                label: 'Address',
+                                hintText: 'Tap to select location on map',
+                                controller: _addressController,
+                                prefixIcon: Icons.location_on_outlined,
+                                isRequired: false,
+                                focusNode: _addressFocus,
+                                textInputAction: TextInputAction.done,
+                              ),
+                            ),
                           ),
                           SizedBox(height: 32.h),
 

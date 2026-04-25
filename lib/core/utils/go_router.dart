@@ -196,7 +196,10 @@ abstract class AppRouter {
       ),
       GoRoute(
         path: kCheckoutView,
-        builder: (context, state) => const CheckoutView(),
+        builder: (context, state) {
+          final payload = state.extra as CheckoutPayload;
+          return CheckoutView(payload: payload);
+        },
       ),
       GoRoute(
         path: kAppointmentDetailsView,

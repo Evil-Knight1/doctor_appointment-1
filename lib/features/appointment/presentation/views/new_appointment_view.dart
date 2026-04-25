@@ -5,9 +5,13 @@ import 'package:doctor_appointment/features/appointment/presentation/models/appo
 import 'package:doctor_appointment/core/utils/go_router.dart';
 import 'package:doctor_appointment/features/appointment/presentation/widgets/date_picker_widget.dart';
 import 'package:doctor_appointment/features/appointment/presentation/widgets/consultation_type_widget.dart';
-import 'package:doctor_appointment/features/appointment/presentation/widgets/available_slots_widget.dart';
 import 'package:doctor_appointment/features/appointment/presentation/widgets/available_time_widget.dart';
 import 'package:doctor_appointment/features/appointment/presentation/widgets/consultation_fees_widget.dart';
+import 'package:doctor_appointment/features/appointment/data/models/slot_model.dart';
+import 'package:doctor_appointment/features/appointment/logic/doctor_slots_cubit.dart';
+import 'package:doctor_appointment/features/appointment/logic/doctor_slots_state.dart';
+import 'package:doctor_appointment/core/services/service_locator.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -21,14 +25,28 @@ class NewAppointmentView extends StatefulWidget {
 }
 
 class _NewAppointmentViewState extends State<NewAppointmentView> {
-  DateTime _selectedDate = DateTime(2020, 7, 14);
+  late DoctorSlotsCubit _slotsCubit;
+  DateTime _selectedDate = DateTime.now();
   String _selectedConsultation = 'Hospital';
-  String _selectedSlot = 'Morning';
-  String _selectedTime = '10:00';
+  SlotModel? _selectedSlot;
 
   List<DateTime> get _weekDays {
-    final start = DateTime(2020, 7, 13);
-    return List.generate(4, (i) => start.add(Duration(days: i)));
+    final start = DateTime.now();
+    return List.generate(14, (i) => start.add(Duration(days: i)));
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _slotsCubit = getIt<DoctorSlotsCubit>();
+    _fetchSlots();
+  }
+
+  void _fetchSlots() {
+    _slotsCubit.fetchSlots(widget.doctor.id, _selectedDate);
+    setState(() {
+      _selectedSlot = null; // Reset selection on date change
+    });
   }
 
   @override
@@ -58,50 +76,70 @@ class _NewAppointmentViewState extends State<NewAppointmentView> {
           style: AppStyles.styleSemiBold22.copyWith(fontSize: 18.sp),
         ),
       ),
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 20.w),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 8.h),
-                DatePickerWidget(
-                  selectedDate: _selectedDate,
-                  weekDays: _weekDays,
-                  onDateSelected: (d) => setState(() => _selectedDate = d),
-                ),
-                SizedBox(height: 24.h),
-                _sectionTitle('Consultation Type'),
-                SizedBox(height: 12.h),
-                ConsultationTypeWidget(
-                  selected: _selectedConsultation,
-                  onSelected: (t) => setState(() => _selectedConsultation = t),
-                ),
-                SizedBox(height: 24.h),
-                _sectionTitle('Available Slots'),
-                SizedBox(height: 12.h),
-                AvailableSlotsWidget(
-                  selectedSlot: _selectedSlot,
-                  onSlotSelected: (s) => setState(() => _selectedSlot = s),
-                ),
-                SizedBox(height: 16.h),
-                _sectionTitle('Available Time'),
-                SizedBox(height: 12.h),
-                AvailableTimeWidget(
-                  selectedTime: _selectedTime,
-                  onTimeSelected: (t) => setState(() => _selectedTime = t),
-                ),
-                SizedBox(height: 24.h),
-                _sectionTitle('Consultation Fees'),
-                SizedBox(height: 12.h),
-                const ConsultationFeesWidget(),
-                SizedBox(height: 100.h),
-              ],
+      body: BlocProvider(
+        create: (context) => _slotsCubit,
+        child: Stack(
+          children: [
+            SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: 20.w),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 8.h),
+                  DatePickerWidget(
+                    selectedDate: _selectedDate,
+                    weekDays: _weekDays,
+                    onDateSelected: (d) {
+                      setState(() => _selectedDate = d);
+                      _fetchSlots();
+                    },
+                  ),
+                  SizedBox(height: 24.h),
+                  _sectionTitle('Consultation Type'),
+                  SizedBox(height: 12.h),
+                  ConsultationTypeWidget(
+                    selected: _selectedConsultation,
+                    onSelected: (t) =>
+                        setState(() => _selectedConsultation = t),
+                  ),
+                  SizedBox(height: 24.h),
+                  _sectionTitle('Available Slots'),
+                  SizedBox(height: 12.h),
+                  BlocBuilder<DoctorSlotsCubit, DoctorSlotsState>(
+                    builder: (context, state) {
+                      if (state is DoctorSlotsLoading) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if (state is DoctorSlotsError) {
+                        return Center(
+                          child: Text(
+                            state.message,
+                            style: AppStyles.styleMedium14.copyWith(
+                              color: Colors.redAccent,
+                            ),
+                          ),
+                        );
+                      } else if (state is DoctorSlotsLoaded) {
+                        return AvailableTimeWidget(
+                          slots: state.slots,
+                          selectedSlot: _selectedSlot,
+                          onSlotSelected: (s) =>
+                              setState(() => _selectedSlot = s),
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    },
+                  ),
+                  SizedBox(height: 24.h),
+                  _sectionTitle('Consultation Fees'),
+                  SizedBox(height: 12.h),
+                  const ConsultationFeesWidget(),
+                  SizedBox(height: 100.h),
+                ],
+              ),
             ),
-          ),
-          _buildBottomButton(context),
-        ],
+            _buildBottomButton(context),
+          ],
+        ),
       ),
     );
   }
@@ -118,24 +156,34 @@ class _NewAppointmentViewState extends State<NewAppointmentView> {
         padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 32.h),
         color: Colors.white,
         child: ElevatedButton(
-          onPressed: () {
-            final draft = AppointmentDraft(
-              doctor: widget.doctor,
-              date: _selectedDate,
-              time: _selectedTime,
-              consultationType: _selectedConsultation,
-            );
-            context.push(AppRouter.kPatientDetails, extra: draft);
-          },
+          onPressed: _selectedSlot == null
+              ? null
+              : () {
+                  final draft = AppointmentDraft(
+                    doctor: widget.doctor,
+                    date: _selectedDate,
+                    slot: _selectedSlot!,
+                    consultationType: _selectedConsultation,
+                  );
+                  context.push(AppRouter.kPatientDetails, extra: draft);
+                },
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primary,
+            disabledBackgroundColor: AppColors.border,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(14.r),
             ),
             minimumSize: Size(double.infinity, 52.h),
             elevation: 0,
           ),
-          child: Text('Book Appointment', style: AppStyles.styleSemiBold16),
+          child: Text(
+            'Book Appointment',
+            style: AppStyles.styleSemiBold16.copyWith(
+              color: _selectedSlot == null
+                  ? AppColors.textSecondary
+                  : Colors.white,
+            ),
+          ),
         ),
       ),
     );

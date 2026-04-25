@@ -1,18 +1,20 @@
 import 'package:doctor_appointment/core/errors/exceptions.dart';
 import 'package:doctor_appointment/core/services/api_service.dart';
 import 'package:doctor_appointment/features/appointment/data/models/appointment_model.dart';
+import 'package:doctor_appointment/features/appointment/data/models/slot_model.dart';
 
 abstract class AppointmentRemoteDataSource {
   Future<AppointmentModel> createAppointment({
     required int doctorId,
-    required DateTime startTime,
-    required DateTime endTime,
+    required int slotId,
     required String reason,
     int? paymentMethod,
     double? amount,
   });
 
   Future<List<AppointmentModel>> getMyAppointments();
+  
+  Future<List<SlotModel>> getDoctorSlots(int doctorId, DateTime date);
 }
 
 class AppointmentRemoteDataSourceImpl implements AppointmentRemoteDataSource {
@@ -23,8 +25,7 @@ class AppointmentRemoteDataSourceImpl implements AppointmentRemoteDataSource {
   @override
   Future<AppointmentModel> createAppointment({
     required int doctorId,
-    required DateTime startTime,
-    required DateTime endTime,
+    required int slotId,
     required String reason,
     int? paymentMethod,
     double? amount,
@@ -33,8 +34,7 @@ class AppointmentRemoteDataSourceImpl implements AppointmentRemoteDataSource {
       '/api/Appointment',
       data: {
         'doctorId': doctorId,
-        'startTime': startTime.toIso8601String(),
-        'endTime': endTime.toIso8601String(),
+        'slotId': slotId,
         'reason': reason,
         'paymentMethod': paymentMethod,
         'amount': amount,
@@ -67,6 +67,27 @@ class AppointmentRemoteDataSourceImpl implements AppointmentRemoteDataSource {
       return data
           .whereType<Map<String, dynamic>>()
           .map(AppointmentModel.fromJson)
+          .toList();
+    }
+
+    throw const ApiException('Unexpected response payload');
+  }
+
+  @override
+  Future<List<SlotModel>> getDoctorSlots(int doctorId, DateTime date) async {
+    final dateString = date.toIso8601String().split('T').first;
+    final response = await apiService.get('/api/Appointment/slots/$doctorId?date=$dateString');
+    
+    final success = response['success'] == true;
+    if (!success) {
+      throw ApiException(_extractMessage(response));
+    }
+
+    final data = response['data'];
+    if (data is List) {
+      return data
+          .whereType<Map<String, dynamic>>()
+          .map(SlotModel.fromJson)
           .toList();
     }
 

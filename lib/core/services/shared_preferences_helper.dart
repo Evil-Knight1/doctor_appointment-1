@@ -12,6 +12,14 @@ class SharedPreferencesHelper {
     _prefs = await SharedPreferences.getInstance();
   }
 
+  // Onboarding
+  static Future<bool> saveHasSeenOnboarding(bool value) async {
+    return await _prefs.setBool('has_seen_onboarding', value);
+  }
+  static bool getHasSeenOnboarding() {
+    return _prefs.getBool('has_seen_onboarding') ?? false;
+  }
+
   // Token
   static Future<bool> saveToken(String token) async {
     return await _prefs.setString('token', token);

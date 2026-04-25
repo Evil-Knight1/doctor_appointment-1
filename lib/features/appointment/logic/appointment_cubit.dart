@@ -7,12 +7,11 @@ class AppointmentCubit extends Cubit<AppointmentState> {
   final CreateAppointmentUseCase createAppointmentUseCase;
 
   AppointmentCubit({required this.createAppointmentUseCase})
-      : super(const AppointmentInitial());
+    : super(const AppointmentInitial());
 
   Future<void> createAppointment({
     required int doctorId,
-    required DateTime startTime,
-    required DateTime endTime,
+    required int slotId,
     required String reason,
     int? paymentMethod,
     double? amount,
@@ -21,8 +20,7 @@ class AppointmentCubit extends Cubit<AppointmentState> {
     final result = await createAppointmentUseCase(
       CreateAppointmentParams(
         doctorId: doctorId,
-        startTime: startTime,
-        endTime: endTime,
+        slotId: slotId,
         reason: reason,
         paymentMethod: paymentMethod,
         amount: amount,

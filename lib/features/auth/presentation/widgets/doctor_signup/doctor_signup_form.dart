@@ -94,7 +94,6 @@ class _DoctorSignUpFormState extends State<DoctorSignUpForm> {
         SizedBox(height: 8.h),
         PhoneFormField(
           key: const Key('phone-field'),
-          defaultCountry: 'EG',
           decoration: InputDecoration(
             hintText: '1234567890',
             hintStyle: AppStyles.styleRegular14.copyWith(
