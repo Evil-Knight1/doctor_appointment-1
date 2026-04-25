@@ -79,7 +79,7 @@ class _SignUpViewState extends State<SignUpView> {
     context.read<AuthCubit>().registerPatient(
       fullName: _nameController.text.trim(),
       email: _emailController.text.trim(),
-      phone: _phoneController.value!.international,
+      phone: _phoneController.value.international,
       password: _passwordController.text.trim(),
       dateOfBirth: _dateOfBirth,
       gender: _selectedGender,

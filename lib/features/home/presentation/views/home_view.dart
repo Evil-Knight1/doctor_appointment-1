@@ -7,7 +7,6 @@ import 'package:doctor_appointment/features/home/presentation/widgets/doctor_spe
 import 'package:doctor_appointment/features/home/presentation/widgets/popular_doctors_section.dart';
 import 'package:doctor_appointment/features/home/presentation/widgets/search_bar_widget.dart';
 import 'package:doctor_appointment/features/doctors/logic/doctors_cubit.dart';
-import 'package:doctor_appointment/core/services/service_locator.dart';
 import 'package:doctor_appointment/core/utils/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

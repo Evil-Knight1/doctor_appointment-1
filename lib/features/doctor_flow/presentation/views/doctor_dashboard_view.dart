@@ -1,4 +1,3 @@
-import 'package:doctor_appointment/core/services/service_locator.dart';
 import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/features/doctor_flow/logic/doctor_stats_cubit.dart';
@@ -34,10 +33,7 @@ class DoctorDashboardView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Dashboard Overview',
-                    style: AppStyles.styleSemiBold22,
-                  ),
+                  Text('Dashboard Overview', style: AppStyles.styleSemiBold22),
                   SizedBox(height: 8.h),
                   Text(
                     'Here is what\'s happening today.',
@@ -90,10 +86,7 @@ class DoctorDashboardView extends StatelessWidget {
                     ],
                   ),
                   SizedBox(height: 24.h),
-                  Text(
-                    'Appointment Summary',
-                    style: AppStyles.styleSemiBold16,
-                  ),
+                  Text('Appointment Summary', style: AppStyles.styleSemiBold16),
                   SizedBox(height: 12.h),
                   _buildSummaryRow(
                     'Completed',

@@ -1,4 +1,3 @@
-import 'package:doctor_appointment/core/services/service_locator.dart';
 import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/features/appointment/domain/entities/appointment.dart';

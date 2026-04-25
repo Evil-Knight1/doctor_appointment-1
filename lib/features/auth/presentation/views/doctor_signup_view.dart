@@ -135,66 +135,65 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<AuthCubit, AuthState>(
-        listener: (context, state) {
-          if (state is AuthLoading) {
-            setState(() => _isSubmitting = true);
-          } else if (state is AuthSuccess) {
-            setState(() => _isSubmitting = false);
-            context.push(AppRouter.kDoctorPendingApprovalView);
-          } else if (state is AuthFailure) {
-            setState(() => _isSubmitting = false);
-            _showErrorSnackBar(state.message);
-          }
-        },
-        child: Scaffold(
-          backgroundColor: Colors.white,
-          body: SafeArea(
-            child: CustomScrollView(
-              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-              slivers: [
-                SliverPadding(
-                  padding: EdgeInsets.symmetric(horizontal: 24.w),
-                  sliver: SliverToBoxAdapter(
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const DoctorSignUpHeader(),
-                          SizedBox(height: 20.h),
-                          const DoctorApprovalNotice(),
-                          SizedBox(height: 28.h),
-                          DoctorSignUpForm(
-                            formKey: _formKey,
-                            onShowClinicLocationPicker: () =>
-                                _showLocationPicker(forClinic: true),
-                            onShowHospitalLocationPicker: () =>
-                                _showLocationPicker(forClinic: false),
-                            nameController: _nameController,
-                            emailController: _emailController,
-                            phoneController: _phoneController,
-                            passwordController: _passwordController,
-                            confirmPasswordController:
-                                _confirmPasswordController,
-                            yearsController: _yearsController,
-                            licenseController: _licenseController,
-                            bioController: _bioController,
-                            clinicAddressController: _clinicAddressController,
-                            hospitalController: _hospitalController,
-                            selectedSpecializations: _selectedSpecializations,
-                          ),
-                          SizedBox(height: 32.h),
-                          DoctorSignUpFooter(
-                            isLoading: _isSubmitting,
-                            onSubmit: _submitForm,
-                          ),
-                        ],
-                      ),
+      listener: (context, state) {
+        if (state is AuthLoading) {
+          setState(() => _isSubmitting = true);
+        } else if (state is AuthSuccess) {
+          setState(() => _isSubmitting = false);
+          context.push(AppRouter.kDoctorPendingApprovalView);
+        } else if (state is AuthFailure) {
+          setState(() => _isSubmitting = false);
+          _showErrorSnackBar(state.message);
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: CustomScrollView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            slivers: [
+              SliverPadding(
+                padding: EdgeInsets.symmetric(horizontal: 24.w),
+                sliver: SliverToBoxAdapter(
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const DoctorSignUpHeader(),
+                        SizedBox(height: 20.h),
+                        const DoctorApprovalNotice(),
+                        SizedBox(height: 28.h),
+                        DoctorSignUpForm(
+                          formKey: _formKey,
+                          onShowClinicLocationPicker: () =>
+                              _showLocationPicker(forClinic: true),
+                          onShowHospitalLocationPicker: () =>
+                              _showLocationPicker(forClinic: false),
+                          nameController: _nameController,
+                          emailController: _emailController,
+                          phoneController: _phoneController,
+                          passwordController: _passwordController,
+                          confirmPasswordController: _confirmPasswordController,
+                          yearsController: _yearsController,
+                          licenseController: _licenseController,
+                          bioController: _bioController,
+                          clinicAddressController: _clinicAddressController,
+                          hospitalController: _hospitalController,
+                          selectedSpecializations: _selectedSpecializations,
+                        ),
+                        SizedBox(height: 32.h),
+                        DoctorSignUpFooter(
+                          isLoading: _isSubmitting,
+                          onSubmit: _submitForm,
+                        ),
+                      ],
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -287,7 +286,7 @@ class _LocationPickerSheetState extends State<_LocationPickerSheet> {
     }
   }
 
-  bool _isLoading = false;
+  final bool _isLoading = false;
   @override
   Widget build(BuildContext context) {
     return Container(

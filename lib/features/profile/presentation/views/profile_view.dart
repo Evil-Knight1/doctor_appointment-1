@@ -1,7 +1,6 @@
 import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/core/utils/go_router.dart';
-import 'package:doctor_appointment/core/services/service_locator.dart';
 import 'package:doctor_appointment/features/profile/logic/profile_cubit.dart';
 import 'package:doctor_appointment/features/profile/logic/profile_state.dart';
 import 'package:doctor_appointment/core/services/shared_preferences_helper.dart';

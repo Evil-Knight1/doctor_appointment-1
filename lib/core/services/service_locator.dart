@@ -32,8 +32,6 @@ import 'package:doctor_appointment/features/profile/domain/usecases/get_patient_
 import 'package:doctor_appointment/features/profile/domain/usecases/update_patient_profile_usecase.dart';
 import 'package:doctor_appointment/features/profile/logic/profile_cubit.dart';
 import 'package:doctor_appointment/features/appointment/data/datasources/appointment_remote_data_source.dart';
-import 'package:doctor_appointment/features/appointment/data/repositories/appointment_repository_impl.dart'
-    hide AppointmentRepositoryImpl;
 import 'package:doctor_appointment/features/appointment/domain/usecases/create_appointment_usecase.dart';
 import 'package:doctor_appointment/features/appointment/domain/usecases/get_my_appointments_usecase.dart';
 import 'package:doctor_appointment/features/appointment/logic/appointment_cubit.dart';
@@ -58,7 +56,6 @@ import 'package:doctor_appointment/features/doctor_flow/domain/usecases/get_doct
 import 'package:doctor_appointment/features/doctor_flow/logic/doctor_stats_cubit.dart';
 import 'package:doctor_appointment/features/doctor_flow/logic/doctor_profile_cubit.dart';
 import 'package:doctor_appointment/features/doctor_flow/logic/doctor_appointments_cubit.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
 
 final getIt = GetIt.instance;
 

@@ -1,4 +1,3 @@
-import 'package:doctor_appointment/core/services/service_locator.dart';
 import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/core/utils/go_router.dart';
@@ -50,19 +49,25 @@ class _DoctorProfileViewState extends State<DoctorProfileView> {
                   CircleAvatar(
                     radius: 40.r,
                     backgroundColor: AppColors.primaryLight,
-                    child: Icon(Icons.person,
-                        size: 40.sp, color: AppColors.primary),
+                    child: Icon(
+                      Icons.person,
+                      size: 40.sp,
+                      color: AppColors.primary,
+                    ),
                   ),
                   SizedBox(height: 16.h),
                   Text(doctor.fullName, style: AppStyles.styleSemiBold22),
-                  Text(doctor.specialization ?? 'Specialist',
-                      style: AppStyles.styleRegular14
-                          .copyWith(color: AppColors.textSecondary)),
+                  Text(
+                    doctor.specialization ?? 'Specialist',
+                    style: AppStyles.styleRegular14.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
                   SizedBox(height: 32.h),
                   Align(
-                      alignment: Alignment.centerLeft,
-                      child:
-                          Text('Management', style: AppStyles.styleSemiBold16)),
+                    alignment: Alignment.centerLeft,
+                    child: Text('Management', style: AppStyles.styleSemiBold16),
+                  ),
                   SizedBox(height: 12.h),
                   ProfileMenuItem(
                     icon: Icons.personal_injury_outlined,
@@ -107,8 +112,11 @@ class _DoctorProfileViewState extends State<DoctorProfileView> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.logout_rounded,
-                              color: AppColors.accent, size: 20.sp),
+                          Icon(
+                            Icons.logout_rounded,
+                            color: AppColors.accent,
+                            size: 20.sp,
+                          ),
                           SizedBox(width: 8.w),
                           Text(
                             'Log Out',
@@ -136,18 +144,28 @@ class _DoctorProfileViewState extends State<DoctorProfileView> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
-        title: Text('Log Out',
-            style: AppStyles.styleSemiBold22.copyWith(fontSize: 16.sp)),
-        content: Text('Are you sure you want to log out?',
-            style: AppStyles.styleRegular14
-                .copyWith(color: AppColors.textSecondary)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16.r),
+        ),
+        title: Text(
+          'Log Out',
+          style: AppStyles.styleSemiBold22.copyWith(fontSize: 16.sp),
+        ),
+        content: Text(
+          'Are you sure you want to log out?',
+          style: AppStyles.styleRegular14.copyWith(
+            color: AppColors.textSecondary,
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancel',
-                style: AppStyles.styleMedium14
-                    .copyWith(color: AppColors.textSecondary)),
+            child: Text(
+              'Cancel',
+              style: AppStyles.styleMedium14.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
           ),
           TextButton(
             onPressed: () async {
@@ -156,8 +174,10 @@ class _DoctorProfileViewState extends State<DoctorProfileView> {
                 context.go(AppRouter.kLoginView);
               }
             },
-            child: Text('Log Out',
-                style: AppStyles.styleMedium14.copyWith(color: AppColors.accent)),
+            child: Text(
+              'Log Out',
+              style: AppStyles.styleMedium14.copyWith(color: AppColors.accent),
+            ),
           ),
         ],
       ),
