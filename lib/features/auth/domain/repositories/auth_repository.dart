@@ -29,7 +29,7 @@ abstract class AuthRepository {
     required String email,
     required String phone,
     required String password,
-    required List<String> specializations,
+    required int specializationId,
     required int experienceYears,
     required String licenseId,
     required String clinicAddress,

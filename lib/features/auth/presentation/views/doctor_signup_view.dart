@@ -1,4 +1,3 @@
-import 'package:doctor_appointment/core/services/service_locator.dart';
 import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/core/utils/go_router.dart';
@@ -6,10 +5,9 @@ import 'package:doctor_appointment/features/auth/presentation/widgets/doctor_sig
 import 'package:doctor_appointment/features/auth/presentation/widgets/doctor_signup/doctor_signup_footer.dart';
 import 'package:doctor_appointment/features/auth/presentation/widgets/doctor_signup/doctor_signup_form.dart';
 import 'package:doctor_appointment/features/auth/presentation/widgets/doctor_signup/doctor_signup_header.dart';
-import 'package:doctor_appointment/features/auth/domain/usecases/register_patient_usecase.dart'; // Existing, might need to import doctor one later
 import 'package:doctor_appointment/features/auth/logic/auth_cubit.dart';
 import 'package:doctor_appointment/features/auth/logic/auth_state.dart';
-import 'package:doctor_appointment/features/doctors/logic/specializations_cubit.dart';
+import 'package:doctor_appointment/features/doctors/domain/entities/specialization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
@@ -47,8 +45,8 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
   // Controllers and FocusNodes are handled inside DoctorSignUpForm or passed to it.
   // We keep controllers here because they are needed for _submitForm.
 
-  // --- Specializations ---
-  final Set<String> _selectedSpecializations = {};
+  // --- Specialization ---
+  Specialization? _selectedSpecialization;
 
   @override
   void initState() {
@@ -95,8 +93,8 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
   void _submitForm() {
     if (_formKey.currentState?.validate() != true) return;
 
-    if (_selectedSpecializations.isEmpty) {
-      _showErrorSnackBar('Please select at least one specialization');
+    if (_selectedSpecialization == null) {
+      _showErrorSnackBar('Please select a specialization');
       return;
     }
 
@@ -112,7 +110,7 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
       email: _emailController.text.trim(),
       phone: _phoneController.text.trim(),
       password: _passwordController.text.trim(),
-      specializations: _selectedSpecializations.toList(),
+      specializationId: _selectedSpecialization!.id,
       experienceYears: int.tryParse(_yearsController.text) ?? 0,
       licenseId: _licenseController.text.trim(),
       clinicAddress: _clinicAddressController.text.trim(),
@@ -180,7 +178,9 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
                           bioController: _bioController,
                           clinicAddressController: _clinicAddressController,
                           hospitalController: _hospitalController,
-                          selectedSpecializations: _selectedSpecializations,
+                          selectedSpecialization: _selectedSpecialization,
+                          onSpecializationChanged: (spec) =>
+                              setState(() => _selectedSpecialization = spec),
                         ),
                         SizedBox(height: 32.h),
                         DoctorSignUpFooter(

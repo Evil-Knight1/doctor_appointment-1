@@ -1,19 +1,23 @@
 import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
+import 'package:doctor_appointment/features/doctors/domain/entities/specialization.dart';
 import 'package:doctor_appointment/features/doctors/logic/specializations_cubit.dart';
 import 'package:doctor_appointment/features/doctors/logic/specializations_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+/// A single-select specialization dropdown backed by the live API.
+/// Exposes [selectedSpecialization] (the full entity) and calls
+/// [onChanged] whenever the user picks a different item.
 class DoctorSpecializationField extends StatefulWidget {
-  final Set<String> selectedSpecializations;
-  final VoidCallback onStateChanged;
+  final Specialization? selectedSpecialization;
+  final ValueChanged<Specialization?> onChanged;
 
   const DoctorSpecializationField({
     super.key,
-    required this.selectedSpecializations,
-    required this.onStateChanged,
+    required this.selectedSpecialization,
+    required this.onChanged,
   });
 
   @override
@@ -22,27 +26,28 @@ class DoctorSpecializationField extends StatefulWidget {
 }
 
 class _DoctorSpecializationFieldState extends State<DoctorSpecializationField> {
-  final _controller = TextEditingController();
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SpecializationsCubit, SpecializationsState>(
       builder: (context, state) {
+        // --- Loading ---
         if (state is SpecializationsLoading) {
-          return const Center(child: CircularProgressIndicator());
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Specialization', style: AppStyles.styleMedium14),
+              SizedBox(height: 8.h),
+              const Center(child: CircularProgressIndicator()),
+            ],
+          );
         }
 
+        // --- Error ---
         if (state is SpecializationsFailure) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Specializations', style: AppStyles.styleMedium14),
+              Text('Specialization', style: AppStyles.styleMedium14),
               SizedBox(height: 8.h),
               Container(
                 padding: EdgeInsets.all(12.w),
@@ -57,7 +62,7 @@ class _DoctorSpecializationFieldState extends State<DoctorSpecializationField> {
                     SizedBox(width: 10.w),
                     Expanded(
                       child: Text(
-                        'Failed to load specializations: ${state.message}',
+                        'Failed to load: ${state.message}',
                         style: AppStyles.styleRegular12.copyWith(
                           color: Colors.red[700],
                         ),
@@ -76,83 +81,61 @@ class _DoctorSpecializationFieldState extends State<DoctorSpecializationField> {
           );
         }
 
+        // --- Success ---
         if (state is SpecializationsSuccess) {
+          final items = state.specializations;
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Specializations', style: AppStyles.styleMedium14),
+              Text('Specialization', style: AppStyles.styleMedium14),
               SizedBox(height: 8.h),
-              Autocomplete<String>(
-                optionsBuilder: (TextEditingValue textEditingValue) {
-                  if (textEditingValue.text == '') {
-                    return const Iterable<String>.empty();
-                  }
-                  return state.uniqueNames.where((String option) {
-                    return option.toLowerCase().contains(
-                      textEditingValue.text.toLowerCase(),
-                    );
-                  });
-                },
-                onSelected: (String selection) {
-                  setState(() {
-                    widget.selectedSpecializations.add(selection);
-                    _controller.clear();
-                  });
-                  widget.onStateChanged();
-                },
-                fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
-                  // Sync Autocomplete's controller with our state's controller
-                  // This ensures that when we call _controller.clear(), it clears the field.
-                  if (_controller.text != controller.text &&
-                      _controller.text.isEmpty) {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      controller.clear();
-                    });
-                  }
-
-                  return TextField(
-                    controller: controller,
-                    focusNode: focusNode,
-                    decoration: InputDecoration(
-                      hintText: 'Search specializations...',
-                      prefixIcon: const Icon(Icons.search, size: 20),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12.r),
-                        borderSide: BorderSide(color: Colors.grey[200]!),
-                      ),
+              DropdownButtonFormField<Specialization>(
+                initialValue: widget.selectedSpecialization,
+                isExpanded: true,
+                decoration: InputDecoration(
+                  hintText: 'Select your specialization',
+                  hintStyle: AppStyles.styleRegular14.copyWith(
+                    color: Colors.grey[400],
+                  ),
+                  prefixIcon: const Icon(
+                    Icons.medical_services_outlined,
+                    size: 20,
+                    color: AppColors.primary,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12.r),
+                    borderSide: BorderSide(color: Colors.grey[200]!),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12.r),
+                    borderSide: BorderSide(color: Colors.grey[200]!),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12.r),
+                    borderSide: const BorderSide(
+                      color: AppColors.primary,
+                      width: 1.5,
+                    ),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 16.w,
+                    vertical: 14.h,
+                  ),
+                ),
+                items: items.map((spec) {
+                  return DropdownMenuItem<Specialization>(
+                    value: spec,
+                    child: Text(
+                      spec.name,
+                      style: AppStyles.styleRegular14,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   );
-                },
+                }).toList(),
+                onChanged: widget.onChanged,
+                validator: (value) =>
+                    value == null ? 'Please select a specialization' : null,
               ),
-              if (widget.selectedSpecializations.isNotEmpty) ...[
-                SizedBox(height: 12.h),
-                Wrap(
-                  spacing: 8.w,
-                  runSpacing: 8.h,
-                  children: widget.selectedSpecializations.map((spec) {
-                    return Chip(
-                      label: Text(
-                        spec,
-                        style: AppStyles.styleRegular12.copyWith(
-                          color: AppColors.primary,
-                        ),
-                      ),
-                      backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-                      deleteIcon: const Icon(Icons.close, size: 14),
-                      onDeleted: () {
-                        setState(
-                          () => widget.selectedSpecializations.remove(spec),
-                        );
-                        widget.onStateChanged();
-                      },
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.r),
-                        side: BorderSide.none,
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ],
             ],
           );
         }

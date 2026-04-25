@@ -13,7 +13,7 @@ class RegisterDoctorUseCase {
       email: params.email,
       phone: params.phone,
       password: params.password,
-      specializations: params.specializations,
+      specializationId: params.specializationId,
       experienceYears: params.experienceYears,
       licenseId: params.licenseId,
       clinicAddress: params.clinicAddress,
@@ -28,7 +28,7 @@ class RegisterDoctorParams {
   final String email;
   final String phone;
   final String password;
-  final List<String> specializations;
+  final int specializationId;
   final int experienceYears;
   final String licenseId;
   final String clinicAddress;
@@ -40,7 +40,7 @@ class RegisterDoctorParams {
     required this.email,
     required this.phone,
     required this.password,
-    required this.specializations,
+    required this.specializationId,
     required this.experienceYears,
     required this.licenseId,
     required this.clinicAddress,

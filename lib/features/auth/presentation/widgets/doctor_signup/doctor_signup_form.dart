@@ -2,6 +2,7 @@ import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/features/auth/presentation/widgets/custom_text_field.dart';
 import 'package:doctor_appointment/features/auth/presentation/widgets/doctor_signup/doctor_specialization_field.dart';
+import 'package:doctor_appointment/features/doctors/domain/entities/specialization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:phone_form_field/phone_form_field.dart';
@@ -20,7 +21,8 @@ class DoctorSignUpForm extends StatefulWidget {
   final TextEditingController bioController;
   final TextEditingController clinicAddressController;
   final TextEditingController hospitalController;
-  final Set<String> selectedSpecializations;
+  final Specialization? selectedSpecialization;
+  final ValueChanged<Specialization?> onSpecializationChanged;
 
   const DoctorSignUpForm({
     super.key,
@@ -37,7 +39,8 @@ class DoctorSignUpForm extends StatefulWidget {
     required this.bioController,
     required this.clinicAddressController,
     required this.hospitalController,
-    required this.selectedSpecializations,
+    required this.selectedSpecialization,
+    required this.onSpecializationChanged,
   });
 
   @override
@@ -136,8 +139,8 @@ class _DoctorSignUpFormState extends State<DoctorSignUpForm> {
         _buildSectionTitle('Professional Details'),
         SizedBox(height: 16.h),
         DoctorSpecializationField(
-          selectedSpecializations: widget.selectedSpecializations,
-          onStateChanged: () => setState(() {}),
+          selectedSpecialization: widget.selectedSpecialization,
+          onChanged: widget.onSpecializationChanged,
         ),
         SizedBox(height: 16.h),
         Row(
