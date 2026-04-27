@@ -9,16 +9,14 @@ import 'package:doctor_appointment/features/auth/logic/auth_cubit.dart';
 import 'package:doctor_appointment/features/auth/logic/auth_state.dart';
 import 'package:doctor_appointment/features/doctors/domain/entities/specialization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geocoding/geocoding.dart' as geo;
 import 'package:go_router/go_router.dart';
+import 'package:phone_form_field/phone_form_field.dart';
 
-/// Standalone doctor registration view.
-/// Since the backend does not yet have a doctor-register endpoint, this form
-/// collects all professional fields and navigates to the pending-approval
-/// screen on submission — matching the existing behaviour.
 class DoctorSignUpView extends StatefulWidget {
   const DoctorSignUpView({super.key});
 
@@ -33,7 +31,7 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
   // --- Controllers ---
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
-  final _phoneController = TextEditingController();
+  final _phoneController = PhoneController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final _yearsController = TextEditingController();
@@ -42,16 +40,11 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
   final _clinicAddressController = TextEditingController();
   final _hospitalController = TextEditingController();
 
-  // Controllers and FocusNodes are handled inside DoctorSignUpForm or passed to it.
-  // We keep controllers here because they are needed for _submitForm.
-
   // --- Specialization ---
   Specialization? _selectedSpecialization;
 
-  @override
-  void initState() {
-    super.initState();
-  }
+  /// Per-field server validation errors to show inline.
+  Map<String, String> _fieldErrors = {};
 
   @override
   void dispose() {
@@ -91,6 +84,9 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
   }
 
   void _submitForm() {
+    // Clear previous server errors before re-validating locally
+    setState(() => _fieldErrors = {});
+
     if (_formKey.currentState?.validate() != true) return;
 
     if (_selectedSpecialization == null) {
@@ -108,7 +104,7 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
     context.read<AuthCubit>().registerDoctor(
       fullName: _nameController.text.trim(),
       email: _emailController.text.trim(),
-      phone: _phoneController.text.trim(),
+      phone: _phoneController.value.international,
       password: _passwordController.text.trim(),
       specializationId: _selectedSpecialization!.id,
       experienceYears: int.tryParse(_yearsController.text) ?? 0,
@@ -120,6 +116,7 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
   }
 
   void _showErrorSnackBar(String message) {
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
@@ -135,13 +132,29 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
     return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) {
         if (state is AuthLoading) {
-          setState(() => _isSubmitting = true);
+          setState(() {
+            _isSubmitting = true;
+            _fieldErrors = {};
+          });
         } else if (state is AuthSuccess) {
           setState(() => _isSubmitting = false);
-          context.push(AppRouter.kDoctorPendingApprovalView);
+          // Use addPostFrameCallback to avoid navigating while the element
+          // tree is still being updated — prevents the "element tree no longer
+          // stable" assertion error.
+          SchedulerBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              context.push(AppRouter.kDoctorPendingApprovalView);
+            }
+          });
         } else if (state is AuthFailure) {
-          setState(() => _isSubmitting = false);
-          _showErrorSnackBar(state.message);
+          setState(() {
+            _isSubmitting = false;
+            _fieldErrors = state.fieldErrors;
+          });
+          // Only show snackbar for a generic (non-field-specific) error
+          if (state.fieldErrors.isEmpty) {
+            _showErrorSnackBar(state.message);
+          }
         }
       },
       child: Scaffold(
@@ -181,6 +194,7 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
                           selectedSpecialization: _selectedSpecialization,
                           onSpecializationChanged: (spec) =>
                               setState(() => _selectedSpecialization = spec),
+                          fieldErrors: _fieldErrors,
                         ),
                         SizedBox(height: 32.h),
                         DoctorSignUpFooter(
@@ -449,7 +463,7 @@ class _LocationPickerSheetState extends State<_LocationPickerSheet> {
                         _updateAddress(point);
                       } catch (e) {
                         debugPrint('Error getting current location: $e');
-                        if (mounted) {
+                        if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: Text('Could not get current location'),

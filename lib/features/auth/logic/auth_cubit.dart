@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:doctor_appointment/core/errors/failures.dart';
 import 'package:doctor_appointment/core/utils/result.dart';
 import 'package:doctor_appointment/core/services/shared_preferences_helper.dart';
 import 'dart:convert';
@@ -33,7 +34,12 @@ class AuthCubit extends Cubit<AuthState> {
         await _saveUserData(result.data);
         emit(AuthSuccess(result.data, role: _normalizeRole(result.data.role)));
       case FailureResult():
-        emit(AuthFailure(result.failure.message));
+        emit(AuthFailure(
+          result.failure.message,
+          fieldErrors: result.failure is ServerFailure
+              ? (result.failure as ServerFailure).fieldErrors
+              : {},
+        ));
     }
   }
 
@@ -64,7 +70,12 @@ class AuthCubit extends Cubit<AuthState> {
         await _saveUserData(result.data);
         emit(AuthSuccess(result.data, role: _normalizeRole(result.data.role)));
       case FailureResult():
-        emit(AuthFailure(result.failure.message));
+        emit(AuthFailure(
+          result.failure.message,
+          fieldErrors: result.failure is ServerFailure
+              ? (result.failure as ServerFailure).fieldErrors
+              : {},
+        ));
     }
   }
 
@@ -101,7 +112,12 @@ class AuthCubit extends Cubit<AuthState> {
         await _saveUserData(result.data);
         emit(AuthSuccess(result.data, role: _normalizeRole(result.data.role)));
       case FailureResult():
-        emit(AuthFailure(result.failure.message));
+        emit(AuthFailure(
+          result.failure.message,
+          fieldErrors: result.failure is ServerFailure
+              ? (result.failure as ServerFailure).fieldErrors
+              : {},
+        ));
     }
   }
 

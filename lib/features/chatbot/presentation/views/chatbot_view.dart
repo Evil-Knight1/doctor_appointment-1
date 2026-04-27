@@ -1,11 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
+import 'package:doctor_appointment/features/chatbot/logic/chat_cubit.dart';
 
-class ChatbotView extends StatelessWidget {
+class ChatbotView extends StatefulWidget {
   const ChatbotView({super.key});
+
+  @override
+  State<ChatbotView> createState() => _ChatbotViewState();
+}
+
+class _ChatbotViewState extends State<ChatbotView> {
+  final TextEditingController _messageController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _messageController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollToBottom() {
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
+  }
+
+  void _sendMessage() {
+    final text = _messageController.text.trim();
+    if (text.isNotEmpty) {
+      context.read<ChatCubit>().sendMessage(text);
+      _messageController.clear();
+      // Wait a bit for the optimistic message to render before scrolling
+      Future.delayed(const Duration(milliseconds: 100), _scrollToBottom);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,42 +53,139 @@ class ChatbotView extends StatelessWidget {
         elevation: 1,
         titleSpacing: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.textPrimary, size: 20.sp),
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: AppColors.textPrimary,
+            size: 20.sp,
+          ),
           onPressed: () => context.pop(),
         ),
         title: Row(
           children: [
             CircleAvatar(
               backgroundColor: AppColors.primaryLight,
-              child: Icon(Icons.smart_toy_rounded, color: AppColors.primary, size: 20.sp),
+              child: Icon(
+                Icons.smart_toy_rounded,
+                color: AppColors.primary,
+                size: 20.sp,
+              ),
             ),
             SizedBox(width: 10.w),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('AI Assistant', style: AppStyles.styleSemiBold16),
-                Text('Online', style: AppStyles.styleRegular12.copyWith(color: AppColors.primary)),
+                BlocBuilder<ChatCubit, ChatState>(
+                  builder: (context, state) {
+                    if (state.status == ChatStatus.loading) {
+                      return Text(
+                        'Connecting...',
+                        style: AppStyles.styleRegular12.copyWith(
+                          color: Colors.orange,
+                        ),
+                      );
+                    }
+                    if (state.status == ChatStatus.sending) {
+                      return Text(
+                        'Typing...',
+                        style: AppStyles.styleRegular12.copyWith(
+                          color: AppColors.primary,
+                        ),
+                      );
+                    }
+                    return Text(
+                      'Online',
+                      style: AppStyles.styleRegular12.copyWith(
+                        color: AppColors.primary,
+                      ),
+                    );
+                  },
+                ),
               ],
             ),
           ],
         ),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView(
-              padding: EdgeInsets.all(20.w),
-              children: [
-                _buildBotMessage('Hello! I am your AI Health Assistant. How can I help you today?'),
-                SizedBox(height: 16.h),
-                _buildUserMessage('I need to find a good Dentist in my area.'),
-                SizedBox(height: 16.h),
-                _buildBotMessage('Sure! I can help you with that. We have several highly rated dentists available. Would you like me to book an appointment for you?'),
-              ],
-            ),
-          ),
-          _buildMessageInput(),
-        ],
+      body: BlocConsumer<ChatCubit, ChatState>(
+        listener: (context, state) {
+          if (state.status == ChatStatus.error && state.errorMessage != null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.errorMessage!),
+                backgroundColor: Colors.red,
+                duration: const Duration(seconds: 4),
+              ),
+            );
+          } else if (state.status == ChatStatus.ready) {
+            Future.delayed(const Duration(milliseconds: 100), _scrollToBottom);
+          }
+        },
+        builder: (context, state) {
+          return Column(
+            children: [
+              Expanded(
+                child:
+                    state.status == ChatStatus.loading && state.messages.isEmpty
+                    ? const Center(child: CircularProgressIndicator())
+                    : ListView.separated(
+                        controller: _scrollController,
+                        padding: EdgeInsets.all(20.w),
+                        itemCount:
+                            state.messages.length +
+                            (state.status == ChatStatus.sending ? 1 : 0),
+                        separatorBuilder: (context, index) =>
+                            SizedBox(height: 16.h),
+                        itemBuilder: (context, index) {
+                          if (index < state.messages.length) {
+                            final message = state.messages[index];
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                _buildUserMessage(message.userMessage),
+                                SizedBox(height: 16.h),
+                                _buildBotMessage(message.aiMessage),
+                              ],
+                            );
+                          } else {
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                if (state.pendingUserMessage != null) ...[
+                                  _buildUserMessage(state.pendingUserMessage!),
+                                  SizedBox(height: 16.h),
+                                ],
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Container(
+                                    padding: EdgeInsets.all(12.w),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(16.r),
+                                      border: Border.all(
+                                        color: AppColors.border,
+                                      ),
+                                    ),
+                                    child: Text(
+                                      "...",
+                                      style: AppStyles.styleRegular14.copyWith(
+                                        color: AppColors.textSecondary,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          }
+                        },
+                      ),
+              ),
+              _buildMessageInput(
+                state.status == ChatStatus.sending ||
+                    state.status == ChatStatus.loading,
+              ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -71,7 +205,10 @@ class ChatbotView extends StatelessWidget {
           ),
           border: Border.all(color: AppColors.border),
         ),
-        child: Text(text, style: AppStyles.styleRegular14.copyWith(height: 1.5)),
+        child: Text(
+          text,
+          style: AppStyles.styleRegular14.copyWith(height: 1.5),
+        ),
       ),
     );
   }
@@ -90,12 +227,18 @@ class ChatbotView extends StatelessWidget {
             bottomLeft: Radius.circular(16.r),
           ),
         ),
-        child: Text(text, style: AppStyles.styleRegular14.copyWith(color: Colors.white, height: 1.5)),
+        child: Text(
+          text,
+          style: AppStyles.styleRegular14.copyWith(
+            color: Colors.white,
+            height: 1.5,
+          ),
+        ),
       ),
     );
   }
 
-  Widget _buildMessageInput() {
+  Widget _buildMessageInput(bool isSending) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
       decoration: BoxDecoration(
@@ -112,23 +255,41 @@ class ChatbotView extends StatelessWidget {
                 borderRadius: BorderRadius.circular(24.r),
               ),
               child: TextField(
+                controller: _messageController,
+                enabled: !isSending,
+                onSubmitted: (_) => _sendMessage(),
                 decoration: InputDecoration(
-                  hintText: 'Type your message...',
-                  hintStyle: AppStyles.styleRegular14.copyWith(color: AppColors.textLight),
+                  hintText: isSending
+                      ? 'Wait for AI...'
+                      : 'Type your message...',
+                  hintStyle: AppStyles.styleRegular14.copyWith(
+                    color: AppColors.textLight,
+                  ),
                   border: InputBorder.none,
                 ),
               ),
             ),
           ),
           SizedBox(width: 12.w),
-          Container(
-            width: 48.w,
-            height: 48.h,
-            decoration: const BoxDecoration(
-              color: AppColors.primary,
-              shape: BoxShape.circle,
+          GestureDetector(
+            onTap: isSending ? null : _sendMessage,
+            child: Container(
+              width: 48.w,
+              height: 48.h,
+              decoration: BoxDecoration(
+                color: isSending ? AppColors.border : AppColors.primary,
+                shape: BoxShape.circle,
+              ),
+              child: isSending
+                  ? Padding(
+                      padding: EdgeInsets.all(12.w),
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2.w,
+                      ),
+                    )
+                  : Icon(Icons.send_rounded, color: Colors.white, size: 20.sp),
             ),
-            child: Icon(Icons.send_rounded, color: Colors.white, size: 20.sp),
           ),
         ],
       ),

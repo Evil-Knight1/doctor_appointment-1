@@ -90,6 +90,7 @@ class _ProfileViewState extends State<ProfileView> {
                       AppRouter.kEditProfileView,
                       extra: state.profile,
                     );
+                    if (!context.mounted) return;
                     if (updated == true) {
                       context.read<ProfileCubit>().loadProfile();
                     }

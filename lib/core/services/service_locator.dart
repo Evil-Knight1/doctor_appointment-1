@@ -9,6 +9,7 @@ import 'package:doctor_appointment/core/config/env.dart';
 import 'package:doctor_appointment/core/services/api_service.dart';
 import 'package:doctor_appointment/core/services/auth_token_interceptor.dart';
 import 'package:doctor_appointment/core/services/secure_storage_service.dart';
+import 'package:doctor_appointment/core/services/notification_service.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:doctor_appointment/features/auth/data/datasources/auth_local_data_source.dart';
 import 'package:doctor_appointment/features/auth/data/datasources/auth_remote_data_source.dart';
@@ -57,6 +58,17 @@ import 'package:doctor_appointment/features/doctor_flow/logic/doctor_stats_cubit
 import 'package:doctor_appointment/features/doctor_flow/logic/doctor_profile_cubit.dart';
 import 'package:doctor_appointment/features/doctor_flow/logic/doctor_appointments_cubit.dart';
 
+// Chatbot Imports
+import 'package:doctor_appointment/features/chatbot/data/datasources/ai_chat_remote_data_source.dart';
+import 'package:doctor_appointment/features/chatbot/data/repositories/ai_chat_repository_impl.dart';
+import 'package:doctor_appointment/features/chatbot/domain/repositories/ai_chat_repository.dart';
+import 'package:doctor_appointment/features/chatbot/domain/usecases/get_user_chats_usecase.dart';
+import 'package:doctor_appointment/features/chatbot/domain/usecases/start_new_chat_usecase.dart';
+import 'package:doctor_appointment/features/chatbot/domain/usecases/get_ai_chat_history_usecase.dart';
+import 'package:doctor_appointment/features/chatbot/domain/usecases/send_ai_chat_message_usecase.dart';
+import 'package:doctor_appointment/features/chatbot/logic/chat_cubit.dart';
+import 'package:doctor_appointment/features/chatbot/logic/chat_history_cubit.dart';
+
 final getIt = GetIt.instance;
 
 void setupServiceLocator() {
@@ -83,6 +95,9 @@ void setupServiceLocator() {
   );
   getIt.registerLazySingleton<SecureStorageService>(
     () => SecureStorageServiceImpl(getIt<FlutterSecureStorage>()),
+  );
+  getIt.registerLazySingleton<NotificationService>(
+    () => NotificationService(),
   );
 
   getIt.registerLazySingleton<AuthLocalDataSource>(
@@ -254,6 +269,36 @@ void setupServiceLocator() {
   getIt.registerFactory(
     () => DoctorAppointmentsCubit(
       getDoctorAppointmentsUseCase: getIt<GetDoctorAppointmentsUseCase>(),
+    ),
+  );
+
+  // Chatbot
+  getIt.registerLazySingleton<AIChatRemoteDataSource>(
+    () => AIChatRemoteDataSourceImpl(getIt<ApiService>()),
+  );
+  getIt.registerLazySingleton<AIChatRepository>(
+    () => AIChatRepositoryImpl(getIt<AIChatRemoteDataSource>()),
+  );
+  getIt.registerLazySingleton(
+    () => GetUserChatsUseCase(getIt<AIChatRepository>()),
+  );
+  getIt.registerLazySingleton(
+    () => StartNewChatUseCase(getIt<AIChatRepository>()),
+  );
+  getIt.registerLazySingleton(
+    () => GetAIChatHistoryUseCase(getIt<AIChatRepository>()),
+  );
+  getIt.registerLazySingleton(
+    () => SendAIChatMessageUseCase(getIt<AIChatRepository>()),
+  );
+  getIt.registerFactory(
+    () => ChatHistoryCubit(getIt<GetUserChatsUseCase>()),
+  );
+  getIt.registerFactory(
+    () => ChatCubit(
+      startNewChatUseCase: getIt<StartNewChatUseCase>(),
+      getAIChatHistoryUseCase: getIt<GetAIChatHistoryUseCase>(),
+      sendAIChatMessageUseCase: getIt<SendAIChatMessageUseCase>(),
     ),
   );
 }

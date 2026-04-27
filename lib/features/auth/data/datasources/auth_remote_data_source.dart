@@ -125,7 +125,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   AuthResponseModel _parseAuthResponse(Map<String, dynamic> json) {
     final success = json['success'] == true;
     if (!success) {
-      throw ApiException(_extractMessage(json));
+      final fieldErrors = _extractFieldErrors(json);
+      final message = _extractMessage(json, fieldErrors);
+      throw ApiException(message, fieldErrors: fieldErrors);
     }
 
     final data = json['data'];
@@ -136,15 +138,44 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     throw const ApiException('Unexpected response payload');
   }
 
-  String _extractMessage(Map<String, dynamic> json) {
+  String _extractMessage(
+    Map<String, dynamic> json,
+    Map<String, String> fieldErrors,
+  ) {
     final message = json['message'] as String?;
     if (message != null && message.trim().isNotEmpty) {
       return message;
+    }
+    // Flatten field errors into a readable message fallback
+    if (fieldErrors.isNotEmpty) {
+      return fieldErrors.values.first;
     }
     final errors = json['errors'];
     if (errors is List && errors.isNotEmpty) {
       return errors.map((e) => e.toString()).join(', ');
     }
     return 'Request failed';
+  }
+
+  /// Parses ASP.NET model-state / custom field errors.
+  /// Supports two shapes:
+  ///   1. { "errors": { "Password": ["Msg"], "Phone": ["Msg"] } }  (object of arrays)
+  ///   2. { "errors": ["global error"] }  (flat list — no field mapping)
+  Map<String, String> _extractFieldErrors(Map<String, dynamic> json) {
+    final errors = json['errors'];
+    if (errors is Map) {
+      final result = <String, String>{};
+      errors.forEach((key, value) {
+        if (key is String) {
+          if (value is List && value.isNotEmpty) {
+            result[key.toLowerCase()] = value.first.toString();
+          } else if (value is String && value.isNotEmpty) {
+            result[key.toLowerCase()] = value;
+          }
+        }
+      });
+      return result;
+    }
+    return {};
   }
 }

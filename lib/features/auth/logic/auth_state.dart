@@ -26,6 +26,9 @@ class AuthSuccess extends AuthState {
 
 class AuthFailure extends AuthState {
   final String message;
+  /// Per-field validation errors from the server (e.g. 'password', 'phone').
+  final Map<String, String> fieldErrors;
 
-  const AuthFailure(this.message);
+  const AuthFailure(this.message, {this.fieldErrors = const {}});
 }
+

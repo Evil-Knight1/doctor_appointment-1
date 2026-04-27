@@ -52,6 +52,8 @@ dependencies:
   logger: ^2.7.0
   sentry_flutter: ^9.19.0
   sentry_dio: ^9.19.0
+  flutter_local_notifications: ^21.0.0
+  timezone: ^0.11.0
 
 dev_dependencies:
   flutter_lints: ^6.0.0

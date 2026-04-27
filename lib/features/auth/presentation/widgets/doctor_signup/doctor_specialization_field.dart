@@ -125,10 +125,14 @@ class _DoctorSpecializationFieldState extends State<DoctorSpecializationField> {
                 items: items.map((spec) {
                   return DropdownMenuItem<Specialization>(
                     value: spec,
-                    child: Text(
-                      spec.name,
-                      style: AppStyles.styleRegular14,
-                      overflow: TextOverflow.ellipsis,
+                    child: Container(
+                      color: Colors.blueAccent.withAlpha(50),
+                      padding: .symmetric(horizontal: 12.w, vertical: 4.h),
+                      child: Text(
+                        spec.name,
+                        style: AppStyles.styleRegular14,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   );
                 }).toList(),

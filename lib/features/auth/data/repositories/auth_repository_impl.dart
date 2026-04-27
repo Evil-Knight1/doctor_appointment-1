@@ -27,11 +27,15 @@ class AuthRepositoryImpl implements AuthRepository {
       return Result.success(response);
     } on ApiException catch (exception) {
       return Result.failure(
-        ServerFailure(exception.message, statusCode: exception.statusCode),
+        ServerFailure(
+          exception.message,
+          statusCode: exception.statusCode,
+          fieldErrors: exception.fieldErrors,
+        ),
       );
     } on DioException catch (exception) {
       return Result.failure(_mapDioFailure(exception));
-    } catch (exception) {
+    } catch (_) {
       return Result.failure(const UnknownFailure('Unexpected error occurred'));
     }
   }
@@ -60,11 +64,15 @@ class AuthRepositoryImpl implements AuthRepository {
       return Result.success(response);
     } on ApiException catch (exception) {
       return Result.failure(
-        ServerFailure(exception.message, statusCode: exception.statusCode),
+        ServerFailure(
+          exception.message,
+          statusCode: exception.statusCode,
+          fieldErrors: exception.fieldErrors,
+        ),
       );
     } on DioException catch (exception) {
       return Result.failure(_mapDioFailure(exception));
-    } catch (exception) {
+    } catch (_) {
       return Result.failure(const UnknownFailure('Unexpected error occurred'));
     }
   }
@@ -83,11 +91,15 @@ class AuthRepositoryImpl implements AuthRepository {
       return Result.success(response);
     } on ApiException catch (exception) {
       return Result.failure(
-        ServerFailure(exception.message, statusCode: exception.statusCode),
+        ServerFailure(
+          exception.message,
+          statusCode: exception.statusCode,
+          fieldErrors: exception.fieldErrors,
+        ),
       );
     } on DioException catch (exception) {
       return Result.failure(_mapDioFailure(exception));
-    } catch (exception) {
+    } catch (_) {
       return Result.failure(const UnknownFailure('Unexpected error occurred'));
     }
   }
@@ -132,12 +144,16 @@ class AuthRepositoryImpl implements AuthRepository {
       return Result.success(response);
     } on ApiException catch (exception) {
       return Result.failure(
-        ServerFailure(exception.message, statusCode: exception.statusCode),
+        ServerFailure(
+          exception.message,
+          statusCode: exception.statusCode,
+          fieldErrors: exception.fieldErrors,
+        ),
       );
     } on DioException catch (exception) {
       return Result.failure(_mapDioFailure(exception));
-    } catch (exception) {
-      return Result.failure(const UnknownFailure('Unexpected error occurred'));
+    } catch (e) {
+      return Result.failure(UnknownFailure(e.toString()));
     }
   }
 
@@ -151,7 +167,8 @@ class AuthRepositoryImpl implements AuthRepository {
 
     final response = exception.response;
     final statusCode = response?.statusCode;
-    final message = _extractMessage(response?.data) ??
+    final message =
+        _extractMessage(response?.data) ??
         exception.message ??
         'Request failed';
 

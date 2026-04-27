@@ -394,31 +394,7 @@ class _SignUpViewState extends State<SignUpView> {
 // Private reusable widgets for this screen
 // ====================================================================
 
-class _BackButton extends StatelessWidget {
-  const _BackButton({required this.onTap});
-  final VoidCallback onTap;
 
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 40.w,
-        height: 40.h,
-        decoration: BoxDecoration(
-          color: const Color(0xFFF9FAFB),
-          borderRadius: BorderRadius.circular(10.r),
-          border: Border.all(color: const Color(0xFFE2E8F0)),
-        ),
-        child: Icon(
-          Icons.arrow_back_ios_new_rounded,
-          size: 16.sp,
-          color: const Color(0xff1E252D),
-        ),
-      ),
-    );
-  }
-}
 
 class _SubmitButton extends StatelessWidget {
   const _SubmitButton({

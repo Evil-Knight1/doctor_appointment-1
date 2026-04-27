@@ -13,7 +13,7 @@ class DoctorSignUpForm extends StatefulWidget {
   final VoidCallback onShowHospitalLocationPicker;
   final TextEditingController nameController;
   final TextEditingController emailController;
-  final TextEditingController phoneController;
+  final PhoneController phoneController;
   final TextEditingController passwordController;
   final TextEditingController confirmPasswordController;
   final TextEditingController yearsController;
@@ -23,6 +23,10 @@ class DoctorSignUpForm extends StatefulWidget {
   final TextEditingController hospitalController;
   final Specialization? selectedSpecialization;
   final ValueChanged<Specialization?> onSpecializationChanged;
+
+  /// Per-field server validation errors keyed by lowercase field name
+  /// (e.g. 'password', 'phone', 'email', 'fullname').
+  final Map<String, String> fieldErrors;
 
   const DoctorSignUpForm({
     super.key,
@@ -41,6 +45,7 @@ class DoctorSignUpForm extends StatefulWidget {
     required this.hospitalController,
     required this.selectedSpecialization,
     required this.onSpecializationChanged,
+    this.fieldErrors = const {},
   });
 
   @override
@@ -68,6 +73,9 @@ class _DoctorSignUpFormState extends State<DoctorSignUpForm> {
     super.dispose();
   }
 
+  /// Returns the server error message for a given field key, or null.
+  String? _serverError(String key) => widget.fieldErrors[key.toLowerCase()];
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -82,6 +90,7 @@ class _DoctorSignUpFormState extends State<DoctorSignUpForm> {
           controller: widget.nameController,
           focusNode: _nameFocus,
           textInputType: TextInputType.name,
+          serverError: _serverError('fullname') ?? _serverError('fullName'),
         ),
         SizedBox(height: 16.h),
         _buildLabel('Email Address'),
@@ -91,17 +100,20 @@ class _DoctorSignUpFormState extends State<DoctorSignUpForm> {
           controller: widget.emailController,
           focusNode: _emailFocus,
           textInputType: TextInputType.emailAddress,
+          serverError: _serverError('email'),
         ),
         SizedBox(height: 16.h),
         _buildLabel('Phone Number'),
         SizedBox(height: 8.h),
         PhoneFormField(
           key: const Key('phone-field'),
+          controller: widget.phoneController,
           decoration: InputDecoration(
             hintText: '1234567890',
             hintStyle: AppStyles.styleRegular14.copyWith(
               color: AppColors.textLight,
             ),
+            errorText: _serverError('phone'),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12.r),
               borderSide: BorderSide(color: Colors.grey[200]!),
@@ -109,6 +121,14 @@ class _DoctorSignUpFormState extends State<DoctorSignUpForm> {
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12.r),
               borderSide: BorderSide(color: Colors.grey[200]!),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.r),
+              borderSide: const BorderSide(color: Color(0xFFEF4444)),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.r),
+              borderSide: const BorderSide(color: Color(0xFFEF4444)),
             ),
             contentPadding: EdgeInsets.symmetric(
               horizontal: 16.w,
@@ -124,6 +144,7 @@ class _DoctorSignUpFormState extends State<DoctorSignUpForm> {
           controller: widget.passwordController,
           focusNode: _passwordFocus,
           isPassword: true,
+          serverError: _serverError('password'),
         ),
         SizedBox(height: 16.h),
         _buildLabel('Confirm Password'),
@@ -133,6 +154,7 @@ class _DoctorSignUpFormState extends State<DoctorSignUpForm> {
           controller: widget.confirmPasswordController,
           focusNode: _confirmFocus,
           isPassword: true,
+          serverError: _serverError('confirmpassword'),
         ),
 
         SizedBox(height: 32.h),
@@ -156,6 +178,8 @@ class _DoctorSignUpFormState extends State<DoctorSignUpForm> {
                     controller: widget.yearsController,
                     focusNode: _yearsFocus,
                     textInputType: TextInputType.number,
+                    serverError: _serverError('yearsofexperience') ??
+                        _serverError('experienceyears'),
                   ),
                 ],
               ),
@@ -171,6 +195,8 @@ class _DoctorSignUpFormState extends State<DoctorSignUpForm> {
                     hintText: 'LC-12345',
                     controller: widget.licenseController,
                     focusNode: _licenseFocus,
+                    serverError: _serverError('licensenumber') ??
+                        _serverError('licenseid'),
                   ),
                 ],
               ),
@@ -191,6 +217,7 @@ class _DoctorSignUpFormState extends State<DoctorSignUpForm> {
                 Icons.map_rounded,
                 color: AppColors.primary,
               ),
+              serverError: _serverError('hospital'),
             ),
           ),
         ),
@@ -207,6 +234,7 @@ class _DoctorSignUpFormState extends State<DoctorSignUpForm> {
                 Icons.map_rounded,
                 color: AppColors.primary,
               ),
+              serverError: _serverError('clinicaddress'),
             ),
           ),
         ),
@@ -217,6 +245,7 @@ class _DoctorSignUpFormState extends State<DoctorSignUpForm> {
           hintText: 'Tell patients about your expertise...',
           controller: widget.bioController,
           textInputType: TextInputType.text,
+          serverError: _serverError('bio'),
         ),
       ],
     );

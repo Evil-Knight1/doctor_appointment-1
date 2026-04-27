@@ -30,6 +30,8 @@ import 'package:doctor_appointment/features/payments/presentation/views/payment_
 import 'package:doctor_appointment/features/payments/presentation/views/transaction_details_view.dart';
 import 'package:doctor_appointment/features/payments/presentation/views/checkout_view.dart';
 import 'package:doctor_appointment/features/chatbot/presentation/views/chat_history_view.dart';
+import 'package:doctor_appointment/features/chatbot/logic/chat_cubit.dart';
+import 'package:doctor_appointment/features/chatbot/logic/chat_history_cubit.dart';
 import 'package:doctor_appointment/features/appointment/presentation/views/appointment_details_view.dart';
 import 'package:doctor_appointment/features/auth/presentation/views/doctor_signup_view.dart';
 import 'package:doctor_appointment/features/doctors/logic/specializations_cubit.dart';
@@ -141,11 +143,20 @@ abstract class AppRouter {
       ),
       GoRoute(
         path: kChatbotView,
-        builder: (context, state) => const ChatbotView(),
+        builder: (context, state) {
+          final sessionId = state.extra as String?;
+          return BlocProvider(
+            create: (context) => getIt<ChatCubit>()..initChat(sessionId: sessionId),
+            child: const ChatbotView(),
+          );
+        },
       ),
       GoRoute(
         path: kChatHistoryView,
-        builder: (context, state) => const ChatHistoryView(),
+        builder: (context, state) => BlocProvider(
+          create: (context) => getIt<ChatHistoryCubit>()..fetchUserChats(),
+          child: const ChatHistoryView(),
+        ),
       ),
       GoRoute(
         path: kDoctorDetail,
