@@ -62,7 +62,12 @@ class PaymentCubit extends Cubit<PaymentState> {
           case FailureResult():
             emit(PaymentError(paymentResult.failure.message));
           case Success():
-            emit(const PaymentSuccess());
+            final paymentUrl = paymentResult.data;
+            if (paymentUrl != null && paymentUrl.isNotEmpty) {
+              emit(PaymentRequiresAction(paymentUrl));
+            } else {
+              emit(const PaymentSuccess());
+            }
         }
     }
   }

@@ -19,6 +19,8 @@ class RegisterDoctorUseCase {
       clinicAddress: params.clinicAddress,
       hospitalName: params.hospitalName,
       bio: params.bio,
+      profilePicturePath: params.profilePicturePath,
+      clinicImagesPaths: params.clinicImagesPaths,
     );
   }
 }
@@ -34,6 +36,8 @@ class RegisterDoctorParams {
   final String clinicAddress;
   final String hospitalName;
   final String? bio;
+  final String? profilePicturePath;
+  final List<String>? clinicImagesPaths;
 
   RegisterDoctorParams({
     required this.fullName,
@@ -46,5 +50,7 @@ class RegisterDoctorParams {
     required this.clinicAddress,
     required this.hospitalName,
     this.bio,
+    this.profilePicturePath,
+    this.clinicImagesPaths,
   });
 }

@@ -1,3 +1,4 @@
+import 'package:url_launcher/url_launcher.dart';
 import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/core/utils/go_router.dart';
@@ -28,7 +29,7 @@ class CheckoutView extends StatefulWidget {
 }
 
 class _CheckoutViewState extends State<CheckoutView> {
-  int _selectedMethod = 1; // 1 = CreditCard, 2 = Epay, 3 = CashAtClinic
+  int _selectedMethod = 4; // 4 = OnlineCard, 5 = MobileWallet, 3 = CashAtClinic
   late final PaymentCubit _paymentCubit;
 
   @override
@@ -73,9 +74,9 @@ class _CheckoutViewState extends State<CheckoutView> {
             children: [
               Text('Select Payment Method', style: AppStyles.styleSemiBold16),
               SizedBox(height: 16.h),
-              _buildPaymentMethod(1, 'Credit/Debit Card', Icons.credit_card_rounded),
+              _buildPaymentMethod(4, 'Credit/Debit Card', Icons.credit_card_rounded),
               SizedBox(height: 12.h),
-              _buildPaymentMethod(2, 'Epay', Icons.account_balance_wallet_rounded),
+              _buildPaymentMethod(5, 'Mobile Wallet', Icons.account_balance_wallet_rounded),
               SizedBox(height: 12.h),
               _buildPaymentMethod(3, 'Cash at Clinic', Icons.money_rounded),
               const Spacer(),
@@ -95,6 +96,15 @@ class _CheckoutViewState extends State<CheckoutView> {
                     );
                   } else if (state is PaymentSuccess) {
                     context.pushReplacement(AppRouter.kAppointmentSuccess);
+                  } else if (state is PaymentRequiresAction) {
+                    final uri = Uri.parse(state.paymentUrl);
+                    launchUrl(uri, mode: LaunchMode.externalApplication).then((_) {
+                      context.pushReplacement(AppRouter.kAppointmentSuccess);
+                    }).catchError((_) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Could not open payment gateway')),
+                      );
+                    });
                   }
                 },
                 builder: (context, state) {

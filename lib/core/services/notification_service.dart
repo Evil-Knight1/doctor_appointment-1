@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -9,10 +10,19 @@ class NotificationService {
 
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
+  final FirebaseMessaging _fcm = FirebaseMessaging.instance;
 
   Future<void> init() async {
     tz.initializeTimeZones();
 
+    // 1. Request Permission
+    await _fcm.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
+    // 2. Local Notifications Setup
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
@@ -36,6 +46,18 @@ class NotificationService {
       },
     );
 
+    // 3. Handle Foreground FCM Messages
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      if (message.notification != null) {
+        showNotification(
+          id: message.hashCode,
+          title: message.notification!.title ?? 'New Notification',
+          body: message.notification!.body ?? '',
+          payload: message.data.toString(),
+        );
+      }
+    });
+
     // Request permission for Android 13+
     _flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<
@@ -43,6 +65,12 @@ class NotificationService {
         >()
         ?.requestNotificationsPermission();
   }
+
+  Future<String?> getFcmToken() async {
+    return await _fcm.getToken();
+  }
+
+  Stream<String> get onTokenRefresh => _fcm.onTokenRefresh;
 
   Future<void> showNotification({
     required int id,

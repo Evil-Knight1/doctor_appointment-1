@@ -2,7 +2,7 @@ import 'package:doctor_appointment/core/errors/exceptions.dart';
 import 'package:doctor_appointment/core/services/api_service.dart';
 
 abstract class PaymentRemoteDataSource {
-  Future<void> processPayment({
+  Future<String?> processPayment({
     required int appointmentId,
     required double amount,
     required int paymentMethod,
@@ -17,7 +17,7 @@ class PaymentRemoteDataSourceImpl implements PaymentRemoteDataSource {
   PaymentRemoteDataSourceImpl(this.apiService);
 
   @override
-  Future<void> processPayment({
+  Future<String?> processPayment({
     required int appointmentId,
     required double amount,
     required int paymentMethod,
@@ -39,6 +39,9 @@ class PaymentRemoteDataSourceImpl implements PaymentRemoteDataSource {
     if (!success) {
       throw ApiException(_extractMessage(response));
     }
+    
+    // The backend returns the PaymentUrl inside the 'data' object when using Paymob
+    return response['data']?['paymentUrl'] as String?;
   }
 
   String _extractMessage(Map<String, dynamic> json) {

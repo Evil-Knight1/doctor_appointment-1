@@ -15,6 +15,7 @@ abstract class AuthRepository {
     DateTime? dateOfBirth,
     String? gender,
     String? address,
+    String? profilePicturePath,
   });
 
   Future<Result<AuthResponse>> refreshToken({
@@ -35,5 +36,9 @@ abstract class AuthRepository {
     required String clinicAddress,
     required String hospitalName,
     String? bio,
+    String? profilePicturePath,
+    List<String>? clinicImagesPaths,
   });
+
+  Future<Result<bool>> updateFcmToken({required String fcmToken});
 }

@@ -6,6 +6,7 @@ import 'package:doctor_appointment/features/doctors/domain/entities/specializati
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:phone_form_field/phone_form_field.dart';
+import 'package:doctor_appointment/core/widgets/image_picker_widget.dart';
 
 class DoctorSignUpForm extends StatefulWidget {
   final GlobalKey<FormState> formKey;
@@ -45,8 +46,17 @@ class DoctorSignUpForm extends StatefulWidget {
     required this.hospitalController,
     required this.selectedSpecialization,
     required this.onSpecializationChanged,
+    required this.profilePicturePath,
+    required this.onProfilePictureChanged,
+    required this.clinicImagesPaths,
+    required this.onClinicImagesChanged,
     this.fieldErrors = const {},
   });
+
+  final String? profilePicturePath;
+  final ValueChanged<String?> onProfilePictureChanged;
+  final List<String> clinicImagesPaths;
+  final ValueChanged<List<String>> onClinicImagesChanged;
 
   @override
   State<DoctorSignUpForm> createState() => _DoctorSignUpFormState();
@@ -83,6 +93,11 @@ class _DoctorSignUpFormState extends State<DoctorSignUpForm> {
       children: [
         _buildSectionTitle('Basic Information'),
         SizedBox(height: 16.h),
+        ProfileImagePicker(
+          imagePath: widget.profilePicturePath,
+          onImageSelected: widget.onProfilePictureChanged,
+        ),
+        SizedBox(height: 24.h),
         _buildLabel('Full Name'),
         SizedBox(height: 8.h),
         CustomTextFormField(
@@ -246,6 +261,11 @@ class _DoctorSignUpFormState extends State<DoctorSignUpForm> {
           controller: widget.bioController,
           textInputType: TextInputType.text,
           serverError: _serverError('bio'),
+        ),
+        SizedBox(height: 24.h),
+        MultiImagePicker(
+          imagePaths: widget.clinicImagesPaths,
+          onImagesSelected: widget.onClinicImagesChanged,
         ),
       ],
     );

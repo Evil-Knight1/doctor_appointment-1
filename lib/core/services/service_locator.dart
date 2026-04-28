@@ -1,4 +1,5 @@
 import 'package:doctor_appointment/features/appointment/domain/repositories/appointment_repository.dart';
+import 'package:doctor_appointment/features/auth/domain/usecases/update_fcm_token_usecase.dart';
 import 'package:sentry_dio/sentry_dio.dart';
 import 'package:doctor_appointment/core/logging/log_service.dart';
 import 'package:doctor_appointment/core/logging/api_logging_interceptor.dart';
@@ -96,9 +97,7 @@ void setupServiceLocator() {
   getIt.registerLazySingleton<SecureStorageService>(
     () => SecureStorageServiceImpl(getIt<FlutterSecureStorage>()),
   );
-  getIt.registerLazySingleton<NotificationService>(
-    () => NotificationService(),
-  );
+  getIt.registerLazySingleton<NotificationService>(() => NotificationService());
 
   getIt.registerLazySingleton<AuthLocalDataSource>(
     () => AuthLocalDataSourceImpl(getIt<SecureStorageService>()),
@@ -137,11 +136,15 @@ void setupServiceLocator() {
   getIt.registerLazySingleton(
     () => RegisterDoctorUseCase(getIt<AuthRepository>()),
   );
+  getIt.registerLazySingleton(
+    () => UpdateFcmTokenUseCase(getIt<AuthRepository>()),
+  );
   getIt.registerFactory(
     () => AuthCubit(
       loginUseCase: getIt<LoginUseCase>(),
       registerPatientUseCase: getIt<RegisterPatientUseCase>(),
       registerDoctorUseCase: getIt<RegisterDoctorUseCase>(),
+      updateFcmTokenUseCase: getIt<UpdateFcmTokenUseCase>(),
     ),
   );
 
@@ -291,9 +294,7 @@ void setupServiceLocator() {
   getIt.registerLazySingleton(
     () => SendAIChatMessageUseCase(getIt<AIChatRepository>()),
   );
-  getIt.registerFactory(
-    () => ChatHistoryCubit(getIt<GetUserChatsUseCase>()),
-  );
+  getIt.registerFactory(() => ChatHistoryCubit(getIt<GetUserChatsUseCase>()));
   getIt.registerFactory(
     () => ChatCubit(
       startNewChatUseCase: getIt<StartNewChatUseCase>(),

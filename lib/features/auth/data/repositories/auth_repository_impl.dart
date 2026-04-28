@@ -49,6 +49,7 @@ class AuthRepositoryImpl implements AuthRepository {
     DateTime? dateOfBirth,
     String? gender,
     String? address,
+    String? profilePicturePath,
   }) async {
     try {
       final response = await remoteDataSource.registerPatient(
@@ -59,6 +60,7 @@ class AuthRepositoryImpl implements AuthRepository {
         dateOfBirth: dateOfBirth,
         gender: gender,
         address: address,
+        profilePicturePath: profilePicturePath,
       );
       await localDataSource.cacheAuthSession(response);
       return Result.success(response);
@@ -126,6 +128,8 @@ class AuthRepositoryImpl implements AuthRepository {
     required String clinicAddress,
     required String hospitalName,
     String? bio,
+    String? profilePicturePath,
+    List<String>? clinicImagesPaths,
   }) async {
     try {
       final response = await remoteDataSource.registerDoctor(
@@ -139,6 +143,8 @@ class AuthRepositoryImpl implements AuthRepository {
         clinicAddress: clinicAddress,
         hospitalName: hospitalName,
         bio: bio,
+        profilePicturePath: profilePicturePath,
+        clinicImagesPaths: clinicImagesPaths,
       );
       await localDataSource.cacheAuthSession(response);
       return Result.success(response);
@@ -191,5 +197,24 @@ class AuthRepositoryImpl implements AuthRepository {
       }
     }
     return null;
+  }
+
+  @override
+  Future<Result<bool>> updateFcmToken({required String fcmToken}) async {
+    try {
+      final success = await remoteDataSource.updateFcmToken(fcmToken: fcmToken);
+      return Result.success(success);
+    } on ApiException catch (exception) {
+      return Result.failure(
+        ServerFailure(
+          exception.message,
+          statusCode: exception.statusCode,
+        ),
+      );
+    } on DioException catch (exception) {
+      return Result.failure(_mapDioFailure(exception));
+    } catch (e) {
+      return Result.failure(UnknownFailure(e.toString()));
+    }
   }
 }

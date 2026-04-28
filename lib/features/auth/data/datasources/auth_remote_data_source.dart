@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:doctor_appointment/core/errors/exceptions.dart';
 import 'package:doctor_appointment/core/services/api_service.dart';
 import 'package:doctor_appointment/features/auth/data/models/auth_response_model.dart';
@@ -16,6 +17,7 @@ abstract class AuthRemoteDataSource {
     DateTime? dateOfBirth,
     String? gender,
     String? address,
+    String? profilePicturePath,
   });
 
   Future<AuthResponseModel> refreshToken({
@@ -34,7 +36,11 @@ abstract class AuthRemoteDataSource {
     required String clinicAddress,
     required String hospitalName,
     String? bio,
+    String? profilePicturePath,
+    List<String>? clinicImagesPaths,
   });
+
+  Future<bool> updateFcmToken({required String fcmToken});
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -63,18 +69,28 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     DateTime? dateOfBirth,
     String? gender,
     String? address,
+    String? profilePicturePath,
   }) async {
+    final Map<String, dynamic> data = {
+      'fullName': fullName,
+      'email': email,
+      'phone': phone,
+      'password': password,
+      'dateOfBirth': dateOfBirth?.toIso8601String(),
+      'gender': gender,
+      'address': address,
+    };
+
+    if (profilePicturePath != null) {
+      data['profilePicture'] = await MultipartFile.fromFile(
+        profilePicturePath,
+        filename: profilePicturePath.split('/').last,
+      );
+    }
+
     final response = await apiService.post(
       '/api/Auth/register/patient',
-      data: {
-        'fullName': fullName,
-        'email': email,
-        'phone': phone,
-        'password': password,
-        'dateOfBirth': dateOfBirth?.toIso8601String(),
-        'gender': gender,
-        'address': address,
-      },
+      data: FormData.fromMap(data),
     );
     return _parseAuthResponse(response);
   }
@@ -103,23 +119,54 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String clinicAddress,
     required String hospitalName,
     String? bio,
+    String? profilePicturePath,
+    List<String>? clinicImagesPaths,
   }) async {
+    final Map<String, dynamic> data = {
+      'fullName': fullName,
+      'email': email,
+      'phone': phone,
+      'password': password,
+      'specializationId': specializationId,
+      'yearsOfExperience': experienceYears,
+      'licenseNumber': licenseId,
+      'clinicAddress': clinicAddress.isEmpty ? null : clinicAddress,
+      'hospital': hospitalName.isEmpty ? null : hospitalName,
+      'bio': bio?.isEmpty == true ? null : bio,
+    };
+
+    if (profilePicturePath != null) {
+      data['profilePicture'] = await MultipartFile.fromFile(
+        profilePicturePath,
+        filename: profilePicturePath.split('/').last,
+      );
+    }
+
+    if (clinicImagesPaths != null && clinicImagesPaths.isNotEmpty) {
+      data['clinicImages'] = await Future.wait(
+        clinicImagesPaths.map(
+          (path) => MultipartFile.fromFile(
+            path,
+            filename: path.split('/').last,
+          ),
+        ),
+      );
+    }
+
     final response = await apiService.post(
       '/api/Auth/register/doctor',
-      data: {
-        'fullName': fullName,
-        'email': email,
-        'phone': phone,
-        'password': password,
-        'specializationId': specializationId,
-        'yearsOfExperience': experienceYears,
-        'licenseNumber': licenseId,
-        'clinicAddress': clinicAddress.isEmpty ? null : clinicAddress,
-        'hospital': hospitalName.isEmpty ? null : hospitalName,
-        'bio': bio?.isEmpty == true ? null : bio,
-      },
+      data: FormData.fromMap(data),
     );
     return _parseAuthResponse(response);
+  }
+
+  @override
+  Future<bool> updateFcmToken({required String fcmToken}) async {
+    final response = await apiService.post(
+      '/api/Auth/fcm-token',
+      data: {'fcmToken': fcmToken},
+    );
+    return response['success'] == true;
   }
 
   AuthResponseModel _parseAuthResponse(Map<String, dynamic> json) {

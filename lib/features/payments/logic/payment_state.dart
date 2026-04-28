@@ -19,6 +19,15 @@ class PaymentSuccess extends PaymentState {
   const PaymentSuccess();
 }
 
+class PaymentRequiresAction extends PaymentState {
+  final String paymentUrl;
+
+  const PaymentRequiresAction(this.paymentUrl);
+
+  @override
+  List<Object> get props => [paymentUrl];
+}
+
 class PaymentError extends PaymentState {
   final String message;
 

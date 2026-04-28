@@ -8,16 +8,20 @@ import 'package:doctor_appointment/features/auth/domain/usecases/login_usecase.d
 import 'package:doctor_appointment/features/auth/domain/usecases/register_patient_usecase.dart';
 import 'package:doctor_appointment/features/auth/domain/usecases/register_doctor_usecase.dart';
 import 'package:doctor_appointment/features/auth/logic/auth_state.dart';
+import 'package:doctor_appointment/features/auth/domain/usecases/update_fcm_token_usecase.dart';
+import 'package:doctor_appointment/core/services/notification_service.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   final LoginUseCase loginUseCase;
   final RegisterPatientUseCase registerPatientUseCase;
   final RegisterDoctorUseCase registerDoctorUseCase;
+  final UpdateFcmTokenUseCase updateFcmTokenUseCase;
 
   AuthCubit({
     required this.loginUseCase,
     required this.registerPatientUseCase,
     required this.registerDoctorUseCase,
+    required this.updateFcmTokenUseCase,
   }) : super(const AuthInitial());
 
   Future<void> login({
@@ -32,6 +36,7 @@ class AuthCubit extends Cubit<AuthState> {
     switch (result) {
       case Success():
         await _saveUserData(result.data);
+        await _updateFcmToken();
         emit(AuthSuccess(result.data, role: _normalizeRole(result.data.role)));
       case FailureResult():
         emit(AuthFailure(
@@ -51,6 +56,7 @@ class AuthCubit extends Cubit<AuthState> {
     DateTime? dateOfBirth,
     String? gender,
     String? address,
+    String? profilePicturePath,
   }) async {
     emit(const AuthLoading());
     final result = await registerPatientUseCase(
@@ -62,12 +68,14 @@ class AuthCubit extends Cubit<AuthState> {
         dateOfBirth: dateOfBirth,
         gender: gender,
         address: address,
+        profilePicturePath: profilePicturePath,
       ),
     );
 
     switch (result) {
       case Success():
         await _saveUserData(result.data);
+        await _updateFcmToken();
         emit(AuthSuccess(result.data, role: _normalizeRole(result.data.role)));
       case FailureResult():
         emit(AuthFailure(
@@ -90,6 +98,8 @@ class AuthCubit extends Cubit<AuthState> {
     required String clinicAddress,
     required String hospitalName,
     String? bio,
+    String? profilePicturePath,
+    List<String>? clinicImagesPaths,
   }) async {
     emit(const AuthLoading());
     final result = await registerDoctorUseCase(
@@ -104,12 +114,15 @@ class AuthCubit extends Cubit<AuthState> {
         clinicAddress: clinicAddress,
         hospitalName: hospitalName,
         bio: bio,
+        profilePicturePath: profilePicturePath,
+        clinicImagesPaths: clinicImagesPaths,
       ),
     );
 
     switch (result) {
       case Success():
         await _saveUserData(result.data);
+        await _updateFcmToken();
         emit(AuthSuccess(result.data, role: _normalizeRole(result.data.role)));
       case FailureResult():
         emit(AuthFailure(
@@ -138,5 +151,12 @@ class AuthCubit extends Cubit<AuthState> {
   String _normalizeRole(String? role) {
     final value = role?.trim().toLowerCase() ?? '';
     return value == 'doctor' ? 'doctor' : 'patient';
+  }
+
+  Future<void> _updateFcmToken() async {
+    final fcmToken = await NotificationService().getFcmToken();
+    if (fcmToken != null) {
+      await updateFcmTokenUseCase(fcmToken);
+    }
   }
 }

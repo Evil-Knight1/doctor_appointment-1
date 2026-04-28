@@ -40,8 +40,9 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
   final _clinicAddressController = TextEditingController();
   final _hospitalController = TextEditingController();
 
-  // --- Specialization ---
   Specialization? _selectedSpecialization;
+  String? _profilePicturePath;
+  List<String> _clinicImagesPaths = [];
 
   /// Per-field server validation errors to show inline.
   Map<String, String> _fieldErrors = {};
@@ -112,6 +113,8 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
       clinicAddress: _clinicAddressController.text.trim(),
       hospitalName: _hospitalController.text.trim(),
       bio: _bioController.text.trim(),
+      profilePicturePath: _profilePicturePath,
+      clinicImagesPaths: _clinicImagesPaths,
     );
   }
 
@@ -194,6 +197,12 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
                           selectedSpecialization: _selectedSpecialization,
                           onSpecializationChanged: (spec) =>
                               setState(() => _selectedSpecialization = spec),
+                          profilePicturePath: _profilePicturePath,
+                          onProfilePictureChanged: (path) =>
+                              setState(() => _profilePicturePath = path),
+                          clinicImagesPaths: _clinicImagesPaths,
+                          onClinicImagesChanged: (paths) =>
+                              setState(() => _clinicImagesPaths = paths),
                           fieldErrors: _fieldErrors,
                         ),
                         SizedBox(height: 32.h),

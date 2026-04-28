@@ -12,6 +12,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:phone_form_field/phone_form_field.dart';
 import 'package:doctor_appointment/features/auth/presentation/widgets/patient_signup/location_picker_dialog.dart';
+import 'package:doctor_appointment/core/widgets/image_picker_widget.dart';
 
 class SignUpView extends StatefulWidget {
   const SignUpView({super.key});
@@ -41,6 +42,7 @@ class _SignUpViewState extends State<SignUpView> {
   // --- Optional fields ---
   DateTime? _dateOfBirth;
   String? _selectedGender;
+  String? _profilePicturePath;
 
   @override
   void dispose() {
@@ -86,6 +88,7 @@ class _SignUpViewState extends State<SignUpView> {
       address: _addressController.text.trim().isNotEmpty
           ? _addressController.text.trim()
           : null,
+      profilePicturePath: _profilePicturePath,
     );
   }
 
@@ -150,6 +153,14 @@ class _SignUpViewState extends State<SignUpView> {
                             icon: Icons.person_outline_rounded,
                             subtitle: 'Your account credentials',
                           ),
+
+                          ProfileImagePicker(
+                            imagePath: _profilePicturePath,
+                            onImageSelected: (path) {
+                              setState(() => _profilePicturePath = path);
+                            },
+                          ),
+                          SizedBox(height: 24.h),
 
                           RegistrationTextField(
                             label: 'Full Name',

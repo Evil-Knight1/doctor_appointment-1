@@ -6,7 +6,7 @@ class ProcessPaymentUseCase {
 
   const ProcessPaymentUseCase(this.repository);
 
-  Future<Result<void>> call(ProcessPaymentParams params) {
+  Future<Result<String?>> call(ProcessPaymentParams params) {
     return repository.processPayment(
       appointmentId: params.appointmentId,
       amount: params.amount,
