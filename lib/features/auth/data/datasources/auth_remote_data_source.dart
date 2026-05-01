@@ -35,12 +35,24 @@ abstract class AuthRemoteDataSource {
     required String licenseId,
     required String clinicAddress,
     required String hospitalName,
+    DateTime? dateOfBirth,
+    String? gender,
     String? bio,
     String? profilePicturePath,
     List<String>? clinicImagesPaths,
   });
 
   Future<bool> updateFcmToken({required String fcmToken});
+
+  Future<void> forgotPassword({required String email});
+  
+  Future<void> verifyOtp({required String email, required String otp});
+  
+  Future<void> resetPassword({
+    required String email,
+    required String token,
+    required String newPassword,
+  });
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -118,6 +130,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String licenseId,
     required String clinicAddress,
     required String hospitalName,
+    DateTime? dateOfBirth,
+    String? gender,
     String? bio,
     String? profilePicturePath,
     List<String>? clinicImagesPaths,
@@ -132,6 +146,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       'licenseNumber': licenseId,
       'clinicAddress': clinicAddress.isEmpty ? null : clinicAddress,
       'hospital': hospitalName.isEmpty ? null : hospitalName,
+      'dateOfBirth': dateOfBirth?.toIso8601String(),
+      'gender': gender,
       'bio': bio?.isEmpty == true ? null : bio,
     };
 
@@ -167,6 +183,49 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       data: {'fcmToken': fcmToken},
     );
     return response['success'] == true;
+  }
+
+  @override
+  Future<void> forgotPassword({required String email}) async {
+    final response = await apiService.post(
+      '/api/Auth/forgot-password',
+      data: {'email': email},
+    );
+    if (response['success'] != true) {
+      final fieldErrors = _extractFieldErrors(response);
+      final message = _extractMessage(response, fieldErrors);
+      throw ApiException(message, fieldErrors: fieldErrors);
+    }
+  }
+
+  @override
+  Future<void> verifyOtp({required String email, required String otp}) async {
+    final response = await apiService.post(
+      '/api/Auth/verify-email',
+      data: {'email': email, 'token': otp},
+    );
+    if (response['success'] != true) {
+      final fieldErrors = _extractFieldErrors(response);
+      final message = _extractMessage(response, fieldErrors);
+      throw ApiException(message, fieldErrors: fieldErrors);
+    }
+  }
+
+  @override
+  Future<void> resetPassword({
+    required String email,
+    required String token,
+    required String newPassword,
+  }) async {
+    final response = await apiService.post(
+      '/api/Auth/reset-password',
+      data: {'email': email, 'token': token, 'newPassword': newPassword},
+    );
+    if (response['success'] != true) {
+      final fieldErrors = _extractFieldErrors(response);
+      final message = _extractMessage(response, fieldErrors);
+      throw ApiException(message, fieldErrors: fieldErrors);
+    }
   }
 
   AuthResponseModel _parseAuthResponse(Map<String, dynamic> json) {

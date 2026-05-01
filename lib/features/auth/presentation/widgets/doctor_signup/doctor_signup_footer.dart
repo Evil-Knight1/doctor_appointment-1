@@ -7,11 +7,13 @@ import 'package:go_router/go_router.dart';
 class DoctorSignUpFooter extends StatelessWidget {
   final bool isLoading;
   final VoidCallback onSubmit;
+  final bool isLastStep;
 
   const DoctorSignUpFooter({
     super.key,
     required this.isLoading,
     required this.onSubmit,
+    this.isLastStep = false,
   });
 
   @override
@@ -20,7 +22,8 @@ class DoctorSignUpFooter extends StatelessWidget {
       children: [
         _SubmitButton(
           isLoading: isLoading,
-          label: 'Submit Application',
+          label: isLastStep ? 'Submit Application' : 'Next Step',
+          icon: isLastStep ? Icons.send_rounded : Icons.arrow_forward_rounded,
           onPressed: isLoading ? null : onSubmit,
         ),
         SizedBox(height: 24.h),
@@ -58,10 +61,12 @@ class _SubmitButton extends StatelessWidget {
   const _SubmitButton({
     required this.isLoading,
     required this.label,
+    required this.icon,
     this.onPressed,
   });
   final bool isLoading;
   final String label;
+  final IconData icon;
   final VoidCallback? onPressed;
 
   @override
@@ -92,7 +97,7 @@ class _SubmitButton extends StatelessWidget {
             : Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.send_rounded, size: 18.sp),
+                  Icon(icon, size: 18.sp),
                   SizedBox(width: 8.w),
                   Text(label, style: AppStyles.styleSemiBold16),
                 ],

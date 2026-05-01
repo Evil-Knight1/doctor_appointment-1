@@ -1,9 +1,11 @@
+import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/core/utils/go_router.dart';
 import 'package:doctor_appointment/features/auth/logic/auth_cubit.dart';
 import 'package:doctor_appointment/features/auth/logic/auth_state.dart';
+import 'package:doctor_appointment/core/utils/app_images.dart';
+import 'package:doctor_appointment/features/auth/presentation/widgets/circular_social_button.dart';
 import 'package:doctor_appointment/features/auth/presentation/widgets/custom_divider.dart';
-import 'package:doctor_appointment/features/auth/presentation/widgets/custom_social_button.dart';
 import 'package:doctor_appointment/features/auth/presentation/widgets/custom_text_field.dart';
 import 'package:doctor_appointment/features/on_boarding_view/presentation/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
@@ -46,7 +48,7 @@ class _LoginViewState extends State<LoginView> {
       builder: (context, state) {
         final isLoading = state is AuthLoading;
         return Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           body: SafeArea(
             child: SingleChildScrollView(
               keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
@@ -64,49 +66,47 @@ class _LoginViewState extends State<LoginView> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(height: 24.h), // 37 ? 24
+                        SizedBox(height: 30.h),
+                        Text('Welcome Back', style: AppStyles.styleBold32),
+                        SizedBox(height: 8.h),
                         Text(
-                          'Go ahead & set up your\naccount',
-                          style: AppStyles.styleSemiBold24,
-                        ),
-                        SizedBox(height: 8.h), // 15 ? 8
-                        Text(
-                          'Welcome back! Please sign in to manage your account.',
+                          'We\'re excited to have you back, can\'t wait to see what you\'ve been up to since you last logged in.',
                           style: AppStyles.styleRegular14,
                         ),
-                        SizedBox(height: 24.h), // 48 ? 24
-                        Text('Email', style: AppStyles.styleMedium14),
-                        SizedBox(height: 8.h), // 15 ? 8
+                        SizedBox(height: 36.h),
                         CustomTextFormField(
-                          hintText: 'Enter your Email',
+                          hintText: 'Email',
                           textInputType: TextInputType.emailAddress,
                           controller: _emailController,
                         ),
-                        SizedBox(height: 16.h), // 30 ? 16
-                        Text('Password', style: AppStyles.styleMedium14),
-                        SizedBox(height: 8.h), // 15 ? 8
+                        SizedBox(height: 16.h),
                         CustomTextFormField(
                           hintText: 'Password',
                           textInputType: TextInputType.visiblePassword,
                           isPassword: true,
                           controller: _passwordController,
                         ),
-                        SizedBox(height: 10.h), // 30 ? 10
+                        SizedBox(height: 16.h),
                         Align(
                           alignment: Alignment.centerRight,
-                          child: Text(
-                            'Forgot password?',
-                            style: AppStyles.styleRegular12.copyWith(
-                              decoration: TextDecoration.underline,
+                          child: GestureDetector(
+                            onTap: () {
+                              context.go(AppRouter.kForgotPasswordView);
+                            },
+                            child: Text(
+                              'Forgot Password?',
+                              style: AppStyles.styleRegular12.copyWith(
+                                color: AppColors.primary,
+                              ),
                             ),
                           ),
                         ),
-                        SizedBox(height: 20.h), // 30 ? 20
+                        SizedBox(height: 32.h),
                         Align(
                           alignment: Alignment.center,
                           child: CustomButton(
-                            height: 49.h,
-                            width: 328.w,
+                            height: 52.h,
+                            width: double.infinity,
                             text: isLoading ? 'Logging in...' : 'Login',
                             onPressed: isLoading
                                 ? () {}
@@ -120,30 +120,27 @@ class _LoginViewState extends State<LoginView> {
                                       password: _passwordController.text.trim(),
                                     );
                                   },
-                            buttonColor: const Color(0xff236DEC),
-                            textStyle: AppStyles.styleSemiBold16,
-                            circleSize: 10.r,
+                            buttonColor: AppColors.primary,
+                            textStyle: AppStyles.styleSemiBold16.copyWith(
+                              color: Colors.white,
+                            ),
+                            circleSize: 16.r,
                           ),
                         ),
-                        SizedBox(height: 24.h), // 48 ? 24
+                        SizedBox(height: 32.h),
                         CustomDivider(),
-                        SizedBox(height: 24.h), // 48 ? 24
+                        SizedBox(height: 32.h),
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Expanded(
-                              child: CustomSocialButton(
-                                label: 'Google',
-                                iconPath: 'assets/images/google.svg',
-                                onTap: () {},
-                              ),
+                            CircularSocialButton(
+                              icon: Assets.imagesGoogle,
+                              onTap: () {},
                             ),
-                            SizedBox(width: 16.w),
-                            Expanded(
-                              child: CustomSocialButton(
-                                label: 'Facebook',
-                                iconPath: 'assets/images/facebook.svg',
-                                onTap: () {},
-                              ),
+                            SizedBox(width: 32.w),
+                            CircularSocialButton(
+                              icon: Assets.imagesFacebook,
+                              onTap: () {},
                             ),
                           ],
                         ),
@@ -156,18 +153,16 @@ class _LoginViewState extends State<LoginView> {
                               children: [
                                 Text(
                                   "Don't have an account? ",
-                                  style: AppStyles.styleRegular14.copyWith(
-                                    color: const Color(0xFF949D9E),
-                                  ),
+                                  style: AppStyles.styleRegular14,
                                 ),
                                 GestureDetector(
                                   onTap: () {
-                                    context.go(AppRouter.kSignUpView);
+                                    context.go(AppRouter.kUserSelectionView);
                                   },
                                   child: Text(
-                                    'Register',
-                                    style: AppStyles.styleMedium14.copyWith(
-                                      color: const Color(0xFF1A73E8),
+                                    'Sign Up',
+                                    style: AppStyles.styleRegular14.copyWith(
+                                      color: AppColors.primary,
                                     ),
                                   ),
                                 ),

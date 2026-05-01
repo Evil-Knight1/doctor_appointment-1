@@ -47,7 +47,10 @@ class _CheckoutViewState extends State<CheckoutView> {
   @override
   Widget build(BuildContext context) {
     // Assuming a flat fee for consultation for now. You could pull this from doctor's fee.
-    final String doctorFeeStr = widget.payload.draft.doctor.fee.replaceAll(RegExp(r'[^0-9.]'), '');
+    final String doctorFeeStr = widget.payload.draft.doctor.fee.replaceAll(
+      RegExp(r'[^0-9.]'),
+      '',
+    );
     final double amount = double.tryParse(doctorFeeStr) ?? 15.0;
 
     return BlocProvider.value(
@@ -59,7 +62,11 @@ class _CheckoutViewState extends State<CheckoutView> {
           elevation: 0,
           titleSpacing: 0,
           leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.textPrimary, size: 20.sp),
+            icon: Icon(
+              Icons.arrow_back_ios_new_rounded,
+              color: AppColors.textPrimary,
+              size: 20.sp,
+            ),
             onPressed: () => context.pop(),
           ),
           title: Text(
@@ -74,37 +81,61 @@ class _CheckoutViewState extends State<CheckoutView> {
             children: [
               Text('Select Payment Method', style: AppStyles.styleSemiBold16),
               SizedBox(height: 16.h),
-              _buildPaymentMethod(4, 'Credit/Debit Card', Icons.credit_card_rounded),
+              _buildPaymentMethod(
+                4,
+                'Credit/Debit Card',
+                Icons.credit_card_rounded,
+              ),
               SizedBox(height: 12.h),
-              _buildPaymentMethod(5, 'Mobile Wallet', Icons.account_balance_wallet_rounded),
+              _buildPaymentMethod(
+                5,
+                'Mobile Wallet',
+                Icons.account_balance_wallet_rounded,
+              ),
               SizedBox(height: 12.h),
               _buildPaymentMethod(3, 'Cash at Clinic', Icons.money_rounded),
               const Spacer(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Total Fees:', style: AppStyles.styleMedium14.copyWith(color: AppColors.textSecondary)),
-                  Text('\$${amount.toStringAsFixed(2)}', style: AppStyles.styleSemiBold24.copyWith(color: AppColors.primary)),
+                  Text(
+                    'Total Fees:',
+                    style: AppStyles.styleMedium14.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                  Text(
+                    '\$${amount.toStringAsFixed(2)}',
+                    style: AppStyles.styleSemiBold24.copyWith(
+                      color: AppColors.primary,
+                    ),
+                  ),
                 ],
               ),
               SizedBox(height: 24.h),
               BlocConsumer<PaymentCubit, PaymentState>(
                 listener: (context, state) {
                   if (state is PaymentError) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(state.message)),
-                    );
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text(state.message)));
                   } else if (state is PaymentSuccess) {
                     context.pushReplacement(AppRouter.kAppointmentSuccess);
                   } else if (state is PaymentRequiresAction) {
                     final uri = Uri.parse(state.paymentUrl);
-                    launchUrl(uri, mode: LaunchMode.externalApplication).then((_) {
-                      context.pushReplacement(AppRouter.kAppointmentSuccess);
-                    }).catchError((_) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Could not open payment gateway')),
-                      );
-                    });
+                    final router = GoRouter.of(context);
+                    final messenger = ScaffoldMessenger.of(context);
+                    launchUrl(uri, mode: LaunchMode.externalApplication)
+                        .then((_) {
+                          router.pushReplacement(AppRouter.kAppointmentSuccess);
+                        })
+                        .catchError((_) {
+                          messenger.showSnackBar(
+                            const SnackBar(
+                              content: Text('Could not open payment gateway'),
+                            ),
+                          );
+                        });
                   }
                 },
                 builder: (context, state) {
@@ -126,7 +157,9 @@ class _CheckoutViewState extends State<CheckoutView> {
                     height: 50.h,
                     circleSize: 12.r,
                     textStyle: AppStyles.styleSemiBold16,
-                    buttonColor: isLoading ? AppColors.border : AppColors.primary,
+                    buttonColor: isLoading
+                        ? AppColors.border
+                        : AppColors.primary,
                   );
                 },
               ),
@@ -146,11 +179,17 @@ class _CheckoutViewState extends State<CheckoutView> {
         decoration: BoxDecoration(
           color: isSelected ? AppColors.primaryLight : Colors.white,
           borderRadius: BorderRadius.circular(12.r),
-          border: Border.all(color: isSelected ? AppColors.primary : AppColors.border),
+          border: Border.all(
+            color: isSelected ? AppColors.primary : AppColors.border,
+          ),
         ),
         child: Row(
           children: [
-            Icon(icon, color: isSelected ? AppColors.primary : AppColors.textSecondary, size: 28.sp),
+            Icon(
+              icon,
+              color: isSelected ? AppColors.primary : AppColors.textSecondary,
+              size: 28.sp,
+            ),
             SizedBox(width: 16.w),
             Expanded(
               child: Text(
@@ -161,7 +200,11 @@ class _CheckoutViewState extends State<CheckoutView> {
               ),
             ),
             if (isSelected)
-              Icon(Icons.check_circle_rounded, color: AppColors.primary, size: 20.sp)
+              Icon(
+                Icons.check_circle_rounded,
+                color: AppColors.primary,
+                size: 20.sp,
+              )
             else
               Icon(Icons.circle_outlined, color: AppColors.border, size: 20.sp),
           ],

@@ -5,19 +5,27 @@ class AppTheme {
   static ThemeData get theme => ThemeData(
     useMaterial3: true,
     colorSchemeSeed: AppColors.primary,
-    scaffoldBackgroundColor: Colors.white,
-    fontFamily: 'Poppins',
+    scaffoldBackgroundColor: AppColors.bg,
+    fontFamily: 'Inter',
     appBarTheme: const AppBarTheme(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.bg,
       elevation: 0,
       centerTitle: false,
-      titleTextStyle: TextStyle(
-        color: AppColors.textPrimary,
-        fontSize: 18,
-        fontWeight: FontWeight.w700,
-        fontFamily: 'Poppins',
-      ),
       iconTheme: IconThemeData(color: AppColors.textSecondary),
+    ),
+  );
+
+  static ThemeData get darkTheme => ThemeData(
+    useMaterial3: true,
+    colorSchemeSeed: AppColors.primary,
+    scaffoldBackgroundColor: AppColors.darkBg,
+    brightness: Brightness.dark,
+    fontFamily: 'Inter',
+    appBarTheme: const AppBarTheme(
+      backgroundColor: AppColors.darkBg,
+      elevation: 0,
+      centerTitle: false,
+      iconTheme: IconThemeData(color: AppColors.textLight),
     ),
   );
 }

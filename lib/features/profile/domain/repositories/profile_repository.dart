@@ -10,5 +10,6 @@ abstract class ProfileRepository {
     DateTime? dateOfBirth,
     String? gender,
     String? address,
+    String? profilePicturePath,
   });
 }

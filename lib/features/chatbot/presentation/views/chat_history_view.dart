@@ -17,34 +17,50 @@ class ChatHistoryView extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        titleSpacing: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.textPrimary, size: 20.sp),
-          onPressed: () => context.pop(),
-        ),
+        automaticallyImplyLeading: false,
+        leading: Navigator.canPop(context)
+            ? IconButton(
+                icon: Icon(Icons.arrow_back_ios_new_rounded,
+                    color: AppColors.textPrimary, size: 20.sp),
+                onPressed: () => context.pop(),
+              )
+            : null,
         title: Text(
           'Chat Assistant',
           style: AppStyles.styleSemiBold22.copyWith(fontSize: 18.sp),
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push(AppRouter.kChatbotView),
-        backgroundColor: AppColors.primary,
-        icon: const Icon(Icons.add_rounded, color: Colors.white),
-        label: Text('New Chat', style: AppStyles.styleMedium14.copyWith(color: Colors.white)),
+      floatingActionButton: Padding(
+        padding: EdgeInsets.only(bottom: 80.h),
+        child: FloatingActionButton.extended(
+          onPressed: () => context.push(AppRouter.kChatbotView),
+          backgroundColor: AppColors.primary,
+          icon: const Icon(Icons.add_rounded, color: Colors.white),
+          label: Text('New Chat',
+              style: AppStyles.styleMedium14.copyWith(color: Colors.white)),
+        ),
       ),
       body: BlocBuilder<ChatHistoryCubit, ChatHistoryState>(
         builder: (context, state) {
           if (state is ChatHistoryLoading) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is ChatHistoryError) {
-            return Center(child: Text(state.message, style: AppStyles.styleMedium14.copyWith(color: Colors.red)));
+            return Center(
+                child: Text(state.message,
+                    style: AppStyles.styleMedium14.copyWith(color: Colors.red)));
           } else if (state is ChatHistoryLoaded) {
             if (state.sessionIds.isEmpty) {
-              return Center(child: Text('No previous chats found.', style: AppStyles.styleMedium14));
+              return Center(
+                  child: Text('No previous chats found.',
+                      style: AppStyles.styleMedium14));
             }
             return ListView.separated(
-              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+              padding: EdgeInsets.only(
+                left: 20.w,
+                right: 20.w,
+                top: 16.h,
+                bottom: 100.h,
+              ),
               itemCount: state.sessionIds.length,
               separatorBuilder: (context, index) => SizedBox(height: 12.h),
               itemBuilder: (context, index) {

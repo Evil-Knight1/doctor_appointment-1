@@ -101,7 +101,12 @@ class _CalendarViewState extends State<CalendarView>
             );
           }
           return ListView.separated(
-            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+            padding: EdgeInsets.only(
+              left: 20.w,
+              right: 20.w,
+              top: 16.h,
+              bottom: 100.h,
+            ),
             itemCount: items.length,
             separatorBuilder: (_, _) => SizedBox(height: 14.h),
             itemBuilder: (_, index) {

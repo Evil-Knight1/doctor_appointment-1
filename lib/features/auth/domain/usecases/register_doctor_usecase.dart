@@ -18,6 +18,8 @@ class RegisterDoctorUseCase {
       licenseId: params.licenseId,
       clinicAddress: params.clinicAddress,
       hospitalName: params.hospitalName,
+      dateOfBirth: params.dateOfBirth,
+      gender: params.gender,
       bio: params.bio,
       profilePicturePath: params.profilePicturePath,
       clinicImagesPaths: params.clinicImagesPaths,
@@ -35,6 +37,8 @@ class RegisterDoctorParams {
   final String licenseId;
   final String clinicAddress;
   final String hospitalName;
+  final DateTime? dateOfBirth;
+  final String? gender;
   final String? bio;
   final String? profilePicturePath;
   final List<String>? clinicImagesPaths;
@@ -49,6 +53,8 @@ class RegisterDoctorParams {
     required this.licenseId,
     required this.clinicAddress,
     required this.hospitalName,
+    this.dateOfBirth,
+    this.gender,
     this.bio,
     this.profilePicturePath,
     this.clinicImagesPaths,

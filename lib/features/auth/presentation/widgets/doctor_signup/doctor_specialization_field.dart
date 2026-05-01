@@ -87,58 +87,78 @@ class _DoctorSpecializationFieldState extends State<DoctorSpecializationField> {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Specialization', style: AppStyles.styleMedium14),
+              RichText(
+                text: TextSpan(
+                  text: 'Specialization',
+                  style: AppStyles.styleMedium14,
+                  children: [
+                    TextSpan(
+                      text: ' *',
+                      style: AppStyles.styleMedium14.copyWith(
+                        color: const Color(0xFFEF4444),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               SizedBox(height: 8.h),
               DropdownButtonFormField<Specialization>(
-                initialValue: widget.selectedSpecialization,
+                value: widget.selectedSpecialization,
                 isExpanded: true,
+                icon: Icon(
+                  Icons.keyboard_arrow_down_rounded,
+                  color: const Color(0xFF949D9E),
+                  size: 20.sp,
+                ),
                 decoration: InputDecoration(
-                  hintText: 'Select your specialization',
+                  hintText: 'Select Specialization',
                   hintStyle: AppStyles.styleRegular14.copyWith(
-                    color: Colors.grey[400],
+                    color: const Color(0xFF949D9E),
                   ),
-                  prefixIcon: const Icon(
-                    Icons.medical_services_outlined,
-                    size: 20,
-                    color: AppColors.primary,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.r),
-                    borderSide: BorderSide(color: Colors.grey[200]!),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.r),
-                    borderSide: BorderSide(color: Colors.grey[200]!),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.r),
-                    borderSide: const BorderSide(
-                      color: AppColors.primary,
-                      width: 1.5,
+                  filled: true,
+                  fillColor: const Color(0xFFF9FAFB),
+                  prefixIcon: Padding(
+                    padding: EdgeInsets.only(left: 14.w, right: 10.w),
+                    child: Icon(
+                      Icons.medical_services_outlined,
+                      size: 20.sp,
+                      color: const Color(0xFF949D9E),
                     ),
+                  ),
+                  prefixIconConstraints: BoxConstraints(
+                    minWidth: 44.w,
+                    minHeight: 20.h,
                   ),
                   contentPadding: EdgeInsets.symmetric(
                     horizontal: 16.w,
                     vertical: 14.h,
                   ),
+                  border: _buildBorder(const Color(0xFFE2E8F0)),
+                  enabledBorder: _buildBorder(const Color(0xFFE2E8F0)),
+                  focusedBorder: _buildBorder(
+                    const Color(0xff236DEC),
+                    width: 1.5,
+                  ),
+                  errorBorder: _buildBorder(const Color(0xFFEF4444)),
+                  focusedErrorBorder: _buildBorder(
+                    const Color(0xFFEF4444),
+                    width: 1.5,
+                  ),
                 ),
                 items: items.map((spec) {
                   return DropdownMenuItem<Specialization>(
                     value: spec,
-                    child: Container(
-                      color: Colors.blueAccent.withAlpha(50),
-                      padding: .symmetric(horizontal: 12.w, vertical: 4.h),
-                      child: Text(
-                        spec.name,
-                        style: AppStyles.styleRegular14,
-                        overflow: TextOverflow.ellipsis,
+                    child: Text(
+                      spec.name,
+                      style: AppStyles.styleMedium14.copyWith(
+                        color: const Color(0xff1E252D),
                       ),
                     ),
                   );
                 }).toList(),
                 onChanged: widget.onChanged,
                 validator: (value) =>
-                    value == null ? 'Please select a specialization' : null,
+                    value == null ? 'Specialization is required' : null,
               ),
             ],
           );
@@ -146,6 +166,13 @@ class _DoctorSpecializationFieldState extends State<DoctorSpecializationField> {
 
         return const SizedBox.shrink();
       },
+    );
+  }
+
+  InputBorder? _buildBorder(Color color, {double width = 1.0}) {
+    return OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12.r),
+      borderSide: BorderSide(color: color, width: width),
     );
   }
 }

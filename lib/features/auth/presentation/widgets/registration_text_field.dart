@@ -23,6 +23,7 @@ class RegistrationTextField extends StatefulWidget {
     this.focusNode,
     this.suffixIcon,
     this.onFieldSubmitted,
+    this.serverError,
   });
 
   final String label;
@@ -39,6 +40,7 @@ class RegistrationTextField extends StatefulWidget {
   final FocusNode? focusNode;
   final Widget? suffixIcon;
   final void Function(String)? onFieldSubmitted;
+  final String? serverError;
 
   @override
   State<RegistrationTextField> createState() => _RegistrationTextFieldState();
@@ -94,6 +96,7 @@ class _RegistrationTextFieldState extends State<RegistrationTextField> {
             hintStyle: AppStyles.styleRegular14.copyWith(
               color: const Color(0xFF949D9E),
             ),
+            errorText: widget.serverError,
             filled: true,
             fillColor: const Color(0xFFF9FAFB),
             prefixIcon: widget.prefixIcon != null

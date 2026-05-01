@@ -12,6 +12,8 @@ import 'package:doctor_appointment/firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:doctor_appointment/core/logic/theme_cubit.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -37,25 +39,36 @@ void main() async {
   }, appRunner: () => runApp(const DoctorAppointment()));
 }
 
+
+
 class DoctorAppointment extends StatelessWidget {
   const DoctorAppointment({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ScreenUtilInit(
-      designSize: const Size(375, 812),
-      splitScreenMode: true,
-      builder: (context, child) {
-        return MaterialApp.router(
-          theme: AppTheme.theme,
-          // ignore: deprecated_member_use
-          useInheritedMediaQuery: true,
-          builder: DevicePreview.appBuilder,
-          locale: DevicePreview.locale(context),
-          routerConfig: AppRouter.router,
-          debugShowCheckedModeBanner: false,
-        );
-      },
+    return BlocProvider(
+      create: (context) => getIt<ThemeCubit>(),
+      child: BlocBuilder<ThemeCubit, ThemeMode>(
+        builder: (context, themeMode) {
+          return ScreenUtilInit(
+            designSize: const Size(375, 812),
+            splitScreenMode: true,
+            builder: (context, child) {
+              return MaterialApp.router(
+                theme: AppTheme.theme,
+                darkTheme: AppTheme.darkTheme,
+                themeMode: themeMode,
+                // ignore: deprecated_member_use
+                useInheritedMediaQuery: true,
+                builder: DevicePreview.appBuilder,
+                locale: DevicePreview.locale(context),
+                routerConfig: AppRouter.router,
+                debugShowCheckedModeBanner: false,
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }

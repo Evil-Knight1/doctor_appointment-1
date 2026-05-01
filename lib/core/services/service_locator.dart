@@ -22,6 +22,7 @@ import 'package:doctor_appointment/features/auth/domain/usecases/register_patien
 import 'package:doctor_appointment/features/auth/domain/usecases/register_doctor_usecase.dart';
 import 'package:doctor_appointment/features/auth/domain/usecases/refresh_token_usecase.dart';
 import 'package:doctor_appointment/features/auth/logic/auth_cubit.dart';
+import 'package:doctor_appointment/features/auth/logic/forgot_password_cubit.dart';
 import 'package:doctor_appointment/features/doctors/data/datasources/doctors_remote_data_source.dart';
 import 'package:doctor_appointment/features/doctors/data/repositories/doctors_repository_impl.dart';
 import 'package:doctor_appointment/features/doctors/domain/repositories/doctors_repository.dart';
@@ -69,10 +70,12 @@ import 'package:doctor_appointment/features/chatbot/domain/usecases/get_ai_chat_
 import 'package:doctor_appointment/features/chatbot/domain/usecases/send_ai_chat_message_usecase.dart';
 import 'package:doctor_appointment/features/chatbot/logic/chat_cubit.dart';
 import 'package:doctor_appointment/features/chatbot/logic/chat_history_cubit.dart';
+import 'package:doctor_appointment/core/logic/theme_cubit.dart';
 
 final getIt = GetIt.instance;
 
 void setupServiceLocator() {
+  getIt.registerLazySingleton<ThemeCubit>(() => ThemeCubit());
   getIt.registerLazySingleton<AppConfig>(() {
     final config = AppConfig(apiUrl: Env.apiUrl);
     config.validate();
@@ -146,6 +149,9 @@ void setupServiceLocator() {
       registerDoctorUseCase: getIt<RegisterDoctorUseCase>(),
       updateFcmTokenUseCase: getIt<UpdateFcmTokenUseCase>(),
     ),
+  );
+  getIt.registerFactory(
+    () => ForgotPasswordCubit(authRepository: getIt<AuthRepository>()),
   );
 
   getIt.registerLazySingleton<DoctorsRemoteDataSource>(

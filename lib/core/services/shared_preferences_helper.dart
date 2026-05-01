@@ -69,6 +69,15 @@ class SharedPreferencesHelper {
   static bool isDoctorFavorite(String name) {
     return getFavoriteDoctors().any((d) => d.name == name);
   }
+
+  // Theme
+  static Future<bool> saveThemeMode(String themeMode) async {
+    return await _prefs.setString('theme_mode', themeMode);
+  }
+
+  static String getThemeMode() {
+    return _prefs.getString('theme_mode') ?? 'system';
+  }
   
   static Future<void> clearAll() async {
     await _prefs.clear();

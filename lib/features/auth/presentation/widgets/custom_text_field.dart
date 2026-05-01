@@ -14,6 +14,7 @@ class CustomTextFormField extends StatefulWidget {
     this.isPassword = false,
     this.focusNode,
     this.maxLines = 1,
+
     /// Server-side validation error to display below the field.
     /// When set, it overrides the local "required" validation message.
     this.serverError,
@@ -85,12 +86,15 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
     );
   }
 
-  OutlineInputBorder buildBorder({bool hasError = false, bool focused = false}) {
+  OutlineInputBorder buildBorder({
+    bool hasError = false,
+    bool focused = false,
+  }) {
     final Color color = hasError
         ? const Color(0xFFEF4444)
         : focused
-            ? const Color(0xFF236DEC)
-            : const Color(0xFFDADADA);
+        ? const Color(0xFF236DEC)
+        : const Color(0xFFDADADA);
     return OutlineInputBorder(
       borderRadius: BorderRadius.circular(10.r),
       borderSide: BorderSide(width: 1, color: color),

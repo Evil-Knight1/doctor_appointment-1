@@ -127,6 +127,8 @@ class AuthRepositoryImpl implements AuthRepository {
     required String licenseId,
     required String clinicAddress,
     required String hospitalName,
+    DateTime? dateOfBirth,
+    String? gender,
     String? bio,
     String? profilePicturePath,
     List<String>? clinicImagesPaths,
@@ -142,6 +144,8 @@ class AuthRepositoryImpl implements AuthRepository {
         licenseId: licenseId,
         clinicAddress: clinicAddress,
         hospitalName: hospitalName,
+        dateOfBirth: dateOfBirth,
+        gender: gender,
         bio: bio,
         profilePicturePath: profilePicturePath,
         clinicImagesPaths: clinicImagesPaths,
@@ -206,9 +210,77 @@ class AuthRepositoryImpl implements AuthRepository {
       return Result.success(success);
     } on ApiException catch (exception) {
       return Result.failure(
+        ServerFailure(exception.message, statusCode: exception.statusCode),
+      );
+    } on DioException catch (exception) {
+      return Result.failure(_mapDioFailure(exception));
+    } catch (e) {
+      return Result.failure(UnknownFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Result<void>> forgotPassword({required String email}) async {
+    try {
+      await remoteDataSource.forgotPassword(email: email);
+      return Result.success(null);
+    } on ApiException catch (exception) {
+      return Result.failure(
         ServerFailure(
           exception.message,
           statusCode: exception.statusCode,
+          fieldErrors: exception.fieldErrors,
+        ),
+      );
+    } on DioException catch (exception) {
+      return Result.failure(_mapDioFailure(exception));
+    } catch (e) {
+      return Result.failure(UnknownFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Result<void>> verifyOtp({
+    required String email,
+    required String otp,
+  }) async {
+    try {
+      await remoteDataSource.verifyOtp(email: email, otp: otp);
+      return Result.success(null);
+    } on ApiException catch (exception) {
+      return Result.failure(
+        ServerFailure(
+          exception.message,
+          statusCode: exception.statusCode,
+          fieldErrors: exception.fieldErrors,
+        ),
+      );
+    } on DioException catch (exception) {
+      return Result.failure(_mapDioFailure(exception));
+    } catch (e) {
+      return Result.failure(UnknownFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Result<void>> resetPassword({
+    required String email,
+    required String token,
+    required String newPassword,
+  }) async {
+    try {
+      await remoteDataSource.resetPassword(
+        email: email,
+        token: token,
+        newPassword: newPassword,
+      );
+      return Result.success(null);
+    } on ApiException catch (exception) {
+      return Result.failure(
+        ServerFailure(
+          exception.message,
+          statusCode: exception.statusCode,
+          fieldErrors: exception.fieldErrors,
         ),
       );
     } on DioException catch (exception) {

@@ -48,7 +48,6 @@ class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push(AppRouter.kChatHistoryView),
         backgroundColor: AppColors.primary,
@@ -57,7 +56,11 @@ class _HomeViewState extends State<HomeView> {
       body: SafeArea(
         child: SingleChildScrollView(
           controller: _scrollController,
-          padding: EdgeInsets.symmetric(horizontal: 20.w),
+          padding: EdgeInsets.only(
+            left: 20.w,
+            right: 20.w,
+            bottom: 100.h, // prevents content from hiding under curved nav bar
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

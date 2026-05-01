@@ -1,3 +1,4 @@
+import 'package:doctor_appointment/core/logic/theme_cubit.dart';
 import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/core/utils/go_router.dart';
@@ -36,7 +37,11 @@ class _ProfileViewState extends State<ProfileView> {
         ),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 20.w),
+        padding: EdgeInsets.only(
+          left: 20.w,
+          right: 20.w,
+          bottom: 100.h, // prevents content from hiding under curved nav bar
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -50,8 +55,7 @@ class _ProfileViewState extends State<ProfileView> {
                 }
                 if (state is ProfileSuccess) {
                   return ProfileHeaderWidget(
-                    name: state.profile.fullName,
-                    email: state.profile.email,
+                    profile: state.profile,
                   );
                 }
                 if (state is ProfileFailure) {
@@ -65,10 +69,7 @@ class _ProfileViewState extends State<ProfileView> {
                     ),
                   );
                 }
-                return const ProfileHeaderWidget(
-                  name: 'Your Name',
-                  email: 'your@email.com',
-                );
+                return const SizedBox.shrink();
               },
             ),
             _buildSectionLabel('Account'),
@@ -140,6 +141,25 @@ class _ProfileViewState extends State<ProfileView> {
                 onChanged: (v) => setState(() => _notificationsEnabled = v),
                 activeThumbColor: AppColors.primary,
               ),
+            ),
+            SizedBox(height: 10.h),
+            BlocBuilder<ThemeCubit, ThemeMode>(
+              builder: (context, themeMode) {
+                return ProfileMenuItem(
+                  icon: Icons.dark_mode_outlined,
+                  title: 'Dark Mode',
+                  subtitle: themeMode == ThemeMode.dark
+                      ? 'Enabled'
+                      : 'Disabled',
+                  trailing: Switch(
+                    value: themeMode == ThemeMode.dark,
+                    onChanged: (v) {
+                      context.read<ThemeCubit>().toggleTheme(v);
+                    },
+                    activeThumbColor: AppColors.primary,
+                  ),
+                );
+              },
             ),
             SizedBox(height: 20.h),
             _buildSectionLabel('Support'),
