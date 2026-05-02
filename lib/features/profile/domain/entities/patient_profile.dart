@@ -3,6 +3,7 @@ class PatientProfile {
   final String fullName;
   final String email;
   final String phone;
+  final String? profilePicture;
   final DateTime? dateOfBirth;
   final String? gender;
   final String? address;
@@ -13,6 +14,7 @@ class PatientProfile {
     required this.fullName,
     required this.email,
     required this.phone,
+    required this.profilePicture,
     required this.dateOfBirth,
     required this.gender,
     required this.address,

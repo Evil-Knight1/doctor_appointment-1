@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 /// A styled dropdown field for registration forms.
 /// Supports required indicators, prefix icons, and custom item lists.
-class RegistrationDropdown<T> extends StatelessWidget {
+class RegistrationDropdown<T> extends StatefulWidget {
   const RegistrationDropdown({
     super.key,
     required this.label,
@@ -27,90 +27,116 @@ class RegistrationDropdown<T> extends StatelessWidget {
   final String? Function(T?)? validator;
 
   @override
+  State<RegistrationDropdown<T>> createState() => _RegistrationDropdownState<T>();
+}
+
+class _RegistrationDropdownState<T> extends State<RegistrationDropdown<T>> {
+  final FocusNode _focusNode = FocusNode();
+  bool _isFocused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(_onFocusChange);
+  }
+
+  void _onFocusChange() {
+    setState(() {
+      _isFocused = _focusNode.hasFocus;
+    });
+  }
+
+  @override
+  void dispose() {
+    _focusNode.removeListener(_onFocusChange);
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         RichText(
           text: TextSpan(
-            text: label,
-            style: AppStyles.styleMedium14,
+            text: widget.label,
+            style: AppStyles.styleMedium14.copyWith(
+              color: _isFocused 
+                  ? theme.colorScheme.primary 
+                  : theme.textTheme.headlineLarge?.color,
+            ),
             children: [
-              if (isRequired)
+              if (widget.isRequired)
                 TextSpan(
                   text: ' *',
                   style: AppStyles.styleMedium14.copyWith(
-                    color: const Color(0xFFEF4444),
+                    color: theme.colorScheme.error,
                   ),
                 ),
             ],
           ),
         ),
         SizedBox(height: 8.h),
-        DropdownButtonFormField<T>(
-          initialValue: value,
-          items: items,
-          onChanged: onChanged,
-          isExpanded: true,
-          icon: Icon(
-            Icons.keyboard_arrow_down_rounded,
-            color: const Color(0xFF949D9E),
-            size: 22.sp,
-          ),
-          dropdownColor: Colors.white,
-          style: AppStyles.styleMedium14.copyWith(
-            color: const Color(0xff1E252D),
-          ),
-          validator: validator ??
-              (value) {
-                if (isRequired && value == null) {
-                  return '$label is required';
-                }
-                return null;
-              },
-          decoration: InputDecoration(
-            hintText: hintText,
-            hintStyle: AppStyles.styleRegular14.copyWith(
-              color: const Color(0xFF949D9E),
-            ),
-            filled: true,
-            fillColor: const Color(0xFFF9FAFB),
-            prefixIcon: prefixIcon != null
-                ? Padding(
-                    padding: EdgeInsets.only(left: 14.w, right: 10.w),
-                    child: Icon(
-                      prefixIcon,
-                      size: 20.sp,
-                      color: const Color(0xFF949D9E),
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12.r),
+            boxShadow: _isFocused
+                ? [
+                    BoxShadow(
+                      color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
                     ),
-                  )
-                : null,
-            prefixIconConstraints: prefixIcon != null
-                ? BoxConstraints(minWidth: 44.w, minHeight: 20.h)
-                : null,
-            contentPadding: EdgeInsets.symmetric(
-              horizontal: 16.w,
-              vertical: 14.h,
+                  ]
+                : [],
+          ),
+          child: DropdownButtonFormField<T>(
+            initialValue: widget.value,
+            items: widget.items,
+            onChanged: widget.onChanged,
+            isExpanded: true,
+            focusNode: _focusNode,
+            icon: Icon(
+              Icons.keyboard_arrow_down_rounded,
+              color: _isFocused ? theme.colorScheme.primary : theme.hintColor,
+              size: 22.sp,
             ),
-            border: _buildBorder(const Color(0xFFE2E8F0)),
-            enabledBorder: _buildBorder(const Color(0xFFE2E8F0)),
-            focusedBorder: _buildBorder(const Color(0xff236DEC), width: 1.5),
-            errorBorder: _buildBorder(const Color(0xFFEF4444)),
-            focusedErrorBorder:
-                _buildBorder(const Color(0xFFEF4444), width: 1.5),
-            errorStyle: AppStyles.styleRegular12.copyWith(
-              color: const Color(0xFFEF4444),
+            dropdownColor: theme.cardColor,
+            style: AppStyles.styleMedium14.copyWith(
+              color: theme.textTheme.headlineLarge?.color,
+            ),
+            validator: widget.validator ?? (value) {
+              if (widget.isRequired && value == null) {
+                return '${widget.label} is required';
+              }
+              return null;
+            },
+            decoration: InputDecoration(
+              hintText: widget.hintText,
+              prefixIcon: widget.prefixIcon != null
+                  ? AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      padding: EdgeInsets.only(left: 14.w, right: 10.w),
+                      child: Icon(
+                        widget.prefixIcon,
+                        size: 20.sp,
+                        color: _isFocused
+                            ? theme.colorScheme.primary
+                            : theme.hintColor,
+                      ),
+                    )
+                  : null,
+              prefixIconConstraints: widget.prefixIcon != null
+                  ? BoxConstraints(minWidth: 44.w, minHeight: 20.h)
+                  : null,
             ),
           ),
         ),
       ],
-    );
-  }
-
-  OutlineInputBorder _buildBorder(Color color, {double width = 1}) {
-    return OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12.r),
-      borderSide: BorderSide(width: width, color: color),
     );
   }
 }

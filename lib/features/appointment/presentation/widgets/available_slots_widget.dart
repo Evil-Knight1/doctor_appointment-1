@@ -31,7 +31,7 @@ class AvailableSlotsWidget extends StatelessWidget {
             margin: EdgeInsets.only(right: 10.w),
             padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
             decoration: BoxDecoration(
-              color: isSelected ? AppColors.primary : AppColors.bg,
+              color: isSelected ? AppColors.primary : Theme.of(context).scaffoldBackgroundColor,
               borderRadius: BorderRadius.circular(20.r),
               border: Border.all(
                 color: isSelected ? AppColors.primary : AppColors.border,
@@ -47,7 +47,7 @@ class AvailableSlotsWidget extends StatelessWidget {
                 SizedBox(width: 4.w),
                 Text(
                   slot,
-                  style: AppStyles.styleRegular12.copyWith(
+                  style: AppStyles.styleMedium12.copyWith(
                     color: isSelected ? Colors.white : AppColors.textPrimary,
                   ),
                 ),

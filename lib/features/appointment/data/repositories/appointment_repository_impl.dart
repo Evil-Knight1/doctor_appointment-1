@@ -3,6 +3,7 @@ import 'package:doctor_appointment/core/errors/exceptions.dart';
 import 'package:doctor_appointment/core/errors/failures.dart';
 import 'package:doctor_appointment/core/utils/result.dart';
 import 'package:doctor_appointment/features/appointment/data/datasources/appointment_remote_data_source.dart';
+import 'package:doctor_appointment/features/appointment/data/models/slot_model.dart';
 import 'package:doctor_appointment/features/appointment/domain/entities/appointment.dart';
 import 'package:doctor_appointment/features/appointment/domain/repositories/appointment_repository.dart';
 
@@ -14,8 +15,7 @@ class AppointmentRepositoryImpl implements AppointmentRepository {
   @override
   Future<Result<Appointment>> createAppointment({
     required int doctorId,
-    required DateTime startTime,
-    required DateTime endTime,
+    required int slotId,
     required String reason,
     int? paymentMethod,
     double? amount,
@@ -23,8 +23,7 @@ class AppointmentRepositoryImpl implements AppointmentRepository {
     try {
       final response = await remoteDataSource.createAppointment(
         doctorId: doctorId,
-        startTime: startTime,
-        endTime: endTime,
+        slotId: slotId,
         reason: reason,
         paymentMethod: paymentMethod,
         amount: amount,
@@ -67,7 +66,8 @@ class AppointmentRepositoryImpl implements AppointmentRepository {
 
     final response = exception.response;
     final statusCode = response?.statusCode;
-    final message = _extractMessage(response?.data) ??
+    final message =
+        _extractMessage(response?.data) ??
         exception.message ??
         'Request failed';
 
@@ -86,5 +86,24 @@ class AppointmentRepositoryImpl implements AppointmentRepository {
       }
     }
     return null;
+  }
+
+  @override
+  Future<Result<List<SlotModel>>> getDoctorSlots(
+    int doctorId,
+    DateTime date,
+  ) async {
+    try {
+      final response = await remoteDataSource.getDoctorSlots(doctorId, date);
+      return Result.success(response);
+    } on ApiException catch (exception) {
+      return Result.failure(
+        ServerFailure(exception.message, statusCode: exception.statusCode),
+      );
+    } on DioException catch (exception) {
+      return Result.failure(_mapDioFailure(exception));
+    } catch (_) {
+      return Result.failure(const UnknownFailure('Unexpected error occurred'));
+    }
   }
 }

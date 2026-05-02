@@ -11,10 +11,11 @@ class CreateRecordView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: theme.scaffoldBackgroundColor,
         elevation: 0,
         titleSpacing: 0,
         leading: IconButton(
@@ -47,7 +48,7 @@ class CreateRecordView extends StatelessWidget {
             SizedBox(height: 20.h),
             Text('Upload Document', style: AppStyles.styleMedium14),
             SizedBox(height: 8.h),
-            _buildUploadBox(),
+            _buildUploadBox(context),
             SizedBox(height: 20.h),
             Text('Additional Notes', style: AppStyles.styleMedium14),
             SizedBox(height: 8.h),
@@ -76,12 +77,12 @@ class CreateRecordView extends StatelessWidget {
     );
   }
 
-  Widget _buildUploadBox() {
+  Widget _buildUploadBox(BuildContext context) {
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(vertical: 32.h),
       decoration: BoxDecoration(
-        color: AppColors.bg,
+        color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(16.r),
         border: Border.all(color: AppColors.border, style: BorderStyle.solid),
       ),

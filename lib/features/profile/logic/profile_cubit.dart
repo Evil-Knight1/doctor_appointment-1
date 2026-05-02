@@ -31,6 +31,7 @@ class ProfileCubit extends Cubit<ProfileState> {
     DateTime? dateOfBirth,
     String? gender,
     String? address,
+    String? profilePicturePath,
   }) async {
     emit(const ProfileLoading());
     final result = await updatePatientProfileUseCase(
@@ -40,6 +41,7 @@ class ProfileCubit extends Cubit<ProfileState> {
         dateOfBirth: dateOfBirth,
         gender: gender,
         address: address,
+        profilePicturePath: profilePicturePath,
       ),
     );
 

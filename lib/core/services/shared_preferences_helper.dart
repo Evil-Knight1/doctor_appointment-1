@@ -12,6 +12,14 @@ class SharedPreferencesHelper {
     _prefs = await SharedPreferences.getInstance();
   }
 
+  // Onboarding
+  static Future<bool> saveHasSeenOnboarding(bool value) async {
+    return await _prefs.setBool('has_seen_onboarding', value);
+  }
+  static bool getHasSeenOnboarding() {
+    return _prefs.getBool('has_seen_onboarding') ?? false;
+  }
+
   // Token
   static Future<bool> saveToken(String token) async {
     return await _prefs.setString('token', token);
@@ -60,6 +68,15 @@ class SharedPreferencesHelper {
   
   static bool isDoctorFavorite(String name) {
     return getFavoriteDoctors().any((d) => d.name == name);
+  }
+
+  // Theme
+  static Future<bool> saveThemeMode(String themeMode) async {
+    return await _prefs.setString('theme_mode', themeMode);
+  }
+
+  static String getThemeMode() {
+    return _prefs.getString('theme_mode') ?? 'system';
   }
   
   static Future<void> clearAll() async {

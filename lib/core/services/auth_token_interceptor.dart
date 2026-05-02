@@ -27,7 +27,7 @@ class AuthTokenInterceptor extends Interceptor {
     final sharedPrefsToken = SharedPreferencesHelper.getToken();
     final session = await localDataSource.getCachedSession();
     final token = sharedPrefsToken ?? session?.token ?? '';
-    if (token.isNotEmpty) {
+    if (!_shouldSkipRefresh(options) && token.isNotEmpty) {
       options.headers['Authorization'] = 'Bearer $token';
     }
     handler.next(options);
@@ -89,7 +89,10 @@ class AuthTokenInterceptor extends Interceptor {
   bool _shouldSkipRefresh(RequestOptions options) {
     final isRetry = options.extra['retry'] == true;
     final path = options.path;
-    return isRetry || path.contains('/api/Auth/refresh');
+    return isRetry ||
+        path.contains('/api/Auth/refresh') ||
+        path.contains('/api/Auth/login') ||
+        path.contains('/api/Auth/register');
   }
 
   Future<Response<dynamic>?> _retryWithUpdatedToken(

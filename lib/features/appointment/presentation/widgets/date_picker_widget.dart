@@ -48,7 +48,7 @@ class DatePickerWidget extends StatelessWidget {
                 width: 60.w,
                 height: 72.h,
                 decoration: BoxDecoration(
-                  color: isSelected ? AppColors.primary : AppColors.bg,
+                  color: isSelected ? AppColors.primary : Theme.of(context).scaffoldBackgroundColor,
                   borderRadius: BorderRadius.circular(14.r),
                 ),
                 child: Column(

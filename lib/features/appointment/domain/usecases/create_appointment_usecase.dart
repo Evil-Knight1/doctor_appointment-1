@@ -10,8 +10,7 @@ class CreateAppointmentUseCase {
   Future<Result<Appointment>> call(CreateAppointmentParams params) {
     return repository.createAppointment(
       doctorId: params.doctorId,
-      startTime: params.startTime,
-      endTime: params.endTime,
+      slotId: params.slotId,
       reason: params.reason,
       paymentMethod: params.paymentMethod,
       amount: params.amount,
@@ -21,16 +20,14 @@ class CreateAppointmentUseCase {
 
 class CreateAppointmentParams {
   final int doctorId;
-  final DateTime startTime;
-  final DateTime endTime;
+  final int slotId;
   final String reason;
   final int? paymentMethod;
   final double? amount;
 
   const CreateAppointmentParams({
     required this.doctorId,
-    required this.startTime,
-    required this.endTime,
+    required this.slotId,
     required this.reason,
     this.paymentMethod,
     this.amount,

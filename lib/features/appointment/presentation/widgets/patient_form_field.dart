@@ -28,7 +28,7 @@ class PatientFormField extends StatelessWidget {
         SizedBox(height: 6.h),
         Container(
           decoration: BoxDecoration(
-            color: AppColors.bg,
+            color: Theme.of(context).scaffoldBackgroundColor,
             borderRadius: BorderRadius.circular(12.r),
           ),
           child: TextField(

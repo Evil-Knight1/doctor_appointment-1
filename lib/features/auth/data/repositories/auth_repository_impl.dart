@@ -27,11 +27,15 @@ class AuthRepositoryImpl implements AuthRepository {
       return Result.success(response);
     } on ApiException catch (exception) {
       return Result.failure(
-        ServerFailure(exception.message, statusCode: exception.statusCode),
+        ServerFailure(
+          exception.message,
+          statusCode: exception.statusCode,
+          fieldErrors: exception.fieldErrors,
+        ),
       );
     } on DioException catch (exception) {
       return Result.failure(_mapDioFailure(exception));
-    } catch (exception) {
+    } catch (_) {
       return Result.failure(const UnknownFailure('Unexpected error occurred'));
     }
   }
@@ -45,6 +49,7 @@ class AuthRepositoryImpl implements AuthRepository {
     DateTime? dateOfBirth,
     String? gender,
     String? address,
+    String? profilePicturePath,
   }) async {
     try {
       final response = await remoteDataSource.registerPatient(
@@ -55,16 +60,21 @@ class AuthRepositoryImpl implements AuthRepository {
         dateOfBirth: dateOfBirth,
         gender: gender,
         address: address,
+        profilePicturePath: profilePicturePath,
       );
       await localDataSource.cacheAuthSession(response);
       return Result.success(response);
     } on ApiException catch (exception) {
       return Result.failure(
-        ServerFailure(exception.message, statusCode: exception.statusCode),
+        ServerFailure(
+          exception.message,
+          statusCode: exception.statusCode,
+          fieldErrors: exception.fieldErrors,
+        ),
       );
     } on DioException catch (exception) {
       return Result.failure(_mapDioFailure(exception));
-    } catch (exception) {
+    } catch (_) {
       return Result.failure(const UnknownFailure('Unexpected error occurred'));
     }
   }
@@ -83,11 +93,15 @@ class AuthRepositoryImpl implements AuthRepository {
       return Result.success(response);
     } on ApiException catch (exception) {
       return Result.failure(
-        ServerFailure(exception.message, statusCode: exception.statusCode),
+        ServerFailure(
+          exception.message,
+          statusCode: exception.statusCode,
+          fieldErrors: exception.fieldErrors,
+        ),
       );
     } on DioException catch (exception) {
       return Result.failure(_mapDioFailure(exception));
-    } catch (exception) {
+    } catch (_) {
       return Result.failure(const UnknownFailure('Unexpected error occurred'));
     }
   }
@@ -102,6 +116,57 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 
+  @override
+  Future<Result<AuthResponse>> registerDoctor({
+    required String fullName,
+    required String email,
+    required String phone,
+    required String password,
+    required int specializationId,
+    required int experienceYears,
+    required String licenseId,
+    required String clinicAddress,
+    required String hospitalName,
+    DateTime? dateOfBirth,
+    String? gender,
+    String? bio,
+    String? profilePicturePath,
+    List<String>? clinicImagesPaths,
+  }) async {
+    try {
+      final response = await remoteDataSource.registerDoctor(
+        fullName: fullName,
+        email: email,
+        phone: phone,
+        password: password,
+        specializationId: specializationId,
+        experienceYears: experienceYears,
+        licenseId: licenseId,
+        clinicAddress: clinicAddress,
+        hospitalName: hospitalName,
+        dateOfBirth: dateOfBirth,
+        gender: gender,
+        bio: bio,
+        profilePicturePath: profilePicturePath,
+        clinicImagesPaths: clinicImagesPaths,
+      );
+      await localDataSource.cacheAuthSession(response);
+      return Result.success(response);
+    } on ApiException catch (exception) {
+      return Result.failure(
+        ServerFailure(
+          exception.message,
+          statusCode: exception.statusCode,
+          fieldErrors: exception.fieldErrors,
+        ),
+      );
+    } on DioException catch (exception) {
+      return Result.failure(_mapDioFailure(exception));
+    } catch (e) {
+      return Result.failure(UnknownFailure(e.toString()));
+    }
+  }
+
   Failure _mapDioFailure(DioException exception) {
     if (exception.type == DioExceptionType.connectionTimeout ||
         exception.type == DioExceptionType.sendTimeout ||
@@ -112,9 +177,14 @@ class AuthRepositoryImpl implements AuthRepository {
 
     final response = exception.response;
     final statusCode = response?.statusCode;
-    final message = _extractMessage(response?.data) ??
+    final message =
+        _extractMessage(response?.data) ??
         exception.message ??
         'Request failed';
+
+    if (statusCode == 409) {
+      return const ServerFailure('This email or phone number is already taken');
+    }
 
     return ServerFailure(message, statusCode: statusCode);
   }
@@ -131,5 +201,92 @@ class AuthRepositoryImpl implements AuthRepository {
       }
     }
     return null;
+  }
+
+  @override
+  Future<Result<bool>> updateFcmToken({required String fcmToken}) async {
+    try {
+      final success = await remoteDataSource.updateFcmToken(fcmToken: fcmToken);
+      return Result.success(success);
+    } on ApiException catch (exception) {
+      return Result.failure(
+        ServerFailure(exception.message, statusCode: exception.statusCode),
+      );
+    } on DioException catch (exception) {
+      return Result.failure(_mapDioFailure(exception));
+    } catch (e) {
+      return Result.failure(UnknownFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Result<void>> forgotPassword({required String email}) async {
+    try {
+      await remoteDataSource.forgotPassword(email: email);
+      return Result.success(null);
+    } on ApiException catch (exception) {
+      return Result.failure(
+        ServerFailure(
+          exception.message,
+          statusCode: exception.statusCode,
+          fieldErrors: exception.fieldErrors,
+        ),
+      );
+    } on DioException catch (exception) {
+      return Result.failure(_mapDioFailure(exception));
+    } catch (e) {
+      return Result.failure(UnknownFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Result<void>> verifyOtp({
+    required String email,
+    required String otp,
+  }) async {
+    try {
+      await remoteDataSource.verifyOtp(email: email, otp: otp);
+      return Result.success(null);
+    } on ApiException catch (exception) {
+      return Result.failure(
+        ServerFailure(
+          exception.message,
+          statusCode: exception.statusCode,
+          fieldErrors: exception.fieldErrors,
+        ),
+      );
+    } on DioException catch (exception) {
+      return Result.failure(_mapDioFailure(exception));
+    } catch (e) {
+      return Result.failure(UnknownFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Result<void>> resetPassword({
+    required String email,
+    required String token,
+    required String newPassword,
+  }) async {
+    try {
+      await remoteDataSource.resetPassword(
+        email: email,
+        token: token,
+        newPassword: newPassword,
+      );
+      return Result.success(null);
+    } on ApiException catch (exception) {
+      return Result.failure(
+        ServerFailure(
+          exception.message,
+          statusCode: exception.statusCode,
+          fieldErrors: exception.fieldErrors,
+        ),
+      );
+    } on DioException catch (exception) {
+      return Result.failure(_mapDioFailure(exception));
+    } catch (e) {
+      return Result.failure(UnknownFailure(e.toString()));
+    }
   }
 }

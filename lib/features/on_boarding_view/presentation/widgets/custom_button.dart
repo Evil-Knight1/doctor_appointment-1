@@ -9,7 +9,8 @@ class CustomButton extends StatelessWidget {
     required this.onPressed,
     required this.buttonColor,
     required this.textStyle,
-    required this.circleSize,
+    this.circleSize = 12,
+    this.borderColor,
   });
 
   final double height;
@@ -19,6 +20,7 @@ class CustomButton extends StatelessWidget {
   final Color buttonColor;
   final TextStyle textStyle;
   final double circleSize;
+  final Color? borderColor;
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +30,9 @@ class CustomButton extends StatelessWidget {
       decoration: BoxDecoration(
         color: buttonColor,
         borderRadius: BorderRadius.circular(circleSize),
+        border: borderColor != null
+            ? Border.all(color: borderColor!, width: 1.5)
+            : null,
       ),
       child: TextButton(
         onPressed: onPressed,

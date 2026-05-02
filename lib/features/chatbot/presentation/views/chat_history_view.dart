@@ -1,7 +1,9 @@
 import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/core/utils/go_router.dart';
+import 'package:doctor_appointment/features/chatbot/logic/chat_history_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
@@ -11,53 +13,76 @@ class ChatHistoryView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
         elevation: 0,
-        titleSpacing: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.textPrimary, size: 20.sp),
-          onPressed: () => context.pop(),
-        ),
+        automaticallyImplyLeading: false,
+        leading: Navigator.canPop(context)
+            ? IconButton(
+                icon: Icon(Icons.arrow_back_ios_new_rounded,
+                    color: AppColors.textPrimary, size: 20.sp),
+                onPressed: () => context.pop(),
+              )
+            : null,
         title: Text(
           'Chat Assistant',
           style: AppStyles.styleSemiBold22.copyWith(fontSize: 18.sp),
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push(AppRouter.kChatbotView),
-        backgroundColor: AppColors.primary,
-        icon: const Icon(Icons.add_rounded, color: Colors.white),
-        label: Text('New Chat', style: AppStyles.styleMedium14.copyWith(color: Colors.white)),
+      floatingActionButton: Padding(
+        padding: EdgeInsets.only(bottom: 80.h),
+        child: FloatingActionButton.extended(
+          onPressed: () => context.push(AppRouter.kChatbotView),
+          backgroundColor: AppColors.primary,
+          icon: const Icon(Icons.add_rounded, color: Colors.white),
+          label: Text('New Chat',
+              style: AppStyles.styleMedium14.copyWith(color: Colors.white)),
+        ),
       ),
-      body: ListView.separated(
-        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
-        itemCount: 3,
-        separatorBuilder: (context, index) => SizedBox(height: 12.h),
-        itemBuilder: (context, index) {
-          return _buildChatRecord(context, index);
+      body: BlocBuilder<ChatHistoryCubit, ChatHistoryState>(
+        builder: (context, state) {
+          if (state is ChatHistoryLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is ChatHistoryError) {
+            return Center(
+                child: Text(state.message,
+                    style: AppStyles.styleMedium14.copyWith(color: Colors.red)));
+          } else if (state is ChatHistoryLoaded) {
+            if (state.sessionIds.isEmpty) {
+              return Padding(
+                padding: EdgeInsets.only(bottom: 100.h),
+                child: Center(
+                    child: Text('No previous chats found.',
+                        style: AppStyles.styleMedium14)),
+              );
+            }
+            return ListView.separated(
+              padding: EdgeInsets.only(
+                left: 20.w,
+                right: 20.w,
+                top: 16.h,
+                bottom: 100.h,
+              ),
+              itemCount: state.sessionIds.length,
+              separatorBuilder: (context, index) => SizedBox(height: 12.h),
+              itemBuilder: (context, index) {
+                return _buildChatRecord(context, state.sessionIds[index]);
+              },
+            );
+          }
+          return const SizedBox.shrink();
         },
       ),
     );
   }
 
-  Widget _buildChatRecord(BuildContext context, int index) {
-    final titles = [
-      'Dentist recommendations',
-      'Fever symptoms analysis',
-      'Follow-up schedule'
-    ];
-    final dates = ['Today', 'Yesterday', '12 Oct, 2023'];
-    final previews = [
-      'Sure! I can help you with that...',
-      'You should rest and hydrate well.',
-      'Your next appointment is at 10 AM.'
-    ];
-
+  Widget _buildChatRecord(BuildContext context, String sessionId) {
+    // We only have the session ID from the backend currently.
+    // In a real app we might have a title, but we will show the truncated session ID.
+    final displayTitle = 'Chat Session ${sessionId.substring(0, 8)}...';
+    
     return GestureDetector(
       onTap: () {
-        context.push(AppRouter.kChatbotView);
+        context.push(AppRouter.kChatbotView, extra: sessionId);
       },
       child: Container(
         padding: EdgeInsets.all(16.w),
@@ -94,22 +119,17 @@ class ChatHistoryView extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          titles[index % titles.length],
+                          displayTitle,
                           style: AppStyles.styleSemiBold16,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      SizedBox(width: 8.w),
-                      Text(
-                        dates[index % dates.length],
-                        style: AppStyles.styleRegular12.copyWith(color: AppColors.textLight),
-                      ),
                     ],
                   ),
                   SizedBox(height: 4.h),
                   Text(
-                    previews[index % previews.length],
+                    'Tap to continue conversation',
                     style: AppStyles.styleMedium14.copyWith(color: AppColors.textSecondary),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,

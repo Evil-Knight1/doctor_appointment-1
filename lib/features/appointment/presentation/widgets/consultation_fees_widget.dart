@@ -21,7 +21,7 @@ class ConsultationFeesWidget extends StatelessWidget {
             margin: EdgeInsets.only(right: i < 2 ? 10.w : 0),
             padding: EdgeInsets.all(12.w),
             decoration: BoxDecoration(
-              color: AppColors.bg,
+              color: Theme.of(context).scaffoldBackgroundColor,
               borderRadius: BorderRadius.circular(12.r),
               border: Border.all(color: AppColors.border),
             ),

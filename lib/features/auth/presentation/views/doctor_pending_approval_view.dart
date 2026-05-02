@@ -1,4 +1,4 @@
-import 'package:doctor_appointment/core/utils/app_colors.dart';
+
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/core/utils/go_router.dart';
 import 'package:flutter/material.dart';
@@ -11,8 +11,9 @@ class DoctorPendingApprovalView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 24.w),
@@ -23,19 +24,21 @@ class DoctorPendingApprovalView extends StatelessWidget {
               Icon(
                 Icons.admin_panel_settings_rounded,
                 size: 80.sp,
-                color: AppColors.primary,
+                color: theme.colorScheme.primary,
               ),
               SizedBox(height: 24.h),
               Text(
                 'Application Received',
                 textAlign: TextAlign.center,
-                style: AppStyles.styleSemiBold24,
+                style: AppStyles.styleSemiBold24.copyWith(
+                  color: theme.textTheme.headlineLarge?.color,
+                ),
               ),
               SizedBox(height: 16.h),
               Text(
                 'Your registration as a Doctor has been successfully submitted. Our administration team is reviewing your details to verify your medical credentials. You will receive an email once approved.',
                 style: AppStyles.styleRegular14.copyWith(
-                  color: AppColors.textSecondary,
+                  color: theme.hintColor,
                   height: 1.5,
                 ),
                 textAlign: TextAlign.center,
@@ -50,7 +53,7 @@ class DoctorPendingApprovalView extends StatelessWidget {
                 height: 50.h,
                 circleSize: 12.r,
                 textStyle: AppStyles.styleSemiBold16,
-                buttonColor: AppColors.primary,
+                buttonColor: theme.colorScheme.primary,
               ),
             ],
           ),

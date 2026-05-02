@@ -17,15 +17,16 @@ class CustomSocialButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return GestureDetector(
       onTap: onTap,
       child: Container(
         height: 52.h,
         width: double.infinity,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: theme.cardColor,
           borderRadius: BorderRadius.circular(10.r),
-          border: Border.all(color: const Color(0xFFDADADA), width: 1),
+          border: Border.all(color: theme.dividerColor, width: 1),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -40,7 +41,7 @@ class CustomSocialButton extends StatelessWidget {
             Text(
               label,
               style: AppStyles.styleMedium14.copyWith(
-                color: const Color(0xFF1A1A1A),
+                color: theme.textTheme.headlineLarge?.color,
               ),
             ),
           ],

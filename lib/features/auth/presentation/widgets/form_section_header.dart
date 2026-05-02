@@ -18,6 +18,8 @@ class FormSectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    
     return Padding(
       padding: EdgeInsets.only(top: 8.h, bottom: 16.h),
       child: Column(
@@ -29,13 +31,13 @@ class FormSectionHeader extends StatelessWidget {
                 width: 32.w,
                 height: 32.h,
                 decoration: BoxDecoration(
-                  color: const Color(0xff236DEC).withValues(alpha: 0.08),
+                  color: theme.colorScheme.primary.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(8.r),
                 ),
                 child: Icon(
                   icon,
                   size: 18.sp,
-                  color: const Color(0xff236DEC),
+                  color: theme.colorScheme.primary,
                 ),
               ),
               SizedBox(width: 10.w),
@@ -46,7 +48,7 @@ class FormSectionHeader extends StatelessWidget {
                     Text(
                       title,
                       style: AppStyles.styleSemiBold16.copyWith(
-                        color: const Color(0xff1E252D),
+                        color: theme.textTheme.headlineLarge?.color,
                       ),
                     ),
                     if (subtitle != null) ...[
@@ -54,7 +56,7 @@ class FormSectionHeader extends StatelessWidget {
                       Text(
                         subtitle!,
                         style: AppStyles.styleRegular12.copyWith(
-                          color: const Color(0xFF949D9E),
+                          color: theme.hintColor,
                         ),
                       ),
                     ],
@@ -69,8 +71,8 @@ class FormSectionHeader extends StatelessWidget {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  const Color(0xff236DEC).withValues(alpha: 0.3),
-                  const Color(0xff236DEC).withValues(alpha: 0.05),
+                  theme.colorScheme.primary.withValues(alpha: 0.3),
+                  theme.colorScheme.primary.withValues(alpha: 0.05),
                   Colors.transparent,
                 ],
               ),

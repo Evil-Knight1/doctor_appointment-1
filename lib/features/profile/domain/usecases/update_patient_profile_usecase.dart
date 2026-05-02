@@ -14,6 +14,7 @@ class UpdatePatientProfileUseCase {
       dateOfBirth: params.dateOfBirth,
       gender: params.gender,
       address: params.address,
+      profilePicturePath: params.profilePicturePath,
     );
   }
 }
@@ -24,6 +25,7 @@ class UpdatePatientProfileParams {
   final DateTime? dateOfBirth;
   final String? gender;
   final String? address;
+  final String? profilePicturePath;
 
   const UpdatePatientProfileParams({
     required this.fullName,
@@ -31,5 +33,6 @@ class UpdatePatientProfileParams {
     this.dateOfBirth,
     this.gender,
     this.address,
+    this.profilePicturePath,
   });
 }

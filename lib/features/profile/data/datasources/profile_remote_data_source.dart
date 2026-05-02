@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:doctor_appointment/core/errors/exceptions.dart';
 import 'package:doctor_appointment/core/services/api_service.dart';
 import 'package:doctor_appointment/features/profile/data/models/patient_profile_model.dart';
@@ -11,6 +12,7 @@ abstract class ProfileRemoteDataSource {
     DateTime? dateOfBirth,
     String? gender,
     String? address,
+    String? profilePicturePath,
   });
 }
 
@@ -42,16 +44,35 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
     DateTime? dateOfBirth,
     String? gender,
     String? address,
+    String? profilePicturePath,
   }) async {
-    final response = await apiService.put(
-      '/api/Patient/profile',
-      data: {
+    dynamic requestData;
+
+    if (profilePicturePath != null) {
+      requestData = FormData.fromMap({
         'fullName': fullName,
         'phone': phone,
         'dateOfBirth': dateOfBirth?.toIso8601String(),
         'gender': gender,
         'address': address,
-      },
+        'profilePicture': await MultipartFile.fromFile(
+          profilePicturePath,
+          filename: profilePicturePath.split('/').last,
+        ),
+      });
+    } else {
+      requestData = {
+        'fullName': fullName,
+        'phone': phone,
+        'dateOfBirth': dateOfBirth?.toIso8601String(),
+        'gender': gender,
+        'address': address,
+      };
+    }
+
+    final response = await apiService.put(
+      '/api/Patient/profile',
+      data: requestData,
     );
     final success = response['success'] == true;
     if (!success) {

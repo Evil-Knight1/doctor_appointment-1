@@ -44,6 +44,15 @@ class DoctorsRemoteDataSourceImpl implements DoctorsRemoteDataSource {
     final data = response['data'];
     if (data is Map<String, dynamic>) {
       return DoctorsPageModel.fromJson(data);
+    } else if (data is List) {
+      // API returned a flat list instead of a paginated object
+      return DoctorsPageModel.fromJson({
+        'items': data,
+        'pageNumber': pageNumber,
+        'pageSize': pageSize,
+        'totalCount': data.length,
+        'totalPages': 1,
+      });
     }
 
     throw const ApiException('Unexpected response payload');

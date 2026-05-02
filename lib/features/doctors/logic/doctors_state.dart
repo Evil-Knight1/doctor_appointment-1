@@ -18,6 +18,11 @@ class DoctorsSuccess extends DoctorsState {
   const DoctorsSuccess(this.page);
 }
 
+class DoctorsPaginationLoading extends DoctorsState {
+  final DoctorsPage lastPage;
+  const DoctorsPaginationLoading(this.lastPage);
+}
+
 class DoctorsFailure extends DoctorsState {
   final String message;
 

@@ -77,4 +77,36 @@ class Assets {
   /// Assets for imagesStethoscope
   /// assets/images/Stethoscope.svg
   static const String imagesStethoscope = "assets/images/Stethoscope.svg";
+
+  /// Assets for imagesSort
+  /// assets/images/sort.svg
+  static const String imagesSort = "assets/images/sort.svg";
+
+  /// Assets for imagesClock
+  /// assets/images/clock.svg
+  static const String imagesClock = "assets/images/clock.svg";
+
+  /// Assets for imagesAdd
+  /// assets/images/add.svg
+  static const String imagesAdd = "assets/images/add.svg";
+
+  /// Assets for imagesSettings
+  /// assets/images/settings.svg
+  static const String imagesSettings = "assets/images/settings.svg";
+
+  /// Assets for imagesCamera
+  /// assets/images/camera.svg
+  static const String imagesCamera = "assets/images/camera.svg";
+
+  /// Assets for imagesPersonalCard
+  /// assets/images/personal_card.svg
+  static const String imagesPersonalCard = "assets/images/personal_card.svg";
+
+  /// Assets for imagesWallet
+  /// assets/images/wallet.svg
+  static const String imagesWallet = "assets/images/wallet.svg";
+
+  /// Assets for imagesDiagnostic
+  /// assets/images/diagnostic.svg
+  static const String imagesDiagnostic = "assets/images/diagnostic.svg";
 }

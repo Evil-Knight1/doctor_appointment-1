@@ -16,6 +16,7 @@ class RegisterPatientUseCase {
       dateOfBirth: params.dateOfBirth,
       gender: params.gender,
       address: params.address,
+      profilePicturePath: params.profilePicturePath,
     );
   }
 }
@@ -28,6 +29,7 @@ class RegisterPatientParams {
   final DateTime? dateOfBirth;
   final String? gender;
   final String? address;
+  final String? profilePicturePath;
 
   const RegisterPatientParams({
     required this.fullName,
@@ -37,5 +39,6 @@ class RegisterPatientParams {
     this.dateOfBirth,
     this.gender,
     this.address,
+    this.profilePicturePath,
   });
 }

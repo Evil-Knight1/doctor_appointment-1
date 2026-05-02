@@ -1,7 +1,6 @@
 import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_images.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
-import 'package:doctor_appointment/core/services/service_locator.dart';
 import 'package:doctor_appointment/features/appointment/domain/entities/appointment.dart';
 import 'package:doctor_appointment/features/appointment/logic/appointments_cubit.dart';
 import 'package:doctor_appointment/features/appointment/logic/appointments_state.dart';
@@ -20,62 +19,53 @@ class CalendarView extends StatefulWidget {
 class _CalendarViewState extends State<CalendarView>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  late final AppointmentsCubit _appointmentsCubit;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this, initialIndex: 0);
-    _appointmentsCubit = getIt<AppointmentsCubit>();
-    _appointmentsCubit.loadAppointments();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
-    _appointmentsCubit.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: _appointmentsCubit,
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          elevation: 0,
-          automaticallyImplyLeading: false,
-          title: Text(
-            'Appointments',
-            style: AppStyles.styleSemiBold22.copyWith(fontSize: 18.sp),
-          ),
-          bottom: PreferredSize(
-            preferredSize: Size.fromHeight(44.h),
-            child: TabBar(
-              controller: _tabController,
-              labelColor: AppColors.primary,
-              unselectedLabelColor: AppColors.textSecondary,
-              indicatorColor: AppColors.primary,
-              indicatorSize: TabBarIndicatorSize.label,
-              labelStyle: AppStyles.styleMedium14.copyWith(fontSize: 13.sp),
-              tabs: const [
-                Tab(text: 'Upcoming'),
-                Tab(text: 'Completed'),
-                Tab(text: 'Cancelled'),
-              ],
-            ),
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        automaticallyImplyLeading: false,
+        title: Text(
+          'Appointments',
+          style: AppStyles.styleSemiBold22.copyWith(fontSize: 18.sp),
+        ),
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(44.h),
+          child: TabBar(
+            controller: _tabController,
+            labelColor: AppColors.primary,
+            unselectedLabelColor: AppColors.textSecondary,
+            indicatorColor: AppColors.primary,
+            indicatorSize: TabBarIndicatorSize.label,
+            labelStyle: AppStyles.styleMedium14.copyWith(fontSize: 13.sp),
+            tabs: const [
+              Tab(text: 'Upcoming'),
+              Tab(text: 'Completed'),
+              Tab(text: 'Cancelled'),
+            ],
           ),
         ),
-        body: TabBarView(
-          controller: _tabController,
-          children: [
-            _buildList(AppointmentTab.upcoming),
-            _buildList(AppointmentTab.completed),
-            _buildList(AppointmentTab.cancelled),
-          ],
-        ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          _buildList(AppointmentTab.upcoming),
+          _buildList(AppointmentTab.completed),
+          _buildList(AppointmentTab.cancelled),
+        ],
       ),
     );
   }
@@ -99,17 +89,25 @@ class _CalendarViewState extends State<CalendarView>
         if (state is AppointmentsSuccess) {
           final items = _filterAppointments(state.appointments, tab);
           if (items.isEmpty) {
-            return Center(
-              child: Text(
-                'No appointments found.',
-                style: AppStyles.styleRegular14.copyWith(
-                  color: AppColors.textSecondary,
+            return Padding(
+              padding: EdgeInsets.only(bottom: 100.h),
+              child: Center(
+                child: Text(
+                  'No appointments found.',
+                  style: AppStyles.styleRegular14.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
                 ),
               ),
             );
           }
           return ListView.separated(
-            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+            padding: EdgeInsets.only(
+              left: 20.w,
+              right: 20.w,
+              top: 16.h,
+              bottom: 100.h,
+            ),
             itemCount: items.length,
             separatorBuilder: (_, _) => SizedBox(height: 14.h),
             itemBuilder: (_, index) {

@@ -34,6 +34,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
     DateTime? dateOfBirth,
     String? gender,
     String? address,
+    String? profilePicturePath,
   }) async {
     try {
       final response = await remoteDataSource.updatePatientProfile(
@@ -42,6 +43,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
         dateOfBirth: dateOfBirth,
         gender: gender,
         address: address,
+        profilePicturePath: profilePicturePath,
       );
       return Result.success(response);
     } on ApiException catch (exception) {
