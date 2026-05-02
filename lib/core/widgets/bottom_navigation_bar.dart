@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
+import 'package:doctor_appointment/core/utils/app_colors.dart';
+import 'package:doctor_appointment/core/utils/app_styles.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:doctor_appointment/features/calendar/presentation/views/calendar_view.dart';
 
 import 'package:doctor_appointment/features/home/presentation/views/home_view.dart';
@@ -27,63 +30,74 @@ class _RootState extends State<Root> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBody: false,
+      extendBody: true,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: IndexedStack(index: _currentIndex, children: _widgetOptions),
       bottomNavigationBar: CurvedNavigationBar(
         index: _currentIndex,
-        backgroundColor: Colors.white,
-        color: Theme.of(context).cardColor,
-        buttonBackgroundColor: const Color(0xff226CEB),
+        backgroundColor: Colors.transparent,
+        color: Colors.white,
+        buttonBackgroundColor: AppColors.primary,
         animationDuration: const Duration(milliseconds: 300),
         items: [
           CurvedNavigationBarItem(
             child: Icon(
               Icons.home_rounded,
-              color: _currentIndex == 0 ? Colors.white : const Color(0xff226CEB),
+              color: _currentIndex == 0 ? Colors.white : AppColors.primary.withValues(alpha: 0.6),
+              size: 26.sp,
             ),
             label: 'Home',
-            labelStyle: TextStyle(
-              color: _currentIndex == 0 ? const Color(0xff226CEB) : const Color(0x80226CEB),
+            labelStyle: AppStyles.styleMedium14.copyWith(
+              color: _currentIndex == 0 ? AppColors.primary : AppColors.textSecondary,
+              fontSize: 11.sp,
             ),
           ),
           CurvedNavigationBarItem(
             child: Icon(
-              Icons.chat_bubble_outline,
-              color: _currentIndex == 1 ? Colors.white : const Color(0xff226CEB),
+              Icons.chat_bubble_rounded,
+              color: _currentIndex == 1 ? Colors.white : AppColors.primary.withValues(alpha: 0.6),
+              size: 26.sp,
             ),
             label: 'Chat',
-            labelStyle: TextStyle(
-              color: _currentIndex == 1 ? const Color(0xff226CEB) : const Color(0x80226CEB),
+            labelStyle: AppStyles.styleMedium14.copyWith(
+              color: _currentIndex == 1 ? AppColors.primary : AppColors.textSecondary,
+              fontSize: 11.sp,
             ),
           ),
           CurvedNavigationBarItem(
             child: Icon(
-              Icons.search,
-              color: _currentIndex == 2 ? Colors.white : const Color(0xff226CEB),
+              Icons.search_rounded,
+              color: _currentIndex == 2 ? Colors.white : AppColors.primary.withValues(alpha: 0.6),
+              size: 26.sp,
             ),
             label: 'Search',
-            labelStyle: TextStyle(
-              color: _currentIndex == 2 ? const Color(0xff226CEB) : const Color(0x80226CEB),
+            labelStyle: AppStyles.styleMedium14.copyWith(
+              color: _currentIndex == 2 ? AppColors.primary : AppColors.textSecondary,
+              fontSize: 11.sp,
             ),
           ),
           CurvedNavigationBarItem(
             child: Icon(
-              Icons.calendar_today_outlined,
-              color: _currentIndex == 3 ? Colors.white : const Color(0xff226CEB),
+              Icons.calendar_month_rounded,
+              color: _currentIndex == 3 ? Colors.white : AppColors.primary.withValues(alpha: 0.6),
+              size: 26.sp,
             ),
             label: 'Bookings',
-            labelStyle: TextStyle(
-              color: _currentIndex == 3 ? const Color(0xff226CEB) : const Color(0x80226CEB),
+            labelStyle: AppStyles.styleMedium14.copyWith(
+              color: _currentIndex == 3 ? AppColors.primary : AppColors.textSecondary,
+              fontSize: 11.sp,
             ),
           ),
           CurvedNavigationBarItem(
             child: Icon(
-              Icons.person_outline,
-              color: _currentIndex == 4 ? Colors.white : const Color(0xff226CEB),
+              Icons.person_rounded,
+              color: _currentIndex == 4 ? Colors.white : AppColors.primary.withValues(alpha: 0.6),
+              size: 26.sp,
             ),
             label: 'Profile',
-            labelStyle: TextStyle(
-              color: _currentIndex == 4 ? const Color(0xff226CEB) : const Color(0x80226CEB),
+            labelStyle: AppStyles.styleMedium14.copyWith(
+              color: _currentIndex == 4 ? AppColors.primary : AppColors.textSecondary,
+              fontSize: 11.sp,
             ),
           ),
         ],

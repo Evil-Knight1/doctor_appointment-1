@@ -1,9 +1,7 @@
-import 'package:doctor_appointment/core/utils/app_colors.dart';
-import 'package:doctor_appointment/core/utils/app_styles.dart';
-import 'package:doctor_appointment/features/auth/presentation/widgets/custom_text_field.dart';
 import 'package:doctor_appointment/features/auth/presentation/widgets/doctor_signup/doctor_specialization_field.dart';
 import 'package:doctor_appointment/features/auth/presentation/widgets/registration_date_picker.dart';
 import 'package:doctor_appointment/features/auth/presentation/widgets/registration_dropdown.dart';
+import 'package:doctor_appointment/features/auth/presentation/widgets/registration_phone_field.dart';
 import 'package:doctor_appointment/features/auth/presentation/widgets/registration_text_field.dart';
 import 'package:doctor_appointment/features/doctors/domain/entities/specialization.dart';
 import 'package:flutter/material.dart';
@@ -248,6 +246,7 @@ class _DoctorSignUpFormState extends State<DoctorSignUpForm> {
   }
 
   Widget _buildStep3() {
+    final theme = Theme.of(context);
     return Column(
       children: [
         MultiImagePicker(
@@ -262,7 +261,7 @@ class _DoctorSignUpFormState extends State<DoctorSignUpForm> {
           focusNode: _hospitalFocus,
           prefixIcon: Icons.local_hospital_outlined,
           suffixIcon: IconButton(
-            icon: const Icon(Icons.map_rounded, color: AppColors.primary),
+            icon: Icon(Icons.map_rounded, color: theme.colorScheme.primary),
             onPressed: widget.onShowHospitalLocationPicker,
           ),
           serverError: _serverError('hospital'),
@@ -275,7 +274,7 @@ class _DoctorSignUpFormState extends State<DoctorSignUpForm> {
           focusNode: _clinicFocus,
           prefixIcon: Icons.location_on_outlined,
           suffixIcon: IconButton(
-            icon: const Icon(Icons.map_rounded, color: AppColors.primary),
+            icon: Icon(Icons.map_rounded, color: theme.colorScheme.primary),
             onPressed: widget.onShowClinicLocationPicker,
           ),
           serverError: _serverError('clinicaddress'),
@@ -285,58 +284,11 @@ class _DoctorSignUpFormState extends State<DoctorSignUpForm> {
   }
 
   Widget _buildPhoneField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        RichText(
-          text: TextSpan(
-            text: 'Phone Number',
-            style: AppStyles.styleMedium14,
-            children: [
-              TextSpan(
-                text: ' *',
-                style: AppStyles.styleMedium14.copyWith(
-                  color: const Color(0xFFEF4444),
-                ),
-              ),
-            ],
-          ),
-        ),
-        SizedBox(height: 8.h),
-        PhoneFormField(
-          key: const Key('phone-field'),
-          controller: widget.phoneController,
-          focusNode: _phoneFocus,
-          decoration: InputDecoration(
-            hintText: '1234567890',
-            hintStyle: AppStyles.styleRegular14.copyWith(
-              color: const Color(0xFF949D9E),
-            ),
-            errorText: _serverError('phone'),
-            filled: true,
-            fillColor: const Color(0xFFF9FAFB),
-            contentPadding: EdgeInsets.symmetric(
-              horizontal: 16.w,
-              vertical: 14.h,
-            ),
-            border: _buildBorder(const Color(0xFFE2E8F0)),
-            enabledBorder: _buildBorder(const Color(0xFFE2E8F0)),
-            focusedBorder: _buildBorder(const Color(0xff236DEC), width: 1.5),
-            errorBorder: _buildBorder(const Color(0xFFEF4444)),
-            focusedErrorBorder: _buildBorder(
-              const Color(0xFFEF4444),
-              width: 1.5,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  OutlineInputBorder _buildBorder(Color color, {double width = 1}) {
-    return OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12.r),
-      borderSide: BorderSide(width: width, color: color),
+    return RegistrationPhoneField(
+      label: 'Phone Number',
+      controller: widget.phoneController,
+      focusNode: _phoneFocus,
+      serverError: _serverError('phone'),
     );
   }
 }

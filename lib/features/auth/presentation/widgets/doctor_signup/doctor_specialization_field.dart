@@ -1,4 +1,3 @@
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/features/doctors/domain/entities/specialization.dart';
 import 'package:doctor_appointment/features/doctors/logic/specializations_cubit.dart';
@@ -26,8 +25,32 @@ class DoctorSpecializationField extends StatefulWidget {
 }
 
 class _DoctorSpecializationFieldState extends State<DoctorSpecializationField> {
+  final FocusNode _focusNode = FocusNode();
+  bool _isFocused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(_onFocusChange);
+  }
+
+  void _onFocusChange() {
+    setState(() {
+      _isFocused = _focusNode.hasFocus;
+    });
+  }
+
+  @override
+  void dispose() {
+    _focusNode.removeListener(_onFocusChange);
+    _focusNode.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    
     return BlocBuilder<SpecializationsCubit, SpecializationsState>(
       builder: (context, state) {
         // --- Loading ---
@@ -35,7 +58,12 @@ class _DoctorSpecializationFieldState extends State<DoctorSpecializationField> {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Specialization', style: AppStyles.styleMedium14),
+              Text(
+                'Specialization',
+                style: AppStyles.styleMedium14.copyWith(
+                  color: theme.textTheme.headlineLarge?.color,
+                ),
+              ),
               SizedBox(height: 8.h),
               const Center(child: CircularProgressIndicator()),
             ],
@@ -47,29 +75,34 @@ class _DoctorSpecializationFieldState extends State<DoctorSpecializationField> {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Specialization', style: AppStyles.styleMedium14),
+              Text(
+                'Specialization',
+                style: AppStyles.styleMedium14.copyWith(
+                  color: theme.textTheme.headlineLarge?.color,
+                ),
+              ),
               SizedBox(height: 8.h),
               Container(
                 padding: EdgeInsets.all(12.w),
                 decoration: BoxDecoration(
-                  color: Colors.red[50],
+                  color: theme.colorScheme.error.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12.r),
-                  border: Border.all(color: Colors.red[100]!),
+                  border: Border.all(color: theme.colorScheme.error.withValues(alpha: 0.2)),
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.error_outline, color: Colors.red),
+                    Icon(Icons.error_outline, color: theme.colorScheme.error),
                     SizedBox(width: 10.w),
                     Expanded(
                       child: Text(
                         'Failed to load: ${state.message}',
                         style: AppStyles.styleRegular12.copyWith(
-                          color: Colors.red[700],
+                          color: theme.colorScheme.error,
                         ),
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.refresh, color: Colors.red),
+                      icon: Icon(Icons.refresh, color: theme.colorScheme.error),
                       onPressed: () => context
                           .read<SpecializationsCubit>()
                           .fetchSpecializations(),
@@ -90,75 +123,84 @@ class _DoctorSpecializationFieldState extends State<DoctorSpecializationField> {
               RichText(
                 text: TextSpan(
                   text: 'Specialization',
-                  style: AppStyles.styleMedium14,
+                  style: AppStyles.styleMedium14.copyWith(
+                    color: _isFocused
+                        ? theme.colorScheme.primary
+                        : theme.textTheme.headlineLarge?.color,
+                  ),
                   children: [
                     TextSpan(
                       text: ' *',
                       style: AppStyles.styleMedium14.copyWith(
-                        color: const Color(0xFFEF4444),
+                        color: theme.colorScheme.error,
                       ),
                     ),
                   ],
                 ),
               ),
               SizedBox(height: 8.h),
-              DropdownButtonFormField<Specialization>(
-                value: widget.selectedSpecialization,
-                isExpanded: true,
-                icon: Icon(
-                  Icons.keyboard_arrow_down_rounded,
-                  color: const Color(0xFF949D9E),
-                  size: 20.sp,
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12.r),
+                  boxShadow: _isFocused
+                      ? [
+                          BoxShadow(
+                            color: theme.colorScheme.primary.withValues(alpha: 0.08),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ]
+                      : [],
                 ),
-                decoration: InputDecoration(
-                  hintText: 'Select Specialization',
-                  hintStyle: AppStyles.styleRegular14.copyWith(
-                    color: const Color(0xFF949D9E),
+                child: DropdownButtonFormField<Specialization>(
+                  initialValue: widget.selectedSpecialization,
+                  isExpanded: true,
+                  focusNode: _focusNode,
+                  icon: Icon(
+                    Icons.keyboard_arrow_down_rounded,
+                    color: _isFocused
+                        ? theme.colorScheme.primary
+                        : theme.hintColor,
+                    size: 22.sp,
                   ),
-                  filled: true,
-                  fillColor: const Color(0xFFF9FAFB),
-                  prefixIcon: Padding(
-                    padding: EdgeInsets.only(left: 14.w, right: 10.w),
-                    child: Icon(
-                      Icons.medical_services_outlined,
-                      size: 20.sp,
-                      color: const Color(0xFF949D9E),
-                    ),
+                  dropdownColor: theme.cardColor,
+                  style: AppStyles.styleMedium14.copyWith(
+                    color: theme.textTheme.headlineLarge?.color,
                   ),
-                  prefixIconConstraints: BoxConstraints(
-                    minWidth: 44.w,
-                    minHeight: 20.h,
-                  ),
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 16.w,
-                    vertical: 14.h,
-                  ),
-                  border: _buildBorder(const Color(0xFFE2E8F0)),
-                  enabledBorder: _buildBorder(const Color(0xFFE2E8F0)),
-                  focusedBorder: _buildBorder(
-                    const Color(0xff236DEC),
-                    width: 1.5,
-                  ),
-                  errorBorder: _buildBorder(const Color(0xFFEF4444)),
-                  focusedErrorBorder: _buildBorder(
-                    const Color(0xFFEF4444),
-                    width: 1.5,
-                  ),
-                ),
-                items: items.map((spec) {
-                  return DropdownMenuItem<Specialization>(
-                    value: spec,
-                    child: Text(
-                      spec.name,
-                      style: AppStyles.styleMedium14.copyWith(
-                        color: const Color(0xff1E252D),
+                  decoration: InputDecoration(
+                    hintText: 'Select Specialization',
+                    prefixIcon: AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      padding: EdgeInsets.only(left: 14.w, right: 10.w),
+                      child: Icon(
+                        Icons.medical_services_outlined,
+                        size: 20.sp,
+                        color: _isFocused
+                            ? theme.colorScheme.primary
+                            : theme.hintColor,
                       ),
                     ),
-                  );
-                }).toList(),
-                onChanged: widget.onChanged,
-                validator: (value) =>
-                    value == null ? 'Specialization is required' : null,
+                    prefixIconConstraints: BoxConstraints(
+                      minWidth: 44.w,
+                      minHeight: 20.h,
+                    ),
+                  ),
+                  items: items.map((spec) {
+                    return DropdownMenuItem<Specialization>(
+                      value: spec,
+                      child: Text(
+                        spec.name,
+                        style: AppStyles.styleMedium14.copyWith(
+                          color: theme.textTheme.headlineLarge?.color,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: widget.onChanged,
+                  validator: (value) =>
+                      value == null ? 'Specialization is required' : null,
+                ),
               ),
             ],
           );
@@ -168,11 +210,5 @@ class _DoctorSpecializationFieldState extends State<DoctorSpecializationField> {
       },
     );
   }
-
-  InputBorder? _buildBorder(Color color, {double width = 1.0}) {
-    return OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12.r),
-      borderSide: BorderSide(color: color, width: width),
-    );
-  }
 }
+

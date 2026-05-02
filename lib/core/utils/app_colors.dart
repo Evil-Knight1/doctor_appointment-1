@@ -11,8 +11,11 @@ class AppColors {
   static const bg = Color(0xFFFFFFFF);
   static const darkBg = Color(0xFF0F172A); // Modern dark blue/slate
   static const darkSurface = Color(0xFF1E293B);
+  static const darkBorder = Color(0xFF334155);
   static const darkTextPrimary = Color(0xFFF8FAFC);
   static const darkTextSecondary = Color(0xFF94A3B8);
+  static const gray100 = Color(0xFFF1F5F9);
+  static const gray200 = Color(0xFFE2E8F0);
   static const star = Color(0xFFF59E0B);
   static const green = Color(0xFF10B981);
 }

@@ -69,26 +69,50 @@ class _SpecialtyItem extends StatelessWidget {
     return Column(
       children: [
         Container(
-          width: 60.w,
-          height: 60.h,
+          width: 64.w,
+          height: 64.h,
           decoration: BoxDecoration(
-            color: AppColors.primaryLight,
-            borderRadius: BorderRadius.circular(16.r),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                AppColors.primaryLight.withValues(alpha: 0.8),
+                AppColors.primaryLight,
+              ],
+            ),
+            borderRadius: BorderRadius.circular(20.r),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withValues(alpha: 0.08),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
           child: Center(
-            child: SvgPicture.asset(asset, width: 30.w, height: 30.h),
+            child: SvgPicture.asset(
+              asset,
+              width: 32.w,
+              height: 32.h,
+              colorFilter: const ColorFilter.mode(
+                AppColors.primary,
+                BlendMode.srcIn,
+              ),
+            ),
           ),
         ),
-        SizedBox(height: 6.h),
+        SizedBox(height: 8.h),
         Text(
           label,
           textAlign: TextAlign.center,
-          style: AppStyles.styleRegular12.copyWith(
-            color: AppColors.textSecondary,
+          style: AppStyles.styleMedium14.copyWith(
+            color: AppColors.textPrimary,
             fontSize: 11.sp,
+            height: 1.2,
           ),
         ),
       ],
     );
   }
 }
+

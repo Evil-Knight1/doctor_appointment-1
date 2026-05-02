@@ -5,16 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
-class DoctorSignUpFooter extends StatelessWidget {
+class PatientSignUpFooter extends StatelessWidget {
   final bool isLoading;
-  final VoidCallback onSubmit;
-  final bool isLastStep;
+  final String label;
+  final VoidCallback? onPressed;
 
-  const DoctorSignUpFooter({
+  const PatientSignUpFooter({
     super.key,
     required this.isLoading,
-    required this.onSubmit,
-    this.isLastStep = false,
+    required this.label,
+    this.onPressed,
   });
 
   @override
@@ -22,37 +22,34 @@ class DoctorSignUpFooter extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         _SubmitButton(
           isLoading: isLoading,
-          label: isLastStep ? 'Submit Application' : 'Next Step',
-          icon: isLastStep ? Icons.send_rounded : Icons.arrow_forward_rounded,
-          onPressed: isLoading ? null : onSubmit,
+          label: label,
+          onPressed: onPressed,
         ),
         SizedBox(height: 24.h),
         Center(
-          child: Padding(
-            padding: EdgeInsets.only(bottom: 20.h),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Already have an account? ',
-                  style: AppStyles.styleRegular14.copyWith(
-                    color: theme.textTheme.bodyMedium?.color,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Already have an account? ',
+                style: AppStyles.styleRegular14.copyWith(
+                  color: theme.textTheme.bodyMedium?.color,
+                ),
+              ),
+              GestureDetector(
+                onTap: () => context.go(AppRouter.kLoginView),
+                child: Text(
+                  'Login',
+                  style: AppStyles.styleMedium14.copyWith(
+                    color: theme.colorScheme.primary,
                   ),
                 ),
-                GestureDetector(
-                  onTap: () => context.go(AppRouter.kLoginView),
-                  child: Text(
-                    'Login',
-                    style: AppStyles.styleMedium14.copyWith(
-                      color: theme.colorScheme.primary,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ],
@@ -64,12 +61,10 @@ class _SubmitButton extends StatelessWidget {
   const _SubmitButton({
     required this.isLoading,
     required this.label,
-    required this.icon,
     this.onPressed,
   });
   final bool isLoading;
   final String label;
-  final IconData icon;
   final VoidCallback? onPressed;
 
   @override
@@ -85,7 +80,10 @@ class _SubmitButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(16.r),
         gradient: LinearGradient(
           colors: onPressed == null
-              ? [primaryColor.withValues(alpha: 0.6), secondaryColor.withValues(alpha: 0.6)]
+              ? [
+                  primaryColor.withValues(alpha: 0.6),
+                  secondaryColor.withValues(alpha: 0.6)
+                ]
               : [primaryColor, secondaryColor],
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
@@ -123,7 +121,12 @@ class _SubmitButton extends StatelessWidget {
             : Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(icon, size: 20.sp),
+                  Icon(
+                    label == 'Continue'
+                        ? Icons.arrow_forward_rounded
+                        : Icons.send_rounded,
+                    size: 20.sp,
+                  ),
                   SizedBox(width: 10.w),
                   Text(
                     label,

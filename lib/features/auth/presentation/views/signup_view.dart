@@ -1,21 +1,22 @@
 import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
-import 'package:doctor_appointment/core/utils/go_router.dart';
 import 'package:doctor_appointment/features/auth/logic/auth_cubit.dart';
 import 'package:doctor_appointment/features/auth/logic/auth_state.dart';
 import 'package:doctor_appointment/core/utils/app_images.dart';
 import 'package:doctor_appointment/features/auth/presentation/widgets/circular_social_button.dart';
 import 'package:doctor_appointment/features/auth/presentation/widgets/custom_divider.dart';
-import 'package:doctor_appointment/features/auth/presentation/widgets/form_section_header.dart';
 import 'package:doctor_appointment/features/auth/presentation/widgets/registration_date_picker.dart';
 import 'package:doctor_appointment/features/auth/presentation/widgets/registration_dropdown.dart';
+import 'package:doctor_appointment/features/auth/presentation/widgets/registration_phone_field.dart';
 import 'package:doctor_appointment/features/auth/presentation/widgets/registration_text_field.dart';
+import 'package:doctor_appointment/features/auth/presentation/widgets/patient_signup/patient_signup_footer.dart';
+import 'package:doctor_appointment/features/auth/presentation/widgets/step_progress_indicator.dart';
+import 'package:doctor_appointment/features/auth/presentation/widgets/location_picker_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:phone_form_field/phone_form_field.dart';
-import 'package:doctor_appointment/features/auth/presentation/widgets/patient_signup/location_picker_dialog.dart';
 import 'package:doctor_appointment/core/widgets/image_picker_widget.dart';
 
 class SignUpView extends StatefulWidget {
@@ -53,7 +54,6 @@ class _SignUpViewState extends State<SignUpView> {
 
   String? _getServerError(String key) => _fieldErrors[key.toLowerCase()];
 
-  final PageController _pageController = PageController();
   int _currentPage = 0;
 
   @override
@@ -69,7 +69,6 @@ class _SignUpViewState extends State<SignUpView> {
     _passwordFocus.dispose();
     _confirmPasswordFocus.dispose();
     _addressFocus.dispose();
-    _pageController.dispose();
     super.dispose();
   }
 
@@ -87,17 +86,19 @@ class _SignUpViewState extends State<SignUpView> {
         return;
       }
     }
-    _pageController.nextPage(
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-    );
+    setState(() {
+      _currentPage++;
+    });
   }
 
   void _previousPage() {
-    _pageController.previousPage(
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-    );
+    if (_currentPage > 0) {
+      setState(() {
+        _currentPage--;
+      });
+    } else {
+      context.pop();
+    }
   }
 
   void _submitForm() {
@@ -127,7 +128,11 @@ class _SignUpViewState extends State<SignUpView> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.message),
-              backgroundColor: const Color(0xFFEF4444),
+              backgroundColor: AppColors.accent,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.r),
+              ),
             ),
           );
         }
@@ -138,42 +143,46 @@ class _SignUpViewState extends State<SignUpView> {
       builder: (context, state) {
         final isLoading = state is AuthLoading;
         return Scaffold(
-          backgroundColor: Colors.white,
-          appBar: AppBar(
-            backgroundColor: Colors.white,
-            elevation: 0,
-            leading: IconButton(
-              icon: const Icon(
-                Icons.arrow_back_ios_new_rounded,
-                color: Colors.black,
-              ),
-              onPressed: () {
-                if (_currentPage > 0) {
-                  _previousPage();
-                } else {
-                  context.pop();
-                }
-              },
-            ),
-            title: Row(
+          backgroundColor: AppColors.bg,
+          body: SafeArea(
+            child: Column(
               children: [
-                _buildStepIndicator(0),
-                SizedBox(width: 8.w),
-                _buildStepIndicator(1),
-              ],
-            ),
-          ),
-          body: Form(
-            key: _formKey,
-            child: PageView(
-              controller: _pageController,
-              physics: const NeverScrollableScrollPhysics(),
-              onPageChanged: (int page) {
-                setState(() => _currentPage = page);
-              },
-              children: [
-                _buildAccountInfoStep(),
-                _buildPersonalInfoStep(isLoading),
+                _buildHeader(),
+                Expanded(
+                  child: Form(
+                    key: _formKey,
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 400),
+                      transitionBuilder:
+                          (Widget child, Animation<double> animation) {
+                        return FadeTransition(
+                          opacity: animation,
+                          child: SlideTransition(
+                            position: Tween<Offset>(
+                              begin: const Offset(0.05, 0),
+                              end: Offset.zero,
+                            ).animate(animation),
+                            child: child,
+                          ),
+                        );
+                      },
+                      child: KeyedSubtree(
+                        key: ValueKey<int>(_currentPage),
+                        child: _currentPage == 0
+                            ? _buildAccountInfoStep()
+                            : _buildPersonalInfoStep(isLoading),
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
+                  child: PatientSignUpFooter(
+                    isLoading: isLoading,
+                    label: _currentPage == 0 ? 'Continue' : 'Create Account',
+                    onPressed: isLoading ? null : (_currentPage == 0 ? _nextPage : _submitForm),
+                  ),
+                ),
               ],
             ),
           ),
@@ -182,15 +191,52 @@ class _SignUpViewState extends State<SignUpView> {
     );
   }
 
-  Widget _buildStepIndicator(int step) {
-    bool isActive = _currentPage >= step;
-    return Expanded(
-      child: Container(
-        height: 4.h,
-        decoration: BoxDecoration(
-          color: isActive ? AppColors.primary : const Color(0xFFE2E8F0),
-          borderRadius: BorderRadius.circular(2.r),
-        ),
+  Widget _buildHeader() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _HeaderButton(
+                icon: Icons.arrow_back_ios_new_rounded,
+                onTap: _previousPage,
+              ),
+              Column(
+                children: [
+                  ShaderMask(
+                    shaderCallback: (bounds) => const LinearGradient(
+                      colors: [Color(0xff236DEC), Color(0xff0D47A1)],
+                    ).createShader(bounds),
+                    child: Text(
+                      'Patient Registration',
+                      style: AppStyles.styleBold16.copyWith(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 2.h),
+                  Text(
+                    'Step ${_currentPage + 1} of 2',
+                    style: AppStyles.styleMedium12.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+              _HeaderButton(
+                icon: Icons.help_outline_rounded,
+                onTap: () {},
+              ),
+            ],
+          ),
+          SizedBox(height: 24.h),
+          StepProgressIndicator(
+            currentStep: _currentPage,
+            totalSteps: 2,
+          ),
+        ],
       ),
     );
   }
@@ -207,7 +253,7 @@ class _SignUpViewState extends State<SignUpView> {
           Text(
             'Set up your login credentials to get started.',
             style: AppStyles.styleRegular14.copyWith(
-              color: const Color(0xFF949D9E),
+              color: AppColors.textSecondary,
             ),
           ),
           SizedBox(height: 32.h),
@@ -221,8 +267,9 @@ class _SignUpViewState extends State<SignUpView> {
             textInputAction: TextInputAction.next,
             serverError: _getServerError('email'),
             validator: (value) {
-              if (value == null || value.trim().isEmpty)
+              if (value == null || value.trim().isEmpty) {
                 return 'Email is required';
+              }
               if (!RegExp(
                 r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
               ).hasMatch(value.trim())) {
@@ -231,14 +278,11 @@ class _SignUpViewState extends State<SignUpView> {
               return null;
             },
           ),
-          SizedBox(height: 16.h),
-          PhoneFormField(
+          RegistrationPhoneField(
+            label: 'Phone Number',
             controller: _phoneController,
-            decoration: _inputDecoration(
-              'Phone Number',
-              Icons.phone_outlined,
-              'phone',
-            ),
+            focusNode: _phoneFocus,
+            serverError: _getServerError('phone'),
           ),
           SizedBox(height: 16.h),
           RegistrationTextField(
@@ -251,10 +295,12 @@ class _SignUpViewState extends State<SignUpView> {
             textInputAction: TextInputAction.next,
             serverError: _getServerError('password'),
             validator: (value) {
-              if (value == null || value.trim().isEmpty)
+              if (value == null || value.trim().isEmpty) {
                 return 'Password is required';
-              if (value.trim().length < 6)
+              }
+              if (value.trim().length < 6) {
                 return 'Password must be at least 6 characters';
+              }
               return null;
             },
           ),
@@ -269,12 +315,6 @@ class _SignUpViewState extends State<SignUpView> {
             textInputAction: TextInputAction.done,
             serverError: _getServerError('confirmPassword'),
           ),
-          SizedBox(height: 40.h),
-          _SubmitButton(
-            isLoading: false,
-            label: 'Continue',
-            onPressed: _nextPage,
-          ),
           SizedBox(height: 24.h),
           const CustomDivider(),
           SizedBox(height: 24.h),
@@ -285,29 +325,6 @@ class _SignUpViewState extends State<SignUpView> {
               SizedBox(width: 32.w),
               CircularSocialButton(icon: Assets.imagesFacebook, onTap: () {}),
             ],
-          ),
-          SizedBox(height: 24.h),
-          Center(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Already have an account? ',
-                  style: AppStyles.styleRegular14.copyWith(
-                    color: const Color(0xFF949D9E),
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () => context.go(AppRouter.kLoginView),
-                  child: Text(
-                    'Login',
-                    style: AppStyles.styleMedium14.copyWith(
-                      color: AppColors.primary,
-                    ),
-                  ),
-                ),
-              ],
-            ),
           ),
           SizedBox(height: 24.h),
         ],
@@ -327,7 +344,7 @@ class _SignUpViewState extends State<SignUpView> {
           Text(
             'Complete your profile for a better experience.',
             style: AppStyles.styleRegular14.copyWith(
-              color: const Color(0xFF949D9E),
+              color: AppColors.textSecondary,
             ),
           ),
           SizedBox(height: 32.h),
@@ -373,15 +390,7 @@ class _SignUpViewState extends State<SignUpView> {
           ),
           SizedBox(height: 16.h),
           GestureDetector(
-            onTap: () async {
-              final address = await showDialog<String>(
-                context: context,
-                builder: (context) => const LocationPickerDialog(),
-              );
-              if (address != null && address.isNotEmpty) {
-                setState(() => _addressController.text = address);
-              }
-            },
+            onTap: _showLocationPicker,
             child: AbsorbPointer(
               child: RegistrationTextField(
                 label: 'Address',
@@ -393,164 +402,59 @@ class _SignUpViewState extends State<SignUpView> {
               ),
             ),
           ),
-          SizedBox(height: 40.h),
-          _SubmitButton(
-            isLoading: isLoading,
-            label: 'Create Account',
-            onPressed: isLoading ? null : _submitForm,
-          ),
           SizedBox(height: 24.h),
         ],
       ),
     );
   }
 
-  InputDecoration _inputDecoration(
-    String label,
-    IconData icon,
-    String errorKey,
-  ) {
-    return InputDecoration(
-      labelText: label,
-      hintText: 'e.g. +216 XX XXX XXX',
-      prefixIcon: Icon(icon),
-      contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14.r),
-        borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14.r),
-        borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14.r),
-        borderSide: const BorderSide(color: AppColors.primary, width: 2),
-      ),
-      errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14.r),
-        borderSide: const BorderSide(color: Color(0xFFEF4444)),
-      ),
-      errorText: _getServerError(errorKey),
-    );
-  }
-}
-
-// ====================================================================
-// Private reusable widgets for this screen
-// ====================================================================
-
-class _SubmitButton extends StatelessWidget {
-  const _SubmitButton({
-    required this.isLoading,
-    required this.label,
-    this.onPressed,
-  });
-  final bool isLoading;
-  final String label;
-  final VoidCallback? onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: 52.h,
-      child: ElevatedButton(
-        onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xff236DEC),
-          disabledBackgroundColor: const Color(
-            0xff236DEC,
-          ).withValues(alpha: 0.6),
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14.r),
-          ),
-          elevation: 0,
-        ),
-        child: isLoading
-            ? SizedBox(
-                width: 22.w,
-                height: 22.h,
-                child: const CircularProgressIndicator(
-                  strokeWidth: 2.5,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                ),
-              )
-            : Text(label, style: AppStyles.styleSemiBold16),
+  void _showLocationPicker() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => LocationPickerSheet(
+        title: 'Select Your Location',
+        onLocationSelected: (address) {
+          setState(() => _addressController.text = address);
+        },
       ),
     );
   }
 }
 
-/// An eye-catching banner card that invites users to register as a doctor.
-class _DoctorRegistrationBanner extends StatelessWidget {
-  const _DoctorRegistrationBanner({required this.onTap});
+class _HeaderButton extends StatelessWidget {
+  final IconData icon;
   final VoidCallback onTap;
 
+  const _HeaderButton({
+    required this.icon,
+    required this.onTap,
+  });
+
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: double.infinity,
-        padding: EdgeInsets.all(16.w),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              const Color(0xff236DEC).withValues(alpha: 0.06),
-              const Color(0xff236DEC).withValues(alpha: 0.02),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.bg,
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
-          borderRadius: BorderRadius.circular(14.r),
-          border: Border.all(
-            color: const Color(0xff236DEC).withValues(alpha: 0.15),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          customBorder: const CircleBorder(),
+          child: Padding(
+            padding: EdgeInsets.all(8.w),
+            child: Icon(icon, size: 20.sp, color: AppColors.textPrimary),
           ),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 44.w,
-              height: 44.h,
-              decoration: BoxDecoration(
-                color: const Color(0xff236DEC).withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12.r),
-              ),
-              child: Icon(
-                Icons.medical_services_outlined,
-                color: const Color(0xff236DEC),
-                size: 22.sp,
-              ),
-            ),
-            SizedBox(width: 12.w),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Are you a Doctor?',
-                    style: AppStyles.styleMedium14.copyWith(
-                      color: const Color(0xff236DEC),
-                    ),
-                  ),
-                  SizedBox(height: 2.h),
-                  Text(
-                    'Register as a healthcare provider',
-                    style: AppStyles.styleRegular12.copyWith(
-                      color: const Color(0xFF949D9E),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Icon(
-              Icons.arrow_forward_ios_rounded,
-              size: 16.sp,
-              color: const Color(0xff236DEC),
-            ),
-          ],
         ),
       ),
     );

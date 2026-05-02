@@ -35,9 +35,7 @@ class _CalendarViewState extends State<CalendarView>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
         elevation: 0,
         automaticallyImplyLeading: false,
         title: Text(
@@ -91,11 +89,14 @@ class _CalendarViewState extends State<CalendarView>
         if (state is AppointmentsSuccess) {
           final items = _filterAppointments(state.appointments, tab);
           if (items.isEmpty) {
-            return Center(
-              child: Text(
-                'No appointments found.',
-                style: AppStyles.styleRegular14.copyWith(
-                  color: AppColors.textSecondary,
+            return Padding(
+              padding: EdgeInsets.only(bottom: 100.h),
+              child: Center(
+                child: Text(
+                  'No appointments found.',
+                  style: AppStyles.styleRegular14.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
                 ),
               ),
             );

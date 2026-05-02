@@ -15,21 +15,35 @@ class SearchBarWidget extends StatelessWidget {
       children: [
         Expanded(
           child: Container(
-            height: 48.h,
+            height: 52.h,
             decoration: BoxDecoration(
-              color: AppColors.bg,
-              borderRadius: BorderRadius.circular(12.r),
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16.r),
+              border: Border.all(color: AppColors.border),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.02),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
             child: TextField(
               decoration: InputDecoration(
-                hintText: 'Find the right doctor for you...',
+                hintText: 'Search for doctors, clinics...',
                 hintStyle: AppStyles.styleRegular14.copyWith(
                   color: AppColors.textLight,
                 ),
-                prefixIcon: Icon(
-                  Icons.search,
-                  color: AppColors.textLight,
-                  size: 20.sp,
+                prefixIcon: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                  child: Icon(
+                    Icons.search_rounded,
+                    color: AppColors.primary,
+                    size: 24.sp,
+                  ),
+                ),
+                prefixIconConstraints: BoxConstraints(
+                  minWidth: 40.w,
                 ),
                 border: InputBorder.none,
                 contentPadding: EdgeInsets.symmetric(vertical: 14.h),
@@ -39,7 +53,6 @@ class SearchBarWidget extends StatelessWidget {
         ),
         SizedBox(width: 12.w),
         GestureDetector(
-          // FIX 1: showModalBottomSheet بدل router.go
           onTap: () => showModalBottomSheet(
             context: context,
             isScrollControlled: true,
@@ -47,15 +60,31 @@ class SearchBarWidget extends StatelessWidget {
             builder: (_) => const FilterBottomSheet(),
           ),
           child: Container(
-            width: 48.w,
-            height: 48.h,
+            width: 52.w,
+            height: 52.h,
             decoration: BoxDecoration(
-              color: AppColors.primary,
-              borderRadius: BorderRadius.circular(12.r),
+              gradient: LinearGradient(
+                colors: [AppColors.primary, AppColors.primary.withValues(alpha: 0.8)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(16.r),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.primary.withValues(alpha: 0.2),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
-            // FIX 2: alignment بدل Center
             alignment: Alignment.center,
-            child: SvgPicture.asset(Assets.imagesFilterIcon),
+            child: SvgPicture.asset(
+              Assets.imagesFilterIcon,
+              colorFilter: const ColorFilter.mode(
+                Colors.white,
+                BlendMode.srcIn,
+              ),
+            ),
           ),
         ),
       ],

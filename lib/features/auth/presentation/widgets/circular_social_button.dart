@@ -14,14 +14,16 @@ class CircularSocialButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return GestureDetector(
       onTap: onTap,
       child: Container(
         width: 46.w,
         height: 46.w,
-        decoration: const BoxDecoration(
-          color: Color(0xFFF5F5F5),
+        decoration: BoxDecoration(
+          color: theme.cardColor,
           shape: BoxShape.circle,
+          border: Border.all(color: theme.dividerColor),
         ),
         child: Center(
           child: SvgPicture.asset(

@@ -7,19 +7,20 @@ class CustomDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Row(
       children: [
-        Expanded(child: Divider(color: const Color(0xFFDADADA), thickness: 1)),
+        Expanded(child: Divider(color: theme.dividerColor, thickness: 1)),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 12.w),
           child: Text(
             'Or continue with',
             style: AppStyles.styleRegular14.copyWith(
-              color: const Color(0xFF949D9E),
+              color: theme.hintColor,
             ),
           ),
         ),
-        Expanded(child: Divider(color: const Color(0xFFDADADA), thickness: 1)),
+        Expanded(child: Divider(color: theme.dividerColor, thickness: 1)),
       ],
     );
   }

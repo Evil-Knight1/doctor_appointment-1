@@ -1,10 +1,11 @@
+import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 /// A tappable date picker field styled consistently with other registration
 /// form fields. Shows a modal date picker and formats the selected date.
-class RegistrationDatePicker extends StatelessWidget {
+class RegistrationDatePicker extends StatefulWidget {
   const RegistrationDatePicker({
     super.key,
     required this.label,
@@ -26,6 +27,33 @@ class RegistrationDatePicker extends StatelessWidget {
   final DateTime? firstDate;
   final DateTime? lastDate;
 
+  @override
+  State<RegistrationDatePicker> createState() => _RegistrationDatePickerState();
+}
+
+class _RegistrationDatePickerState extends State<RegistrationDatePicker> {
+  final FocusNode _focusNode = FocusNode();
+  bool _isFocused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(_onFocusChange);
+  }
+
+  void _onFocusChange() {
+    setState(() {
+      _isFocused = _focusNode.hasFocus;
+    });
+  }
+
+  @override
+  void dispose() {
+    _focusNode.removeListener(_onFocusChange);
+    _focusNode.dispose();
+    super.dispose();
+  }
+
   static const _months = [
     'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
@@ -37,22 +65,27 @@ class RegistrationDatePicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final displayText =
-        selectedDate != null ? _formatDate(selectedDate!) : null;
+        widget.selectedDate != null ? _formatDate(widget.selectedDate!) : null;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         RichText(
           text: TextSpan(
-            text: label,
-            style: AppStyles.styleMedium14,
+            text: widget.label,
+            style: AppStyles.styleMedium14.copyWith(
+              color: _isFocused 
+                  ? theme.colorScheme.primary 
+                  : theme.textTheme.headlineLarge?.color,
+            ),
             children: [
-              if (isRequired)
+              if (widget.isRequired)
                 TextSpan(
                   text: ' *',
                   style: AppStyles.styleMedium14.copyWith(
-                    color: const Color(0xFFEF4444),
+                    color: AppColors.accent,
                   ),
                 ),
             ],
@@ -60,47 +93,68 @@ class RegistrationDatePicker extends StatelessWidget {
         ),
         SizedBox(height: 8.h),
         GestureDetector(
-          onTap: () => _pickDate(context),
-          child: Container(
+          onTap: () {
+            _focusNode.requestFocus();
+            _pickDate(context);
+          },
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
             width: double.infinity,
             padding: EdgeInsets.symmetric(
               horizontal: 16.w,
               vertical: 14.h,
             ),
             decoration: BoxDecoration(
-              color: const Color(0xFFF9FAFB),
+              color: _isFocused 
+                  ? theme.inputDecorationTheme.fillColor?.withValues(alpha: 0.8) 
+                  : theme.inputDecorationTheme.fillColor,
               borderRadius: BorderRadius.circular(12.r),
               border: Border.all(
-                color: const Color(0xFFE2E8F0),
-                width: 1,
+                color: _isFocused 
+                    ? theme.colorScheme.primary 
+                    : (theme.inputDecorationTheme.enabledBorder?.borderSide.color ?? AppColors.gray200),
+                width: _isFocused ? 1.5 : 1,
               ),
+              boxShadow: _isFocused
+                  ? [
+                      BoxShadow(
+                        color: theme.colorScheme.primary.withValues(alpha: 0.08),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ]
+                  : [],
             ),
             child: Row(
               children: [
-                if (prefixIcon != null) ...[
+                if (widget.prefixIcon != null) ...[
                   Icon(
-                    prefixIcon,
+                    widget.prefixIcon,
                     size: 20.sp,
-                    color: const Color(0xFF949D9E),
+                    color: _isFocused
+                        ? theme.colorScheme.primary
+                        : theme.hintColor,
                   ),
                   SizedBox(width: 10.w),
                 ],
                 Expanded(
                   child: Text(
-                    displayText ?? hintText,
+                    displayText ?? widget.hintText,
                     style: displayText != null
                         ? AppStyles.styleMedium14.copyWith(
-                            color: const Color(0xff1E252D),
+                            color: theme.textTheme.headlineLarge?.color,
                           )
                         : AppStyles.styleRegular14.copyWith(
-                            color: const Color(0xFF949D9E),
+                            color: theme.hintColor,
                           ),
                   ),
                 ),
                 Icon(
-                  Icons.calendar_today_outlined,
+                  Icons.calendar_today_rounded,
                   size: 18.sp,
-                  color: const Color(0xFF949D9E),
+                  color: _isFocused
+                      ? theme.colorScheme.primary
+                      : theme.hintColor,
                 ),
               ],
             ),
@@ -111,20 +165,26 @@ class RegistrationDatePicker extends StatelessWidget {
   }
 
   Future<void> _pickDate(BuildContext context) async {
+    final theme = Theme.of(context);
     final now = DateTime.now();
     final picked = await showDatePicker(
       context: context,
-      initialDate: selectedDate ?? DateTime(now.year - 25),
-      firstDate: firstDate ?? DateTime(1920),
-      lastDate: lastDate ?? now,
+      initialDate: widget.selectedDate ?? DateTime(now.year - 25),
+      firstDate: widget.firstDate ?? DateTime(1920),
+      lastDate: widget.lastDate ?? now,
       builder: (context, child) {
         return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: Color(0xff236DEC),
-              onPrimary: Colors.white,
-              surface: Colors.white,
-              onSurface: Color(0xff1E252D),
+          data: theme.copyWith(
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: theme.colorScheme.primary,
+                textStyle: AppStyles.styleBold14,
+              ),
+            ),
+            dialogTheme: theme.dialogTheme.copyWith(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.r),
+              ),
             ),
           ),
           child: child!,
@@ -132,7 +192,11 @@ class RegistrationDatePicker extends StatelessWidget {
       },
     );
     if (picked != null) {
-      onDateSelected(picked);
+      widget.onDateSelected(picked);
     }
+    // Remove focus when picker closes
+    _focusNode.unfocus();
   }
 }
+
+

@@ -71,9 +71,7 @@ class _EditProfileViewState extends State<EditProfileView> {
     return BlocProvider.value(
       value: _profileCubit,
       child: Scaffold(
-        backgroundColor: Colors.white,
         appBar: AppBar(
-          backgroundColor: Colors.white,
           elevation: 0,
           leading: IconButton(
             icon: const Icon(

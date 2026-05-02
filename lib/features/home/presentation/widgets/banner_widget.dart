@@ -10,100 +10,136 @@ class BannerWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 150.h,
+      height: 170.h,
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF1D4ED8), AppColors.primary],
+        gradient: LinearGradient(
+          colors: [
+            const Color(0xFF1D4ED8),
+            AppColors.primary,
+            AppColors.primary.withValues(alpha: 0.8),
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(16.r),
+        borderRadius: BorderRadius.circular(24.r),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: 0.3),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
       child: Stack(
+        clipBehavior: Clip.none,
         children: [
-          // Decorative circle
+          // Decorative soft light effects
           Positioned(
             right: -20.w,
             top: -20.h,
             child: Container(
-              width: 130.w,
-              height: 130.h,
+              width: 150.w,
+              height: 150.h,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white.withValues(alpha: 0.08),
+                gradient: RadialGradient(
+                  colors: [
+                    Colors.white.withValues(alpha: 0.15),
+                    Colors.white.withValues(alpha: 0.0),
+                  ],
+                ),
               ),
             ),
           ),
-          Positioned(
-            right: 20.w,
-            bottom: -30.h,
-            child: Container(
-              width: 90.w,
-              height: 90.h,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white.withValues(alpha: 0.06),
+
+          // Pattern Overlay
+          Positioned.fill(
+            child: Opacity(
+              opacity: 0.05,
+              child: CustomPaint(
+                painter: _BannerPatternPainter(),
               ),
             ),
           ),
+
           // Doctor image
           Positioned(
-            right: 10.w,
+            right: 0,
             bottom: 0,
-            child: Image.asset(
-              Assets.imagesDoctorsGroup,
-              height: 140.h,
-              errorBuilder: (_, _, _) => SizedBox(width: 120.w),
+            child: Hero(
+              tag: 'banner_doctor',
+              child: Image.asset(
+                Assets.imagesDoctorsGroup,
+                height: 170.h,
+                fit: BoxFit.contain,
+                errorBuilder: (_, _, _) => SizedBox(width: 140.w),
+              ),
             ),
           ),
-          // Text content - constrained to avoid overflow
-          Positioned(
-            left: 0,
-            top: 0,
-            bottom: 0,
-            right: 130.w,
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 14.h),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'Medigo',
-                    style: AppStyles.styleSemiBold24.copyWith(
-                      color: Colors.white,
-                      fontSize: 22.sp,
-                    ),
+
+          // Text content
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(20.r),
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
                   ),
-                  SizedBox(height: 4.h),
-                  Text(
-                    'Your doctor, one\ntap away.',
-                    style: AppStyles.styleRegular14.copyWith(
-                      color: Colors.white.withValues(alpha: 0.85),
-                      fontSize: 12.sp,
-                    ),
-                  ),
-                  SizedBox(height: 8.h),
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 12.w,
-                      vertical: 6.h,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20.r),
-                    ),
-                    child: Text(
-                      'Book Now',
-                      style: AppStyles.styleMedium14.copyWith(
-                        color: AppColors.primary,
-                        fontSize: 11.sp,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.star_rounded, color: Colors.amber, size: 12.sp),
+                      SizedBox(width: 4.w),
+                      Text(
+                        'Premium Protection',
+                        style: AppStyles.styleMedium12.copyWith(
+                          color: Colors.white,
+                          fontSize: 10.sp,
+                          letterSpacing: 0.5,
+                        ),
                       ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 12.h),
+                Text(
+                  'Early Protection\nFor Your Family',
+                  style: AppStyles.styleBold20.copyWith(
+                    color: Colors.white,
+                    fontSize: 20.sp,
+                    height: 1.2,
+                  ),
+                ),
+                SizedBox(height: 16.h),
+                ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: AppColors.primary,
+                    elevation: 4,
+                    shadowColor: Colors.black26,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 20.w,
+                      vertical: 8.h,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.r),
                     ),
                   ),
-                ],
-              ),
+                  child: Text(
+                    'Learn More',
+                    style: AppStyles.styleSemiBold16.copyWith(
+                      fontSize: 13.sp,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -111,3 +147,24 @@ class BannerWidget extends StatelessWidget {
     );
   }
 }
+
+class _BannerPatternPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white
+      ..strokeWidth = 1.0
+      ..style = PaintingStyle.stroke;
+
+    for (var i = 0; i < size.width; i += 20) {
+      canvas.drawLine(Offset(i.toDouble(), 0), Offset(i.toDouble(), size.height), paint);
+    }
+    for (var i = 0; i < size.height; i += 20) {
+      canvas.drawLine(Offset(0, i.toDouble()), Offset(size.width, i.toDouble()), paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+

@@ -93,7 +93,6 @@ class _SearchViewState extends State<SearchView> {
     return BlocProvider.value(
       value: _doctorsCubit,
       child: Scaffold(
-        backgroundColor: Colors.white,
         body: SafeArea(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -270,30 +269,33 @@ class _SearchViewState extends State<SearchView> {
           final hasNextPage = page.hasNextPage;
 
           if (doctors.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.search_off_rounded,
-                    size: 56.sp,
-                    color: AppColors.textLight,
-                  ),
-                  SizedBox(height: 12.h),
-                  Text(
-                    'No doctors found',
-                    style: AppStyles.styleSemiBold22.copyWith(
-                      fontSize: 16.sp,
+            return Padding(
+              padding: EdgeInsets.only(bottom: 100.h),
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.search_off_rounded,
+                      size: 56.sp,
+                      color: AppColors.textLight,
                     ),
-                  ),
-                  SizedBox(height: 6.h),
-                  Text(
-                    'Try a different search or specialty',
-                    style: AppStyles.styleRegular14.copyWith(
-                      color: AppColors.textSecondary,
+                    SizedBox(height: 12.h),
+                    Text(
+                      'No doctors found',
+                      style: AppStyles.styleSemiBold22.copyWith(
+                        fontSize: 16.sp,
+                      ),
                     ),
-                  ),
-                ],
+                    SizedBox(height: 6.h),
+                    Text(
+                      'Try a different search or specialty',
+                      style: AppStyles.styleRegular14.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             );
           }

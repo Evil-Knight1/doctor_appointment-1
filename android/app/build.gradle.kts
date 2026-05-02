@@ -27,9 +27,9 @@ android {
             applicationIdSuffix = ".stagging"
             
         }
-        create("production") {
+        create("producation") {
             dimension = "medlink"
-            applicationIdSuffix = ".production"
+            applicationIdSuffix = ".producation"
         }
     }
 

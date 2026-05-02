@@ -61,6 +61,7 @@ dependencies:
   curved_labeled_navigation_bar: ^2.0.6
   pinput: ^6.0.2
   cached_network_image: ^3.4.1
+  file_picker: ^11.0.2
 
 dev_dependencies:
   flutter_lints: ^6.0.0

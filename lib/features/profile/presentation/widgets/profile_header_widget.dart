@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
@@ -116,119 +115,158 @@ class _ProfileHeaderWidgetState extends State<ProfileHeaderWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SizedBox(height: 16.h),
-
-        // Avatar with edit overlay
-        GestureDetector(
-          onTap: _pickImage,
-          child: Stack(
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(vertical: 16.h),
+      child: Column(
+        children: [
+          Stack(
+            alignment: Alignment.center,
             children: [
-              // Avatar circle
+              // Decorative background glow
               Container(
-                width: 96.r,
-                height: 96.r,
+                width: 130.r,
+                height: 130.r,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: AppColors.primaryLight,
-                  border: Border.all(color: Colors.white, width: 3),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: ClipOval(
-                  child: widget.profile.profilePicture != null
-                      ? CachedNetworkImage(
-                          imageUrl: widget.profile.profilePicture!,
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) => Center(
-                            child: SizedBox(
-                              width: 24.w,
-                              height: 24.h,
-                              child: const CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: AppColors.primary,
-                              ),
-                            ),
-                          ),
-                          errorWidget: (context, url, error) => Icon(
-                            Icons.person_rounded,
-                            size: 52.sp,
-                            color: AppColors.primary,
-                          ),
-                        )
-                      : Icon(
-                          Icons.person_rounded,
-                          size: 52.sp,
-                          color: AppColors.primary,
-                        ),
-                ),
-              ),
-
-              // Edit badge
-              Positioned(
-                bottom: 2,
-                right: 2,
-                child: Container(
-                  width: 28.w,
-                  height: 28.h,
-                  decoration: BoxDecoration(
-                    color: AppColors.primary,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 2),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.primary.withValues(alpha: 0.35),
-                        blurRadius: 6,
-                        offset: const Offset(0, 2),
-                      ),
+                  gradient: RadialGradient(
+                    colors: [
+                      AppColors.primary.withValues(alpha: 0.15),
+                      AppColors.primary.withValues(alpha: 0.0),
                     ],
                   ),
-                  child: Icon(Icons.camera_alt, color: Colors.white, size: 13.sp),
+                ),
+              ),
+              // Avatar with edit overlay
+              GestureDetector(
+                onTap: _pickImage,
+                child: Stack(
+                  children: [
+                    // Avatar circle
+                    Container(
+                      width: 100.r,
+                      height: 100.r,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white,
+                        border: Border.all(
+                          color: AppColors.primaryLight,
+                          width: 4,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.primary.withValues(alpha: 0.1),
+                            blurRadius: 20,
+                            offset: const Offset(0, 10),
+                          ),
+                        ],
+                      ),
+                      child: ClipOval(
+                        child:
+                            widget.profile.profilePicture != null
+                                ? CachedNetworkImage(
+                                  imageUrl: widget.profile.profilePicture!,
+                                  fit: BoxFit.cover,
+                                  placeholder:
+                                      (context, url) => Center(
+                                        child: SizedBox(
+                                          width: 24.w,
+                                          height: 24.h,
+                                          child:
+                                              const CircularProgressIndicator(
+                                                strokeWidth: 2,
+                                                color: AppColors.primary,
+                                              ),
+                                        ),
+                                      ),
+                                  errorWidget:
+                                      (context, url, error) => Icon(
+                                        Icons.person_rounded,
+                                        size: 56.sp,
+                                        color: AppColors.primary,
+                                      ),
+                                )
+                                : Icon(
+                                  Icons.person_rounded,
+                                  size: 56.sp,
+                                  color: AppColors.primary,
+                                ),
+                      ),
+                    ),
+                    // Edit badge
+                    Positioned(
+                      bottom: 4,
+                      right: 4,
+                      child: Container(
+                        width: 32.w,
+                        height: 32.h,
+                        decoration: BoxDecoration(
+                          color: AppColors.primary,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 3),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primary.withValues(alpha: 0.4),
+                              blurRadius: 8,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: Icon(
+                          Icons.camera_alt_rounded,
+                          color: Colors.white,
+                          size: 15.sp,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
-        ),
-
-        SizedBox(height: 12.h),
-
-        Text(
-          widget.profile.fullName,
-          style: AppStyles.styleSemiBold22.copyWith(fontSize: 18.sp),
-        ),
-        SizedBox(height: 4.h),
-        Text(
-          widget.profile.email,
-          style: AppStyles.styleRegular14.copyWith(
-            color: AppColors.textSecondary,
-            fontSize: 13.sp,
-          ),
-        ),
-
-        // Tap to change label
-        SizedBox(height: 8.h),
-        GestureDetector(
-          onTap: _pickImage,
-          child: Text(
-            'Tap to change photo',
-            style: AppStyles.styleRegular12.copyWith(
-              color: AppColors.primary,
-              fontSize: 11.sp,
+          SizedBox(height: 16.h),
+          Text(
+            widget.profile.fullName,
+            style: AppStyles.styleSemiBold22.copyWith(
+              fontSize: 22.sp,
+              color: AppColors.textPrimary,
+              letterSpacing: -0.5,
             ),
           ),
-        ),
-
-        SizedBox(height: 24.h),
-      ],
+          SizedBox(height: 6.h),
+          Text(
+            widget.profile.email,
+            style: AppStyles.styleRegular14.copyWith(
+              color: AppColors.textSecondary,
+              fontSize: 14.sp,
+            ),
+          ),
+          SizedBox(height: 12.h),
+          // Edit Profile Button (Optional, or just the label)
+          GestureDetector(
+            onTap: _pickImage,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+              decoration: BoxDecoration(
+                color: AppColors.primaryLight,
+                borderRadius: BorderRadius.circular(20.r),
+              ),
+              child: Text(
+                'Change Photo',
+                style: AppStyles.styleMedium14.copyWith(
+                  color: AppColors.primary,
+                  fontSize: 12.sp,
+                ),
+              ),
+            ),
+          ),
+          SizedBox(height: 16.h),
+        ],
+      ),
     );
   }
 }
+
 
 class _PickerOption extends StatelessWidget {
   final IconData icon;

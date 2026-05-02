@@ -7,14 +7,21 @@ class DoctorApprovalNotice extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    // Use secondary color scheme for the warning/notice look
+    // If secondary is not orange-ish, it will at least be harmonious with the theme
+    final baseColor = theme.colorScheme.secondary;
+    final containerColor = theme.colorScheme.secondaryContainer;
+    final onContainerColor = theme.colorScheme.onSecondaryContainer;
+
     return Container(
       width: double.infinity,
       padding: EdgeInsets.all(14.w),
       decoration: BoxDecoration(
-        color: const Color(0xFFFFF7ED),
+        color: containerColor.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(12.r),
         border: Border.all(
-          color: const Color(0xFFFDBA74).withValues(alpha: 0.5),
+          color: baseColor.withValues(alpha: 0.3),
         ),
       ),
       child: Row(
@@ -24,12 +31,12 @@ class DoctorApprovalNotice extends StatelessWidget {
             width: 32.w,
             height: 32.h,
             decoration: BoxDecoration(
-              color: const Color(0xFFF97316).withValues(alpha: 0.12),
+              color: baseColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8.r),
             ),
             child: Icon(
               Icons.info_outline_rounded,
-              color: const Color(0xFFF97316),
+              color: baseColor,
               size: 18.sp,
             ),
           ),
@@ -41,14 +48,15 @@ class DoctorApprovalNotice extends StatelessWidget {
                 Text(
                   'Verification Required',
                   style: AppStyles.styleMedium14.copyWith(
-                    color: const Color(0xFF9A3412),
+                    color: onContainerColor,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
                 SizedBox(height: 4.h),
                 Text(
                   'Your account will be reviewed by our admin team before activation. This usually takes 1-2 business days.',
                   style: AppStyles.styleRegular12.copyWith(
-                    color: const Color(0xFFEA580C),
+                    color: onContainerColor.withValues(alpha: 0.9),
                     height: 1.4,
                   ),
                 ),

@@ -1,10 +1,9 @@
 import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/core/utils/go_router.dart';
-import 'package:doctor_appointment/features/auth/presentation/widgets/doctor_signup/doctor_approval_notice.dart';
 import 'package:doctor_appointment/features/auth/presentation/widgets/doctor_signup/doctor_signup_footer.dart';
 import 'package:doctor_appointment/features/auth/presentation/widgets/doctor_signup/doctor_signup_form.dart';
-import 'package:doctor_appointment/features/auth/presentation/widgets/doctor_signup/doctor_signup_header.dart';
+import 'package:doctor_appointment/features/auth/presentation/widgets/location_picker_sheet.dart';
 import 'package:doctor_appointment/features/auth/logic/auth_cubit.dart';
 import 'package:doctor_appointment/features/auth/logic/auth_state.dart';
 import 'package:doctor_appointment/features/auth/presentation/widgets/step_progress_indicator.dart';
@@ -12,9 +11,7 @@ import 'package:doctor_appointment/features/doctors/domain/entities/specializati
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:geocoding/geocoding.dart' as geo;
 import 'package:go_router/go_router.dart';
 import 'package:phone_form_field/phone_form_field.dart';
 
@@ -112,7 +109,7 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => _LocationPickerSheet(
+      builder: (context) => LocationPickerSheet(
         title: forClinic
             ? 'Select Clinic Location'
             : 'Select Hospital Location',
@@ -160,7 +157,7 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: const Color(0xFFEF4444),
+        backgroundColor: AppColors.accent,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
@@ -194,45 +191,50 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.bg,
         body: SafeArea(
           child: Column(
             children: [
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+                padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
                 child: Column(
                   children: [
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        GestureDetector(
+                        _HeaderButton(
+                          icon: Icons.arrow_back_ios_new_rounded,
                           onTap: _previousStep,
-                          child: Container(
-                            width: 40.w,
-                            height: 40.h,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFF9FAFB),
-                              borderRadius: BorderRadius.circular(10.r),
-                              border: Border.all(
-                                color: const Color(0xFFE2E8F0),
+                        ),
+                        Column(
+                          children: [
+                            ShaderMask(
+                              shaderCallback: (bounds) => const LinearGradient(
+                                colors: [Color(0xff236DEC), Color(0xff0D47A1)],
+                              ).createShader(bounds),
+                              child: Text(
+                                'Doctor Registration',
+                                style: AppStyles.styleBold16.copyWith(
+                                  color: AppColors.bg,
+                                ),
                               ),
                             ),
-                            child: Icon(
-                              Icons.arrow_back_ios_new_rounded,
-                              size: 16.sp,
-                              color: const Color(0xff1E252D),
+                            SizedBox(height: 2.h),
+                            Text(
+                              'Step ${_currentStep + 1} of 3',
+                              style: AppStyles.styleMedium12.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
                             ),
-                          ),
+                          ],
                         ),
-                        SizedBox(width: 16.w),
-                        Text(
-                          'Step ${_currentStep + 1} of 3',
-                          style: AppStyles.styleMedium16.copyWith(
-                            color: AppColors.textSecondary,
-                          ),
+                        _HeaderButton(
+                          icon: Icons.help_outline_rounded,
+                          onTap: () {}, // Future: Show help dialog
                         ),
                       ],
                     ),
-                    SizedBox(height: 16.h),
+                    SizedBox(height: 24.h),
                     StepProgressIndicator(
                       currentStep: _currentStep,
                       totalSteps: 3,
@@ -243,15 +245,30 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
               Expanded(
                 child: Form(
                   key: _formKey,
-                  child: PageView(
-                    controller: _pageController,
-                    physics: const NeverScrollableScrollPhysics(),
-                    children: [_buildStep1(), _buildStep2(), _buildStep3()],
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 400),
+                    transitionBuilder:
+                        (Widget child, Animation<double> animation) {
+                      return FadeTransition(
+                        opacity: animation,
+                        child: SlideTransition(
+                          position: Tween<Offset>(
+                            begin: const Offset(0.05, 0),
+                            end: Offset.zero,
+                          ).animate(animation),
+                          child: child,
+                        ),
+                      );
+                    },
+                    child: KeyedSubtree(
+                      key: ValueKey<int>(_currentStep),
+                      child: _buildCurrentStep(),
+                    ),
                   ),
                 ),
               ),
               Padding(
-                padding: EdgeInsets.all(24.w),
+                padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
                 child: DoctorSignUpFooter(
                   isLoading: _isSubmitting,
                   onSubmit: _nextStep,
@@ -263,6 +280,19 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
         ),
       ),
     );
+  }
+
+  Widget _buildCurrentStep() {
+    switch (_currentStep) {
+      case 0:
+        return _buildStep1();
+      case 1:
+        return _buildStep2();
+      case 2:
+        return _buildStep3();
+      default:
+        return const SizedBox.shrink();
+    }
   }
 
   Widget _buildStep1() {
@@ -288,8 +318,8 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
             confirmPasswordController: _confirmPasswordController,
             fieldErrors: _fieldErrors,
             formKey: _formKey,
-            onShowClinicLocationPicker: () {},
-            onShowHospitalLocationPicker: () {},
+            onShowClinicLocationPicker: () => _showLocationPicker(forClinic: true),
+            onShowHospitalLocationPicker: () => _showLocationPicker(forClinic: false),
             nameController: _nameController,
             yearsController: _yearsController,
             licenseController: _licenseController,
@@ -297,16 +327,17 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
             clinicAddressController: _clinicAddressController,
             hospitalController: _hospitalController,
             selectedSpecialization: _selectedSpecialization,
-            onSpecializationChanged: (Specialization? value) {},
+            onSpecializationChanged: (spec) => setState(() => _selectedSpecialization = spec),
             profilePicturePath: _profilePicturePath,
-            onProfilePictureChanged: (String? value) {},
+            onProfilePictureChanged: (path) => setState(() => _profilePicturePath = path),
             clinicImagesPaths: _clinicImagesPaths,
-            onClinicImagesChanged: (List<String> value) {},
+            onClinicImagesChanged: (paths) => setState(() => _clinicImagesPaths = paths),
             selectedDateOfBirth: _dateOfBirth,
-            onDateOfBirthChanged: (DateTime? value) {},
+            onDateOfBirthChanged: (date) => setState(() => _dateOfBirth = date),
             selectedGender: _selectedGender,
-            onGenderChanged: (String? value) {},
+            onGenderChanged: (gender) => setState(() => _selectedGender = gender),
           ),
+          SizedBox(height: 24.h),
         ],
       ),
     );
@@ -346,8 +377,8 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
             onDateOfBirthChanged: (date) => setState(() => _dateOfBirth = date),
             fieldErrors: _fieldErrors,
             formKey: _formKey,
-            onShowClinicLocationPicker: () {},
-            onShowHospitalLocationPicker: () {},
+            onShowClinicLocationPicker: () => _showLocationPicker(forClinic: true),
+            onShowHospitalLocationPicker: () => _showLocationPicker(forClinic: false),
             emailController: _emailController,
             phoneController: _phoneController,
             passwordController: _passwordController,
@@ -355,10 +386,9 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
             clinicAddressController: _clinicAddressController,
             hospitalController: _hospitalController,
             clinicImagesPaths: _clinicImagesPaths,
-            onClinicImagesChanged: (List<String> value) {
-              setState(() => _clinicImagesPaths = value);
-            },
+            onClinicImagesChanged: (paths) => setState(() => _clinicImagesPaths = paths),
           ),
+          SizedBox(height: 24.h),
         ],
       ),
     );
@@ -401,381 +431,56 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
             licenseController: _licenseController,
             bioController: _bioController,
             selectedSpecialization: _selectedSpecialization,
-            onSpecializationChanged: (Specialization? value) {},
+            onSpecializationChanged: (spec) => setState(() => _selectedSpecialization = spec),
             profilePicturePath: _profilePicturePath,
-            onProfilePictureChanged: (String? value) {},
+            onProfilePictureChanged: (path) => setState(() => _profilePicturePath = path),
             selectedDateOfBirth: _dateOfBirth,
-            onDateOfBirthChanged: (DateTime? value) {},
+            onDateOfBirthChanged: (date) => setState(() => _dateOfBirth = date),
             selectedGender: _selectedGender,
-            onGenderChanged: (String? value) {},
+            onGenderChanged: (gender) => setState(() => _selectedGender = gender),
           ),
+          SizedBox(height: 24.h),
         ],
       ),
     );
   }
+
+
 }
 
-class _LocationPickerSheet extends StatefulWidget {
-  final String title;
-  final Function(String) onLocationSelected;
-  const _LocationPickerSheet({
-    required this.title,
-    required this.onLocationSelected,
+class _HeaderButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _HeaderButton({
+    required this.icon,
+    required this.onTap,
   });
 
-  @override
-  State<_LocationPickerSheet> createState() => _LocationPickerSheetState();
-}
-
-class _LocationPickerSheetState extends State<_LocationPickerSheet> {
-  late MapController _controller;
-  final _searchController = TextEditingController();
-  String _address = 'Loading...';
-  bool _isSearching = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = MapController.withUserPosition(
-      trackUserLocation: const UserTrackingOption(
-        enableTracking: true,
-        unFollowUser: true, // Fix stiff map: allow user to move freely
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    _searchController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _handleSearch() async {
-    final query = _searchController.text.trim();
-    if (query.isEmpty) return;
-
-    setState(() => _isSearching = true);
-    try {
-      List<geo.Location> locations = await geo.locationFromAddress(query);
-      if (locations.isNotEmpty) {
-        final loc = locations.first;
-        final point = GeoPoint(
-          latitude: loc.latitude,
-          longitude: loc.longitude,
-        );
-        await _controller.moveTo(point);
-        await _controller.addMarker(
-          point,
-          markerIcon: const MarkerIcon(
-            icon: Icon(Icons.location_on, color: Colors.blue, size: 48),
-          ),
-        );
-        _updateAddress(point);
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Location not found')));
-      }
-    } finally {
-      if (mounted) setState(() => _isSearching = false);
-    }
-  }
-
-  Future<void> _updateAddress(GeoPoint position) async {
-    try {
-      List<geo.Placemark> placemarks = await geo.placemarkFromCoordinates(
-        position.latitude,
-        position.longitude,
-      );
-      if (placemarks.isNotEmpty) {
-        final p = placemarks.first;
-        setState(() {
-          _address = '${p.street}, ${p.subLocality}, ${p.locality}';
-        });
-      }
-    } catch (e) {
-      setState(() => _address = 'Unknown Location');
-    }
-  }
-
-  final bool _isLoading = false;
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: MediaQuery.of(context).size.height * 0.85,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      child: Column(
-        children: [
-          Container(
-            margin: EdgeInsets.symmetric(vertical: 12.h),
-            width: 40.w,
-            height: 4.h,
-            decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20.w),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(widget.title, style: AppStyles.styleSemiBold18),
-                IconButton(
-                  icon: const Icon(Icons.close),
-                  onPressed: () => Navigator.pop(context),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: Stack(
-              children: [
-                OSMFlutter(
-                  controller: _controller,
-                  osmOption: OSMOption(
-                    userTrackingOption: const UserTrackingOption(
-                      enableTracking: true,
-                      unFollowUser:
-                          true, // Fix stiff map: allow user to move freely
-                    ),
-                    zoomOption: const ZoomOption(
-                      initZoom: 15,
-                      minZoomLevel: 3,
-                      maxZoomLevel: 19,
-                      stepZoom: 1.0,
-                    ),
-                    userLocationMarker: UserLocationMaker(
-                      personMarker: const MarkerIcon(
-                        icon: Icon(
-                          Icons.location_history_rounded,
-                          color: Colors.red,
-                          size: 48,
-                        ),
-                      ),
-                      directionArrowMarker: const MarkerIcon(
-                        icon: Icon(Icons.double_arrow, size: 48),
-                      ),
-                    ),
-                    roadConfiguration: const RoadOption(
-                      roadColor: Colors.yellowAccent,
-                    ),
-                  ),
-                  onGeoPointClicked: (geoPoint) async {
-                    try {
-                      await _controller.removeMarkers(
-                        [geoPoint],
-                      ); // Avoid duplicates if needed, though addMarker usually handles it
-                      await _controller.addMarker(
-                        geoPoint,
-                        markerIcon: const MarkerIcon(
-                          icon: Icon(
-                            Icons.location_on,
-                            color: Colors.blue,
-                            size: 48,
-                          ),
-                        ),
-                      );
-                      _updateAddress(geoPoint);
-                    } catch (e) {
-                      debugPrint('Error adding marker: $e');
-                    }
-                  },
-                  onMapIsReady: (isReady) async {
-                    if (isReady) {
-                      try {
-                        final point = await _controller.myLocation();
-                        await _controller.addMarker(
-                          point,
-                          markerIcon: const MarkerIcon(
-                            icon: Icon(
-                              Icons.person_pin_circle,
-                              color: Colors.blue,
-                              size: 56,
-                            ),
-                          ),
-                        );
-                        _updateAddress(point);
-                      } catch (e) {
-                        debugPrint('Error getting location: $e');
-                      }
-                    }
-                  },
-                ),
-                Positioned(
-                  top: 20.h,
-                  left: 20.w,
-                  right: 20.w,
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 12.w),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12.r),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.1),
-                          blurRadius: 10,
-                          offset: const Offset(0, 5),
-                        ),
-                      ],
-                    ),
-                    child: TextField(
-                      controller: _searchController,
-                      decoration: InputDecoration(
-                        hintText: 'Search for a place...',
-                        hintStyle: AppStyles.styleRegular14,
-                        border: InputBorder.none,
-                        suffixIcon: _isSearching
-                            ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: Padding(
-                                  padding: EdgeInsets.all(12.0),
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                  ),
-                                ),
-                              )
-                            : IconButton(
-                                icon: const Icon(Icons.search),
-                                onPressed: _handleSearch,
-                              ),
-                      ),
-                      onSubmitted: (_) => _handleSearch(),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  bottom: 100.h,
-                  right: 20.w,
-                  child: FloatingActionButton(
-                    mini: true,
-                    backgroundColor: Colors.white,
-                    onPressed: () async {
-                      try {
-                        await _controller.currentLocation();
-                        final point = await _controller.myLocation();
-                        _updateAddress(point);
-                      } catch (e) {
-                        debugPrint('Error getting current location: $e');
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Could not get current location'),
-                            ),
-                          );
-                        }
-                      }
-                    },
-                    child: const Icon(
-                      Icons.my_location,
-                      color: AppColors.primary,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            padding: EdgeInsets.all(20.w),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, -5),
-                ),
-              ],
-            ),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.location_on_outlined,
-                      color: AppColors.primary,
-                    ),
-                    SizedBox(width: 10.w),
-                    Expanded(
-                      child: Text(
-                        _address,
-                        style: AppStyles.styleMedium14,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 20.h),
-                _SubmitButton(
-                  isLoading: _isLoading,
-                  label: 'Confirm Location',
-                  onPressed: () {
-                    widget.onLocationSelected(_address);
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
-            ),
+      decoration: BoxDecoration(
+        color: AppColors.bg,
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
-    );
-  }
-}
-
-class _SubmitButton extends StatelessWidget {
-  const _SubmitButton({
-    required this.isLoading,
-    required this.label,
-    this.onPressed,
-  });
-  final bool isLoading;
-  final String label;
-  final VoidCallback? onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: 52.h,
-      child: ElevatedButton(
-        onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xff236DEC),
-          disabledBackgroundColor: const Color(
-            0xff236DEC,
-          ).withValues(alpha: 0.6),
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14.r),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          customBorder: const CircleBorder(),
+          child: Padding(
+            padding: EdgeInsets.all(8.w),
+            child: Icon(icon, size: 20.sp, color: AppColors.textPrimary),
           ),
-          elevation: 0,
         ),
-        child: isLoading
-            ? SizedBox(
-                width: 22.w,
-                height: 22.h,
-                child: const CircularProgressIndicator(
-                  strokeWidth: 2.5,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                ),
-              )
-            : Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.send_rounded, size: 18.sp),
-                  SizedBox(width: 8.w),
-                  Text(label, style: AppStyles.styleSemiBold16),
-                ],
-              ),
       ),
     );
   }

@@ -104,33 +104,82 @@ class _HomeViewState extends State<HomeView> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Hello, $name',
+                style: AppStyles.styleSemiBold22.copyWith(
+                  fontSize: 20.sp,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              SizedBox(height: 4.h),
+              Row(
+                children: [
+                  Icon(
+                    Icons.location_on_rounded,
+                    color: AppColors.primary,
+                    size: 14.sp,
+                  ),
+                  SizedBox(width: 4.w),
+                  Text(
+                    'Cairo, Egypt', // Placeholder or real location if available
+                    style: AppStyles.styleRegular14.copyWith(
+                      color: AppColors.textSecondary,
+                      fontSize: 12.sp,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        Stack(
           children: [
-            Text('Hello, $name', style: AppStyles.styleSemiBold22),
-            SizedBox(height: 2.h),
-            Text(
-              _getGreeting(),
-              style: AppStyles.styleRegular14.copyWith(
-                color: AppColors.textSecondary,
+            Container(
+              height: 48.h,
+              width: 48.w,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColors.border),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.03),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: IconButton(
+                onPressed: () {},
+                icon: SvgPicture.asset(
+                  Assets.imagesNotificationIcon,
+                  colorFilter: const ColorFilter.mode(
+                    AppColors.textPrimary,
+                    BlendMode.srcIn,
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              right: 12.w,
+              top: 12.h,
+              child: Container(
+                height: 8.h,
+                width: 8.w,
+                decoration: const BoxDecoration(
+                  color: AppColors.accent,
+                  shape: BoxShape.circle,
+                ),
               ),
             ),
           ],
-        ),
-        Container(
-          height: 50.h,
-          width: 50.w,
-          decoration: BoxDecoration(shape: BoxShape.circle),
-          child: SvgPicture.asset(Assets.imagesNotificationIcon),
         ),
       ],
     );
   }
 
-  String _getGreeting() {
-    final hour = DateTime.now().hour;
-    if (hour < 12) return 'Good Morning';
-    if (hour < 17) return 'Good Afternoon';
-    return 'Good Evening';
-  }
 }

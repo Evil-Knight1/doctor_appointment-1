@@ -8,6 +8,7 @@ class DoctorSignUpHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -22,13 +23,15 @@ class DoctorSignUpHeader extends StatelessWidget {
                 children: [
                   Text(
                     'Doctor\nRegistration',
-                    style: AppStyles.styleSemiBold24,
+                    style: AppStyles.styleSemiBold24.copyWith(
+                      color: theme.textTheme.headlineLarge?.color,
+                    ),
                   ),
                   SizedBox(height: 8.h),
                   Text(
                     'Join our network of healthcare professionals.',
                     style: AppStyles.styleRegular14.copyWith(
-                      color: const Color(0xFF949D9E),
+                      color: theme.hintColor,
                       height: 1.4,
                     ),
                   ),
@@ -42,8 +45,8 @@ class DoctorSignUpHeader extends StatelessWidget {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    const Color(0xff236DEC),
-                    const Color(0xff236DEC).withValues(alpha: 0.7),
+                    theme.colorScheme.primary,
+                    theme.colorScheme.primary.withValues(alpha: 0.7),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -69,20 +72,21 @@ class _BackButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return GestureDetector(
       onTap: onTap,
       child: Container(
         width: 40.w,
         height: 40.h,
         decoration: BoxDecoration(
-          color: const Color(0xFFF9FAFB),
+          color: theme.cardColor,
           borderRadius: BorderRadius.circular(10.r),
-          border: Border.all(color: const Color(0xFFE2E8F0)),
+          border: Border.all(color: theme.dividerColor),
         ),
         child: Icon(
           Icons.arrow_back_ios_new_rounded,
           size: 16.sp,
-          color: const Color(0xff1E252D),
+          color: theme.textTheme.headlineLarge?.color,
         ),
       ),
     );

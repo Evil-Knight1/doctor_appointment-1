@@ -87,12 +87,31 @@ abstract class AppStyles {
     color: AppColors.textSecondary,
   );
 
-  static TextStyle styleMedium16 = TextStyle(
+  static TextStyle styleBold18 = TextStyle(
+    fontSize: 18.sp,
+    fontWeight: FontWeight.w700,
+    fontFamily: 'Inter',
+    color: AppColors.primary,
+  );
+
+  static TextStyle styleBold16 = TextStyle(
     fontSize: 16.sp,
-    fontWeight: FontWeight.w500,
+    fontWeight: FontWeight.w700,
+    fontFamily: 'Inter',
+    color: AppColors.primary,
+  );
+
+  static TextStyle styleBold14 = TextStyle(
+    fontSize: 14.sp,
+    fontWeight: FontWeight.w700,
+    fontFamily: 'Inter',
+    color: AppColors.primary,
+  );
+
+  static TextStyle styleSemiBold20 = TextStyle(
+    fontSize: 20.sp,
+    fontWeight: FontWeight.w600,
     fontFamily: 'Inter',
     color: AppColors.textPrimary,
   );
-
-  static TextStyle? styleSemiBold20;
 }

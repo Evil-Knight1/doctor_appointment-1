@@ -13,9 +13,7 @@ class ChatHistoryView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
         elevation: 0,
         automaticallyImplyLeading: false,
         leading: Navigator.canPop(context)
@@ -50,9 +48,12 @@ class ChatHistoryView extends StatelessWidget {
                     style: AppStyles.styleMedium14.copyWith(color: Colors.red)));
           } else if (state is ChatHistoryLoaded) {
             if (state.sessionIds.isEmpty) {
-              return Center(
-                  child: Text('No previous chats found.',
-                      style: AppStyles.styleMedium14));
+              return Padding(
+                padding: EdgeInsets.only(bottom: 100.h),
+                child: Center(
+                    child: Text('No previous chats found.',
+                        style: AppStyles.styleMedium14)),
+              );
             }
             return ListView.separated(
               padding: EdgeInsets.only(

@@ -26,9 +26,7 @@ class _ProfileViewState extends State<ProfileView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bg,
       appBar: AppBar(
-        backgroundColor: AppColors.bg,
         elevation: 0,
         automaticallyImplyLeading: false,
         title: Text(
@@ -36,180 +34,185 @@ class _ProfileViewState extends State<ProfileView> {
           style: AppStyles.styleSemiBold22.copyWith(fontSize: 18.sp),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.only(
-          left: 20.w,
-          right: 20.w,
-          bottom: 100.h, // prevents content from hiding under curved nav bar
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            BlocBuilder<ProfileCubit, ProfileState>(
-              builder: (context, state) {
-                if (state is ProfileLoading) {
-                  return Padding(
-                    padding: EdgeInsets.symmetric(vertical: 20.h),
-                    child: const Center(child: CircularProgressIndicator()),
-                  );
-                }
-                if (state is ProfileSuccess) {
-                  return ProfileHeaderWidget(
-                    profile: state.profile,
-                  );
-                }
-                if (state is ProfileFailure) {
-                  return Padding(
-                    padding: EdgeInsets.symmetric(vertical: 20.h),
-                    child: Text(
-                      state.message,
-                      style: AppStyles.styleRegular14.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  );
-                }
-                return const SizedBox.shrink();
-              },
+      body: Center(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: 600.w),
+          child: SingleChildScrollView(
+            padding: EdgeInsets.only(
+              left: 20.w,
+              right: 20.w,
+              bottom: 100.h, // prevents content from hiding under curved nav bar
             ),
-            _buildSectionLabel('Account'),
-            SizedBox(height: 10.h),
-            BlocBuilder<ProfileCubit, ProfileState>(
-              builder: (context, state) {
-                return ProfileMenuItem(
-                  icon: Icons.person_outline_rounded,
-                  title: 'Personal Information',
-                  subtitle: 'Name, email, phone',
-                  onTap: () async {
-                    if (state is! ProfileSuccess) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Profile not loaded')),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                BlocBuilder<ProfileCubit, ProfileState>(
+                  builder: (context, state) {
+                    if (state is ProfileLoading) {
+                      return Padding(
+                        padding: EdgeInsets.symmetric(vertical: 20.h),
+                        child: const Center(child: CircularProgressIndicator()),
                       );
-                      return;
                     }
-                    final updated = await context.push<bool>(
-                      AppRouter.kEditProfileView,
-                      extra: state.profile,
-                    );
-                    if (!context.mounted) return;
-                    if (updated == true) {
-                      context.read<ProfileCubit>().loadProfile();
+                    if (state is ProfileSuccess) {
+                      return ProfileHeaderWidget(
+                        profile: state.profile,
+                      );
                     }
+                    if (state is ProfileFailure) {
+                      return Padding(
+                        padding: EdgeInsets.symmetric(vertical: 20.h),
+                        child: Text(
+                          state.message,
+                          style: AppStyles.styleRegular14.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      );
+                    }
+                    return const SizedBox.shrink();
                   },
-                );
-              },
-            ),
-            SizedBox(height: 10.h),
-            ProfileMenuItem(
-              icon: Icons.lock_outline_rounded,
-              title: 'Change Password',
-              subtitle: 'Update your password',
-              onTap: () {},
-            ),
-            SizedBox(height: 20.h),
-            _buildSectionLabel('Health'),
-            SizedBox(height: 10.h),
-            ProfileMenuItem(
-              icon: Icons.description_outlined,
-              title: 'Medical Records',
-              subtitle: 'View your health documents',
-              onTap: () => context.push(AppRouter.kMedicalRecordsView),
-            ),
-            SizedBox(height: 10.h),
-            ProfileMenuItem(
-              icon: Icons.payment_rounded,
-              title: 'Payment History',
-              subtitle: 'Check past transactions',
-              onTap: () => context.push(AppRouter.kPaymentHistoryView),
-            ),
-            SizedBox(height: 20.h),
-            _buildSectionLabel('Preferences'),
-            SizedBox(height: 10.h),
-            ProfileMenuItem(
-              icon: Icons.language_rounded,
-              title: 'Language',
-              subtitle: _selectedLanguage,
-              onTap: () => _showLanguagePicker(context),
-            ),
-            SizedBox(height: 10.h),
-            ProfileMenuItem(
-              icon: Icons.notifications_outlined,
-              title: 'Notifications',
-              subtitle: _notificationsEnabled ? 'Enabled' : 'Disabled',
-              trailing: Switch(
-                value: _notificationsEnabled,
-                onChanged: (v) => setState(() => _notificationsEnabled = v),
-                activeThumbColor: AppColors.primary,
-              ),
-            ),
-            SizedBox(height: 10.h),
-            BlocBuilder<ThemeCubit, ThemeMode>(
-              builder: (context, themeMode) {
-                return ProfileMenuItem(
-                  icon: Icons.dark_mode_outlined,
-                  title: 'Dark Mode',
-                  subtitle: themeMode == ThemeMode.dark
-                      ? 'Enabled'
-                      : 'Disabled',
+                ),
+                _buildSectionLabel('Account'),
+                SizedBox(height: 10.h),
+                BlocBuilder<ProfileCubit, ProfileState>(
+                  builder: (context, state) {
+                    return ProfileMenuItem(
+                      icon: Icons.person_outline_rounded,
+                      title: 'Personal Information',
+                      subtitle: 'Name, email, phone',
+                      onTap: () async {
+                        if (state is! ProfileSuccess) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Profile not loaded')),
+                          );
+                          return;
+                        }
+                        final updated = await context.push<bool>(
+                          AppRouter.kEditProfileView,
+                          extra: state.profile,
+                        );
+                        if (!context.mounted) return;
+                        if (updated == true) {
+                          context.read<ProfileCubit>().loadProfile();
+                        }
+                      },
+                    );
+                  },
+                ),
+                SizedBox(height: 10.h),
+                ProfileMenuItem(
+                  icon: Icons.lock_outline_rounded,
+                  title: 'Change Password',
+                  subtitle: 'Update your password',
+                  onTap: () {},
+                ),
+                SizedBox(height: 20.h),
+                _buildSectionLabel('Health'),
+                SizedBox(height: 10.h),
+                ProfileMenuItem(
+                  icon: Icons.description_outlined,
+                  title: 'Medical Records',
+                  subtitle: 'View your health documents',
+                  onTap: () => context.push(AppRouter.kMedicalRecordsView),
+                ),
+                SizedBox(height: 10.h),
+                ProfileMenuItem(
+                  icon: Icons.payment_rounded,
+                  title: 'Payment History',
+                  subtitle: 'Check past transactions',
+                  onTap: () => context.push(AppRouter.kPaymentHistoryView),
+                ),
+                SizedBox(height: 20.h),
+                _buildSectionLabel('Preferences'),
+                SizedBox(height: 10.h),
+                ProfileMenuItem(
+                  icon: Icons.language_rounded,
+                  title: 'Language',
+                  subtitle: _selectedLanguage,
+                  onTap: () => _showLanguagePicker(context),
+                ),
+                SizedBox(height: 10.h),
+                ProfileMenuItem(
+                  icon: Icons.notifications_outlined,
+                  title: 'Notifications',
+                  subtitle: _notificationsEnabled ? 'Enabled' : 'Disabled',
                   trailing: Switch(
-                    value: themeMode == ThemeMode.dark,
-                    onChanged: (v) {
-                      context.read<ThemeCubit>().toggleTheme(v);
-                    },
+                    value: _notificationsEnabled,
+                    onChanged: (v) => setState(() => _notificationsEnabled = v),
                     activeThumbColor: AppColors.primary,
                   ),
-                );
-              },
-            ),
-            SizedBox(height: 20.h),
-            _buildSectionLabel('Support'),
-            SizedBox(height: 10.h),
-            ProfileMenuItem(
-              icon: Icons.help_outline_rounded,
-              title: 'Help & Support',
-              onTap: () {},
-            ),
-            SizedBox(height: 10.h),
-            ProfileMenuItem(
-              icon: Icons.privacy_tip_outlined,
-              title: 'Privacy Policy',
-              onTap: () {},
-            ),
-            SizedBox(height: 20.h),
-            GestureDetector(
-              onTap: () => _showLogoutDialog(context),
-              child: Container(
-                width: double.infinity,
-                padding: EdgeInsets.symmetric(vertical: 14.h),
-                decoration: BoxDecoration(
-                  color: AppColors.accent.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(14.r),
-                  border: Border.all(
-                    color: AppColors.accent.withValues(alpha: 0.3),
-                  ),
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.logout_rounded,
-                      color: AppColors.accent,
-                      size: 20.sp,
-                    ),
-                    SizedBox(width: 8.w),
-                    Text(
-                      'Log Out',
-                      style: AppStyles.styleMedium14.copyWith(
-                        color: AppColors.accent,
-                        fontSize: 15.sp,
+                SizedBox(height: 10.h),
+                BlocBuilder<ThemeCubit, ThemeMode>(
+                  builder: (context, themeMode) {
+                    return ProfileMenuItem(
+                      icon: Icons.dark_mode_outlined,
+                      title: 'Dark Mode',
+                      subtitle: themeMode == ThemeMode.dark
+                          ? 'Enabled'
+                          : 'Disabled',
+                      trailing: Switch(
+                        value: themeMode == ThemeMode.dark,
+                        onChanged: (v) {
+                          context.read<ThemeCubit>().toggleTheme(v);
+                        },
+                        activeThumbColor: AppColors.primary,
+                      ),
+                    );
+                  },
+                ),
+                SizedBox(height: 20.h),
+                _buildSectionLabel('Support'),
+                SizedBox(height: 10.h),
+                ProfileMenuItem(
+                  icon: Icons.help_outline_rounded,
+                  title: 'Help & Support',
+                  onTap: () {},
+                ),
+                SizedBox(height: 10.h),
+                ProfileMenuItem(
+                  icon: Icons.privacy_tip_outlined,
+                  title: 'Privacy Policy',
+                  onTap: () {},
+                ),
+                SizedBox(height: 20.h),
+                GestureDetector(
+                  onTap: () => _showLogoutDialog(context),
+                  child: Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.symmetric(vertical: 14.h),
+                    decoration: BoxDecoration(
+                      color: AppColors.accent.withValues(alpha: 0.08),
+                      borderRadius: BorderRadius.circular(14.r),
+                      border: Border.all(
+                        color: AppColors.accent.withValues(alpha: 0.3),
                       ),
                     ),
-                  ],
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.logout_rounded,
+                          color: AppColors.accent,
+                          size: 20.sp,
+                        ),
+                        SizedBox(width: 8.w),
+                        Text(
+                          'Log Out',
+                          style: AppStyles.styleMedium14.copyWith(
+                            color: AppColors.accent,
+                            fontSize: 15.sp,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+                SizedBox(height: 32.h),
+              ],
             ),
-            SizedBox(height: 32.h),
-          ],
+          ),
         ),
       ),
     );

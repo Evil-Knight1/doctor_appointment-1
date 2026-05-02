@@ -13,11 +13,15 @@ class UserSelectionView extends StatelessWidget {
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
-          image: DecorationImage(
-            image: const AssetImage('assets/images/auth_bg.png'), // Fallback if exists, otherwise gradient
-            fit: BoxFit.cover,
-            opacity: 0.05,
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              AppColors.primary.withValues(alpha: 0.05),
+              Colors.white,
+              Colors.white,
+            ],
+            stops: const [0.0, 0.3, 1.0],
           ),
         ),
         child: SafeArea(
@@ -26,51 +30,53 @@ class UserSelectionView extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox(height: 60.h),
+                SizedBox(height: 40.h),
 
-                // Logo / App Name
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      padding: EdgeInsets.all(8.w),
-                      decoration: BoxDecoration(
-                        color: AppColors.primary.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(12.r),
-                      ),
-                      child: Icon(
-                        Icons.health_and_safety_rounded,
-                        color: AppColors.primary,
-                        size: 32.sp,
-                      ),
+                // Premium Logo Branding
+                Hero(
+                  tag: 'app_logo',
+                  child: Container(
+                    padding: EdgeInsets.all(16.w),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.primary.withValues(alpha: 0.1),
+                          blurRadius: 20,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
                     ),
-                    SizedBox(width: 12.w),
-                    Text(
-                      'MedLink+',
-                      style: AppStyles.styleBold32.copyWith(
-                        fontSize: 24.sp,
-                        color: AppColors.primary,
-                        letterSpacing: -0.5,
-                      ),
+                    child: Icon(
+                      Icons.health_and_safety_rounded,
+                      color: AppColors.primary,
+                      size: 48.sp,
                     ),
-                  ],
+                  ),
+                ),
+                SizedBox(height: 16.h),
+                Text(
+                  'MedLink+',
+                  style: AppStyles.styleBold24.copyWith(
+                    color: AppColors.primary,
+                    letterSpacing: -0.5,
+                  ),
                 ),
                 
                 SizedBox(height: 48.h),
 
                 // Welcome Text
                 Text(
-                  'Join Our Medical\nCommunity',
+                  'Choose Your Role',
                   style: AppStyles.styleBold32.copyWith(
                     fontSize: 28.sp,
-                    height: 1.2,
                     color: AppColors.textPrimary,
                   ),
-                  textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 16.h),
+                SizedBox(height: 12.h),
                 Text(
-                  'To provide you with the best experience,\nplease select your role below.',
+                  'Are you looking for medical care or\noffering professional services?',
                   style: AppStyles.styleRegular14.copyWith(
                     color: AppColors.textSecondary,
                     height: 1.5,
@@ -78,7 +84,7 @@ class UserSelectionView extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
 
-                SizedBox(height: 56.h),
+                SizedBox(height: 48.h),
 
                 // Role Selection Cards
                 Row(
@@ -88,18 +94,18 @@ class UserSelectionView extends StatelessWidget {
                         icon: Icons.person_outline_rounded,
                         activeIcon: Icons.person_rounded,
                         title: "Patient",
-                        description: 'I want to book\nappointments',
-                        isSelected: false, // Could be handled by state if needed
+                        description: 'Book and manage\nappointments',
+                        isSelected: false,
                         onTap: () => context.push(AppRouter.kSignUpView),
                       ),
                     ),
-                    SizedBox(width: 16.w),
+                    SizedBox(width: 20.w),
                     Expanded(
                       child: _RoleCard(
                         icon: Icons.medical_services_outlined,
                         activeIcon: Icons.medical_services_rounded,
                         title: "Doctor",
-                        description: 'I want to manage\nmy practice',
+                        description: 'Manage clinic and\npatient requests',
                         isSelected: false,
                         onTap: () => context.push(AppRouter.kDoctorSignUpView),
                       ),
@@ -112,26 +118,34 @@ class UserSelectionView extends StatelessWidget {
                 // Login Link
                 Padding(
                   padding: EdgeInsets.only(bottom: 24.h),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Already have an account? ',
-                        style: AppStyles.styleRegular14.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () => context.push(AppRouter.kLoginView),
-                        child: Text(
-                          'Sign In',
-                          style: AppStyles.styleSemiBold16.copyWith(
-                            color: AppColors.primary,
-                            fontSize: 14.sp,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 24.w),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.05),
+                      borderRadius: BorderRadius.circular(20.r),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Already a member? ',
+                          style: AppStyles.styleRegular14.copyWith(
+                            color: AppColors.textSecondary,
                           ),
                         ),
-                      ),
-                    ],
+                        GestureDetector(
+                          onTap: () => context.push(AppRouter.kLoginView),
+                          child: Text(
+                            'Sign In',
+                            style: AppStyles.styleSemiBold16.copyWith(
+                              color: AppColors.primary,
+                              fontSize: 14.sp,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -143,7 +157,7 @@ class UserSelectionView extends StatelessWidget {
   }
 }
 
-class _RoleCard extends StatelessWidget {
+class _RoleCard extends StatefulWidget {
   final IconData icon;
   final IconData activeIcon;
   final String title;
@@ -161,67 +175,92 @@ class _RoleCard extends StatelessWidget {
   });
 
   @override
+  State<_RoleCard> createState() => _RoleCardState();
+}
+
+class _RoleCardState extends State<_RoleCard> {
+  bool _isHovered = false;
+
+  @override
   Widget build(BuildContext context) {
+    final bool active = widget.isSelected || _isHovered;
+    
     return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        padding: EdgeInsets.symmetric(vertical: 32.h, horizontal: 16.w),
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary : Colors.white,
-          borderRadius: BorderRadius.circular(24.r),
-          border: Border.all(
-            color: isSelected ? AppColors.primary : AppColors.border.withValues(alpha: 0.5),
-            width: 2,
+      onTap: widget.onTap,
+      onTapDown: (_) => setState(() => _isHovered = true),
+      onTapUp: (_) => setState(() => _isHovered = false),
+      onTapCancel: () => setState(() => _isHovered = false),
+      child: AnimatedScale(
+        scale: active ? 1.02 : 1.0,
+        duration: const Duration(milliseconds: 200),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          padding: EdgeInsets.symmetric(vertical: 32.h, horizontal: 16.w),
+          decoration: BoxDecoration(
+            color: active ? Colors.white : Colors.white.withValues(alpha: 0.8),
+            borderRadius: BorderRadius.circular(28.r),
+            gradient: active ? LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                AppColors.primary,
+                AppColors.primary.withValues(alpha: 0.8),
+              ],
+            ) : null,
+            border: Border.all(
+              color: active ? AppColors.primary : AppColors.border,
+              width: 1.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: active 
+                    ? AppColors.primary.withValues(alpha: 0.25) 
+                    : Colors.black.withValues(alpha: 0.05),
+                blurRadius: active ? 24 : 12,
+                offset: Offset(0, active ? 12 : 6),
+              ),
+            ],
           ),
-          boxShadow: [
-            BoxShadow(
-              color: isSelected 
-                  ? AppColors.primary.withValues(alpha: 0.25) 
-                  : Colors.black.withValues(alpha: 0.03),
-              blurRadius: 20,
-              offset: const Offset(0, 10),
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              padding: EdgeInsets.all(16.w),
-              decoration: BoxDecoration(
-                color: isSelected 
-                    ? Colors.white.withValues(alpha: 0.2) 
-                    : AppColors.primary.withValues(alpha: 0.08),
-                shape: BoxShape.circle,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                padding: EdgeInsets.all(16.w),
+                decoration: BoxDecoration(
+                  color: active 
+                      ? Colors.white.withValues(alpha: 0.2) 
+                      : AppColors.primary.withValues(alpha: 0.08),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  active ? widget.activeIcon : widget.icon,
+                  size: 36.sp,
+                  color: active ? Colors.white : AppColors.primary,
+                ),
               ),
-              child: Icon(
-                isSelected ? activeIcon : icon,
-                size: 32.sp,
-                color: isSelected ? Colors.white : AppColors.primary,
+              SizedBox(height: 24.h),
+              Text(
+                widget.title,
+                style: AppStyles.styleBold32.copyWith(
+                  fontSize: 20.sp,
+                  color: active ? Colors.white : AppColors.textPrimary,
+                ),
               ),
-            ),
-            SizedBox(height: 20.h),
-            Text(
-              title,
-              style: AppStyles.styleBold32.copyWith(
-                fontSize: 18.sp,
-                color: isSelected ? Colors.white : AppColors.textPrimary,
+              SizedBox(height: 12.h),
+              Text(
+                widget.description,
+                textAlign: TextAlign.center,
+                style: AppStyles.styleRegular12.copyWith(
+                  fontSize: 12.sp,
+                  color: active 
+                      ? Colors.white.withValues(alpha: 0.9) 
+                      : AppColors.textSecondary,
+                  height: 1.4,
+                ),
               ),
-            ),
-            SizedBox(height: 8.h),
-            Text(
-              description,
-              textAlign: TextAlign.center,
-              style: AppStyles.styleRegular12.copyWith(
-                fontSize: 11.sp,
-                color: isSelected 
-                    ? Colors.white.withValues(alpha: 0.8) 
-                    : AppColors.textSecondary,
-                height: 1.4,
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
