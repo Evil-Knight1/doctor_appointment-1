@@ -1,3 +1,4 @@
+import 'package:doctor_appointment/core/utils/registration_validators.dart';
 import 'package:doctor_appointment/features/auth/presentation/widgets/doctor_signup/doctor_specialization_field.dart';
 import 'package:doctor_appointment/features/auth/presentation/widgets/registration_date_picker.dart';
 import 'package:doctor_appointment/features/auth/presentation/widgets/registration_dropdown.dart';
@@ -128,6 +129,7 @@ class _DoctorSignUpFormState extends State<DoctorSignUpForm> {
           focusNode: _emailFocus,
           keyboardType: TextInputType.emailAddress,
           prefixIcon: Icons.email_outlined,
+          validator: RegistrationValidators.validateEmail,
           serverError: _serverError('email'),
         ),
         SizedBox(height: 16.h),
@@ -140,6 +142,7 @@ class _DoctorSignUpFormState extends State<DoctorSignUpForm> {
           focusNode: _passwordFocus,
           isPassword: true,
           prefixIcon: Icons.lock_outline_rounded,
+          validator: RegistrationValidators.validatePassword,
           serverError: _serverError('password'),
         ),
         SizedBox(height: 16.h),
@@ -150,6 +153,10 @@ class _DoctorSignUpFormState extends State<DoctorSignUpForm> {
           focusNode: _confirmFocus,
           isPassword: true,
           prefixIcon: Icons.lock_reset_rounded,
+          validator: (value) => RegistrationValidators.validateConfirmPassword(
+            value,
+            widget.passwordController.text,
+          ),
           serverError: _serverError('confirmpassword'),
         ),
       ],
@@ -170,6 +177,7 @@ class _DoctorSignUpFormState extends State<DoctorSignUpForm> {
           controller: widget.nameController,
           focusNode: _nameFocus,
           prefixIcon: Icons.person_outline_rounded,
+          validator: (value) => RegistrationValidators.validateRequired(value, 'Full Name'),
           serverError: _serverError('fullname') ?? _serverError('fullName'),
         ),
         SizedBox(height: 16.h),
@@ -205,6 +213,7 @@ class _DoctorSignUpFormState extends State<DoctorSignUpForm> {
           controller: widget.licenseController,
           focusNode: _licenseFocus,
           prefixIcon: Icons.badge_outlined,
+          validator: (value) => RegistrationValidators.validateRequired(value, 'License ID'),
           serverError:
               _serverError('licensenumber') ?? _serverError('licenseid'),
         ),
@@ -218,6 +227,7 @@ class _DoctorSignUpFormState extends State<DoctorSignUpForm> {
                 controller: widget.yearsController,
                 focusNode: _yearsFocus,
                 keyboardType: TextInputType.number,
+                validator: RegistrationValidators.validateExperienceYears,
                 serverError:
                     _serverError('yearsofexperience') ??
                     _serverError('experienceyears'),
@@ -239,6 +249,7 @@ class _DoctorSignUpFormState extends State<DoctorSignUpForm> {
           controller: widget.bioController,
           focusNode: _bioFocus,
           maxLines: 3,
+          validator: (value) => RegistrationValidators.validateRequired(value, 'Bio'),
           serverError: _serverError('bio'),
         ),
       ],
@@ -260,6 +271,7 @@ class _DoctorSignUpFormState extends State<DoctorSignUpForm> {
           controller: widget.hospitalController,
           focusNode: _hospitalFocus,
           prefixIcon: Icons.local_hospital_outlined,
+          validator: (value) => RegistrationValidators.validateRequired(value, 'Main Hospital'),
           suffixIcon: IconButton(
             icon: Icon(Icons.map_rounded, color: theme.colorScheme.primary),
             onPressed: widget.onShowHospitalLocationPicker,
@@ -273,6 +285,7 @@ class _DoctorSignUpFormState extends State<DoctorSignUpForm> {
           controller: widget.clinicAddressController,
           focusNode: _clinicFocus,
           prefixIcon: Icons.location_on_outlined,
+          validator: (value) => RegistrationValidators.validateRequired(value, 'Clinic Address'),
           suffixIcon: IconButton(
             icon: Icon(Icons.map_rounded, color: theme.colorScheme.primary),
             onPressed: widget.onShowClinicLocationPicker,

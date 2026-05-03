@@ -98,4 +98,10 @@ abstract class AppStyles {
     fontWeight: FontWeight.w600,
     fontFamily: 'Inter',
   );
+
+  static TextStyle styleSemiBold14 = TextStyle(
+    fontSize: 14.sp,
+    fontWeight: FontWeight.w600,
+    fontFamily: 'Inter',
+  );
 }

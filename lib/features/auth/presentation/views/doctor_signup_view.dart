@@ -152,6 +152,71 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
     );
   }
 
+  void _showHelpDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        final theme = Theme.of(context);
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
+          backgroundColor: theme.cardColor,
+          title: Row(
+            children: [
+              Icon(Icons.help_outline_rounded, color: theme.colorScheme.primary),
+              SizedBox(width: 12.w),
+              Text('Registration Help', style: AppStyles.styleBold18),
+            ],
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildHelpItem(
+                  'Step 1: Credentials',
+                  'Provide your professional email and a secure password. You\'ll also need a valid phone number for verification.',
+                ),
+                _buildHelpItem(
+                  'Step 2: Personal Info',
+                  'Upload a professional profile picture. Enter your full name, birth date, gender, and medical license ID.',
+                ),
+                _buildHelpItem(
+                  'Step 3: Clinic Details',
+                  'Provide your clinic location and name of the hospital you are affiliated with. Upload images of your clinic to help patients find you.',
+                ),
+                SizedBox(height: 12.h),
+                Text(
+                  'Note: All registrations are reviewed by our administration team before approval.',
+                  style: AppStyles.styleRegular12.copyWith(color: theme.hintColor, fontStyle: FontStyle.italic),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Got it', style: AppStyles.styleSemiBold16.copyWith(color: theme.colorScheme.primary)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildHelpItem(String title, String description) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 16.h),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: AppStyles.styleSemiBold14.copyWith(color: Theme.of(context).colorScheme.primary)),
+          SizedBox(height: 4.h),
+          Text(description, style: AppStyles.styleRegular14),
+        ],
+      ),
+    );
+  }
+
   void _showErrorSnackBar(String message) {
     if (!mounted) return;
     final theme = Theme.of(context);
