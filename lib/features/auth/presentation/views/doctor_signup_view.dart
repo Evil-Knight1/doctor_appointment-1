@@ -230,6 +230,22 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
     );
   }
 
+  void _showHelpDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Help'),
+        content: const Text('Please fill out the form to register as a doctor. For further assistance, contact support.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<AuthCubit, AuthState>(

@@ -1,3 +1,4 @@
+import 'package:doctor_appointment/core/utils/routes.dart';
 import 'package:doctor_appointment/core/widgets/bottom_navigation_bar.dart';
 import 'package:doctor_appointment/features/appointment/presentation/views/appointment_success_view.dart';
 import 'package:doctor_appointment/features/appointment/presentation/views/new_appointment_view.dart';
@@ -12,13 +13,23 @@ import 'package:doctor_appointment/features/auth/presentation/views/user_selecti
 import 'package:doctor_appointment/features/auth/logic/auth_cubit.dart';
 import 'package:doctor_appointment/features/auth/logic/forgot_password_cubit.dart';
 import 'package:doctor_appointment/features/calendar/presentation/views/calendar_view.dart';
-import 'package:doctor_appointment/features/doctor_details/presentation/views/doctor_details_view.dart';
 import 'package:doctor_appointment/features/favorite/presentation/views/favorite_view.dart';
-import 'package:doctor_appointment/features/home/presentation/views/category_detail_view.dart';
 import 'package:doctor_appointment/features/home/presentation/views/home_view.dart';
-import 'package:doctor_appointment/features/home/presentation/views/specialties_view.dart';
-import 'package:doctor_appointment/features/chatbot/presentation/views/chatbot_view.dart';
+import 'package:doctor_appointment/features/home/presentation/views/notification_view.dart';
+import 'package:doctor_appointment/features/home/presentation/views/find_nearby_view.dart';
+import 'package:doctor_appointment/features/home/presentation/views/doctor_speciality_view.dart';
+import 'package:doctor_appointment/features/home/presentation/views/recommendation_view.dart';
+import 'package:doctor_appointment/features/home/presentation/views/doctor_details_view.dart'
+    as home_doctor_details;
+import 'package:doctor_appointment/features/home/presentation/views/booking_date_view.dart';
+import 'package:doctor_appointment/features/home/presentation/views/booking_payment_view.dart';
+import 'package:doctor_appointment/features/home/presentation/views/booking_summary_view.dart';
+import 'package:doctor_appointment/features/home/presentation/views/booking_confirmed_view.dart';
+import 'package:doctor_appointment/features/home/presentation/views/booking_review_view.dart';
+import 'package:doctor_appointment/features/home/data/models/home_model.dart'
+    as home_models;
 import 'package:doctor_appointment/features/home/data/models/doctor_model.dart';
+import 'package:doctor_appointment/features/chatbot/presentation/views/chatbot_view.dart';
 import 'package:doctor_appointment/features/profile/presentation/views/profile_view.dart';
 import 'package:doctor_appointment/features/profile/presentation/views/edit_profile_view.dart';
 import 'package:doctor_appointment/features/profile/domain/entities/patient_profile.dart';
@@ -27,7 +38,8 @@ import 'package:doctor_appointment/features/on_boarding_view/presentation/views/
 import 'package:doctor_appointment/core/services/service_locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:doctor_appointment/features/auth/presentation/views/doctor_pending_approval_view.dart' as doctor_pending;
+import 'package:doctor_appointment/features/auth/presentation/views/doctor_pending_approval_view.dart'
+    as doctor_pending;
 import 'package:doctor_appointment/features/medical_records/presentation/views/medical_records_view.dart';
 import 'package:doctor_appointment/features/medical_records/presentation/views/create_record_view.dart';
 import 'package:doctor_appointment/features/doctor_flow/presentation/views/doctor_root.dart';
@@ -57,8 +69,6 @@ abstract class AppRouter {
   static const kFavoriteView = '/favoriteView';
   static const kCalendarView = '/calendarView';
   static const kProfileView = '/profileView';
-  static const kCategoryDetailsView = '/categoryDetailsView';
-  static const kSpecialtiesView = '/specialtiesView';
   static const kChatbotView = '/chatbotView';
   static const kDoctorDetail = '/doctorDetail';
   static const kNewAppointment = '/newAppointment';
@@ -80,10 +90,23 @@ abstract class AppRouter {
   static const kVerifyOtpView = '/verifyOtpView';
   static const kResetPasswordView = '/resetPasswordView';
 
+  // ── Home sub-routes ──
+  static const kNotificationView = '/notificationView';
+  static const kFindNearbyView = '/findNearbyView';
+  static const kDoctorSpecialityView = '/doctorSpecialityView';
+  static const kRecommendationView = '/recommendationView';
+  static const kHomeDoctorDetailsView = '/homeDoctorDetailsView';
+  static const kBookingDateView = '/bookingDateView';
+  static const kBookingPaymentView = '/bookingPaymentView';
+  static const kBookingSummaryView = '/bookingSummaryView';
+  static const kBookingConfirmedView = '/bookingConfirmedView';
+  static const kBookingReviewView = '/bookingReviewView';
+
   static final router = GoRouter(
     routes: [
       GoRoute(path: '/', builder: (context, state) => const SplashView()),
       GoRoute(
+        name: Routes.loginView,
         path: kLoginView,
         builder: (context, state) => BlocProvider(
           create: (_) => getIt<AuthCubit>(),
@@ -95,11 +118,17 @@ abstract class AppRouter {
         builder: (context, state) => const UserSelectionView(),
       ),
       GoRoute(
+        name: Routes.onBoardingView,
         path: kOnBoardingView,
         builder: (context, state) => const OnBoardingView(),
       ),
-      GoRoute(path: kHomeView, builder: (context, state) => const HomeView()),
       GoRoute(
+        name: Routes.homeView,
+        path: kHomeView,
+        builder: (context, state) => const HomeView(),
+      ),
+      GoRoute(
+        name: Routes.signUpView,
         path: kSignUpView,
         builder: (context, state) => BlocProvider(
           create: (_) => getIt<AuthCubit>(),
@@ -107,6 +136,7 @@ abstract class AppRouter {
         ),
       ),
       GoRoute(
+        name: Routes.root,
         path: kRoot,
         builder: (context, state) => MultiBlocProvider(
           providers: [
@@ -125,18 +155,22 @@ abstract class AppRouter {
         ),
       ),
       GoRoute(
+        name: Routes.favoriteView,
         path: kFavoriteView,
         builder: (context, state) => const FavoriteView(),
       ),
       GoRoute(
+        name: Routes.calendarView,
         path: kCalendarView,
         builder: (context, state) => const CalendarView(),
       ),
       GoRoute(
+        name: Routes.profileView,
         path: kProfileView,
         builder: (context, state) => const ProfileView(),
       ),
       GoRoute(
+        name: Routes.editProfileView,
         path: kEditProfileView,
         builder: (context, state) {
           final profile = state.extra as PatientProfile;
@@ -144,17 +178,7 @@ abstract class AppRouter {
         },
       ),
       GoRoute(
-        path: kCategoryDetailsView,
-        builder: (context, state) {
-          final name = state.extra as String? ?? 'Category';
-          return CategoryDetailView(categoryName: name);
-        },
-      ),
-      GoRoute(
-        path: kSpecialtiesView,
-        builder: (context, state) => const SpecialtiesView(),
-      ),
-      GoRoute(
+        name: Routes.chatbotView,
         path: kChatbotView,
         builder: (context, state) {
           final sessionId = state.extra as String?;
@@ -165,6 +189,7 @@ abstract class AppRouter {
         },
       ),
       GoRoute(
+        name: Routes.chatHistoryView,
         path: kChatHistoryView,
         builder: (context, state) => BlocProvider(
           create: (context) => getIt<ChatHistoryCubit>()..fetchUserChats(),
@@ -172,53 +197,34 @@ abstract class AppRouter {
         ),
       ),
       GoRoute(
-        path: kDoctorDetail,
-        builder: (context, state) {
-          final doctor = state.extra as DoctorModel;
-          return DoctorDetailsView(doctor: doctor);
-        },
-      ),
-      GoRoute(
-        path: kNewAppointment,
-        builder: (context, state) {
-          final doctor = state.extra as DoctorModel;
-          return NewAppointmentView(doctor: doctor);
-        },
-      ),
-      GoRoute(
-        path: kPatientDetails,
-        builder: (context, state) {
-          final draft = state.extra as AppointmentDraft;
-          return PatientDetailsView(draft: draft);
-        },
-      ),
-      GoRoute(
-        path: kAppointmentSuccess,
-        builder: (context, state) => const AppointmentSuccessView(),
-      ),
-      GoRoute(
+        name: Routes.doctorPendingApprovalView,
         path: kDoctorPendingApprovalView,
         builder: (context, state) {
           return const doctor_pending.DoctorPendingApprovalView();
         },
       ),
       GoRoute(
+        name: Routes.medicalRecordsView,
         path: kMedicalRecordsView,
         builder: (context, state) => const MedicalRecordsView(),
       ),
       GoRoute(
+        name: Routes.createRecordView,
         path: kCreateRecordView,
         builder: (context, state) => const CreateRecordView(),
       ),
       GoRoute(
+        name: Routes.paymentHistoryView,
         path: kPaymentHistoryView,
         builder: (context, state) => const PaymentHistoryView(),
       ),
       GoRoute(
+        name: Routes.transactionDetailsView,
         path: kTransactionDetailsView,
         builder: (context, state) => const TransactionDetailsView(),
       ),
       GoRoute(
+        name: Routes.checkoutView,
         path: kCheckoutView,
         builder: (context, state) {
           final payload = state.extra as CheckoutPayload;
@@ -226,6 +232,7 @@ abstract class AppRouter {
         },
       ),
       GoRoute(
+        name: Routes.appointmentDetailsView,
         path: kAppointmentDetailsView,
         builder: (context, state) {
           final data = state.extra as Map<String, dynamic>? ?? {};
@@ -233,6 +240,7 @@ abstract class AppRouter {
         },
       ),
       GoRoute(
+        name: Routes.doctorRoot,
         path: kDoctorRoot,
         builder: (context, state) => MultiBlocProvider(
           providers: [
@@ -251,6 +259,7 @@ abstract class AppRouter {
         ),
       ),
       GoRoute(
+        name: Routes.doctorSignUpView,
         path: kDoctorSignUpView,
         builder: (context, state) => MultiBlocProvider(
           providers: [
@@ -290,6 +299,99 @@ abstract class AppRouter {
               token: data['token'] as String,
             ),
           );
+        },
+      ),
+
+      // ── Existing appointment flow (uses API DoctorModel) ──
+      GoRoute(
+        name: Routes.newAppointment,
+        path: kNewAppointment,
+        builder: (context, state) {
+          final doctor = state.extra as DoctorModel;
+          return NewAppointmentView(doctor: doctor);
+        },
+      ),
+      GoRoute(
+        name: Routes.patientDetails,
+        path: kPatientDetails,
+        builder: (context, state) {
+          final draft = state.extra as AppointmentDraft;
+          return PatientDetailsView(draft: draft);
+        },
+      ),
+      GoRoute(
+        name: Routes.appointmentSuccess,
+        path: kAppointmentSuccess,
+        builder: (context, state) => const AppointmentSuccessView(),
+      ),
+
+      // ── Home sub-view routes ──
+      GoRoute(
+        name: Routes.notificationView,
+        path: kNotificationView,
+        builder: (context, state) => const NotificationsView(),
+      ),
+      GoRoute(
+        name: Routes.findNearbyView,
+        path: kFindNearbyView,
+        builder: (context, state) => const FindNearbyView(),
+      ),
+      GoRoute(
+        name: Routes.doctorSpecialityView,
+        path: kDoctorSpecialityView,
+        builder: (context, state) => const DoctorSpecialityView(),
+      ),
+      GoRoute(
+        name: Routes.recommendationView,
+        path: kRecommendationView,
+        builder: (context, state) {
+          final speciality = state.extra as String?;
+          return RecommendationView(filterSpeciality: speciality);
+        },
+      ),
+      GoRoute(
+        name: Routes.doctorDetailsView,
+        path: kHomeDoctorDetailsView,
+        builder: (context, state) {
+          final doctor = state.extra as home_models.DoctorModel;
+          return home_doctor_details.DoctorDetailView(doctor: doctor);
+        },
+      ),
+      GoRoute(
+        name: Routes.bookingDateView,
+        path: kBookingDateView,
+        builder: (context, state) {
+          final doctor = state.extra as home_models.DoctorModel;
+          return BookingDateView(doctor: doctor);
+        },
+      ),
+      GoRoute(
+        name: Routes.bookingPaymentView,
+        path: kBookingPaymentView,
+        builder: (context, state) {
+          final args = state.extra as Map<String, dynamic>;
+          return BookingPaymentView(args: args);
+        },
+      ),
+      GoRoute(
+        name: Routes.bookingSummaryView,
+        path: kBookingSummaryView,
+        builder: (context, state) {
+          final args = state.extra as Map<String, dynamic>;
+          return BookingSummaryView(args: args);
+        },
+      ),
+      GoRoute(
+        name: Routes.bookingConfirmedView,
+        path: kBookingConfirmedView,
+        builder: (context, state) => const BookingConfirmedView(),
+      ),
+      GoRoute(
+        name: Routes.bookingReviewView,
+        path: kBookingReviewView,
+        builder: (context, state) {
+          final doctor = state.extra as home_models.DoctorModel;
+          return BookingReviewView(doctor: doctor);
         },
       ),
     ],

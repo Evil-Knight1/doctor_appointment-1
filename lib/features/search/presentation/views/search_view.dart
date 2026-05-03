@@ -5,8 +5,8 @@ import 'package:doctor_appointment/core/services/service_locator.dart';
 import 'package:doctor_appointment/features/doctors/domain/entities/doctor.dart';
 import 'package:doctor_appointment/features/doctors/logic/doctors_cubit.dart';
 import 'package:doctor_appointment/features/doctors/logic/doctors_state.dart';
-import 'package:doctor_appointment/features/home/data/models/doctor_model.dart';
-import 'package:doctor_appointment/features/home/presentation/widgets/category_doctor_card.dart';
+import 'package:doctor_appointment/features/home/data/models/home_model.dart';
+import 'package:doctor_appointment/features/home/presentation/widgets/doctor_list_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -307,7 +307,10 @@ class _SearchViewState extends State<SearchView> {
             separatorBuilder: (_, _) => SizedBox(height: 12.h),
             itemBuilder: (_, index) {
               if (index < doctors.length) {
-                return CategoryDoctorCard(doctor: doctors[index]);
+                return DoctorListTile(
+                  doctor: doctors[index],
+                  onTap: () {},
+                );
               }
               return Padding(
                 padding: EdgeInsets.symmetric(vertical: 16.h),
@@ -333,13 +336,14 @@ List<DoctorModel> _mapDoctors(List<Doctor> doctors) {
     final index = entry.key;
     final doctor = entry.value;
     return DoctorModel(
-      id: doctor.id,
+      id: doctor.id.toString(),
       name: doctor.fullName,
-      specialty: doctor.specialization ?? 'General',
-      rating: doctor.averageRating ?? 0,
-      reviews: doctor.totalReviews,
-      fee: 'N/A',
-      imageAsset: images[index % images.length],
+      speciality: doctor.specialization ?? 'General',
+      hospital: 'N/A',
+      rating: doctor.averageRating ?? 0.0,
+      reviewCount: doctor.totalReviews,
+      avatarAsset: images[index % images.length],
+      isAvailable: true,
     );
   }).toList();
 }
