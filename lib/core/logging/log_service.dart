@@ -29,10 +29,7 @@ class LogService {
         printEmojis: true,
         dateTimeFormat: DateTimeFormat.onlyTimeAndSinceStart,
       ),
-      output: MultiOutput([
-        ConsoleOutput(),
-        _FileLogOutput(_logFile),
-      ]),
+      output: MultiOutput([ConsoleOutput(), _FileLogOutput(_logFile)]),
     );
 
     _initialized = true;

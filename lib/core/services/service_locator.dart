@@ -1,8 +1,6 @@
 import 'package:doctor_appointment/features/appointment/domain/repositories/appointment_repository.dart';
 import 'package:doctor_appointment/features/auth/domain/usecases/update_fcm_token_usecase.dart';
 import 'package:sentry_dio/sentry_dio.dart';
-import 'package:doctor_appointment/core/logging/log_service.dart';
-import 'package:doctor_appointment/core/logging/api_logging_interceptor.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:doctor_appointment/core/config/app_config.dart';
@@ -12,6 +10,8 @@ import 'package:doctor_appointment/core/services/auth_token_interceptor.dart';
 import 'package:doctor_appointment/core/services/secure_storage_service.dart';
 import 'package:doctor_appointment/core/services/notification_service.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:doctor_appointment/core/logging/log_service.dart';
+import 'package:doctor_appointment/core/logging/api_logging_interceptor.dart';
 import 'package:doctor_appointment/features/auth/data/datasources/auth_local_data_source.dart';
 import 'package:doctor_appointment/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:doctor_appointment/features/auth/data/repositories/auth_repository_impl.dart';
@@ -31,6 +31,7 @@ import 'package:doctor_appointment/features/doctors/logic/doctors_cubit.dart';
 import 'package:doctor_appointment/features/profile/data/datasources/profile_remote_data_source.dart';
 import 'package:doctor_appointment/features/profile/data/repositories/profile_repository_impl.dart';
 import 'package:doctor_appointment/features/profile/domain/repositories/profile_repository.dart';
+import 'package:doctor_appointment/features/doctors/logic/doctor_details_cubit.dart';
 import 'package:doctor_appointment/features/profile/domain/usecases/get_patient_profile_usecase.dart';
 import 'package:doctor_appointment/features/profile/domain/usecases/update_patient_profile_usecase.dart';
 import 'package:doctor_appointment/features/profile/logic/profile_cubit.dart';
@@ -72,12 +73,23 @@ import 'package:doctor_appointment/features/chatbot/logic/chat_cubit.dart';
 import 'package:doctor_appointment/features/chatbot/logic/chat_history_cubit.dart';
 import 'package:doctor_appointment/core/logic/theme_cubit.dart';
 
+// Chat Feature Imports
+import 'package:doctor_appointment/features/chat/data/datasources/chat_remote_data_source.dart';
+import 'package:doctor_appointment/features/chat/data/services/chat_signalr_service.dart';
+import 'package:doctor_appointment/features/chat/logic/user_chat_cubit.dart';
+import 'package:doctor_appointment/features/chat/logic/conversations_cubit.dart';
+
 final getIt = GetIt.instance;
 
 void setupServiceLocator() {
   getIt.registerLazySingleton<ThemeCubit>(() => ThemeCubit());
   getIt.registerLazySingleton<AppConfig>(() {
-    final config = AppConfig(apiUrl: Env.apiUrl);
+    final config = AppConfig(
+      apiUrl: Env.apiUrl,
+      paymobApiKey: Env.paymobApiKey,
+      paymobIntegrationId: Env.paymobIntegrationId,
+      paymobIframeId: Env.paymobIframeId,
+    );
     config.validate();
     return config;
   });
@@ -166,6 +178,7 @@ void setupServiceLocator() {
   getIt.registerFactory(
     () => DoctorsCubit(searchDoctorsUseCase: getIt<SearchDoctorsUseCase>()),
   );
+  getIt.registerFactory(() => DoctorDetailsCubit());
 
   getIt.registerLazySingleton<ProfileRemoteDataSource>(
     () => ProfileRemoteDataSourceImpl(getIt<ApiService>()),
@@ -308,4 +321,17 @@ void setupServiceLocator() {
       sendAIChatMessageUseCase: getIt<SendAIChatMessageUseCase>(),
     ),
   );
+
+  // Chat Feature
+  getIt.registerLazySingleton<ChatRemoteDataSource>(
+    () => ChatRemoteDataSourceImpl(getIt<ApiService>()),
+  );
+  getIt.registerLazySingleton<ChatSignalRService>(
+    () => ChatSignalRServiceImpl(
+      getIt<AppConfig>(),
+      getIt<AuthLocalDataSource>(),
+    ),
+  );
+  getIt.registerFactory(() => UserChatCubit(getIt(), getIt()));
+  getIt.registerFactory(() => ConversationsCubit(getIt(), getIt()));
 }

@@ -9,13 +9,18 @@ import '../widgets/booking_confirmed_widgets.dart';
 import '../widgets/shared_app_bar.dart';
 
 class BookingConfirmedView extends StatelessWidget {
-  const BookingConfirmedView({super.key});
+  const BookingConfirmedView({super.key, this.args});
+  final Map<String, dynamic>? args;
 
   @override
   Widget build(BuildContext context) {
+    final DoctorModel? doctor = args?['doctor'] as DoctorModel?;
+    final String time = args?['time'] as String? ?? '';
+    final String paymentLabel = args?['paymentLabel'] as String? ?? 'Cash at Clinic';
+
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
-      appBar: const SharedAppBar(title: 'Details'),
+      appBar: const SharedAppBar(title: 'Booking Confirmed'),
       body: Column(
         children: [
           Expanded(
@@ -30,7 +35,7 @@ class BookingConfirmedView extends StatelessWidget {
                     BookingInfoRow(
                       icon: Icons.calendar_today_outlined,
                       label: 'Date & Time',
-                      value: 'Wednesday, 08 May 2023\n08:30 AM',
+                      value: time.isNotEmpty ? time : 'Appointment Booked',
                       trailing: Container(
                         padding: EdgeInsets.symmetric(
                           horizontal: 10.w,
@@ -51,31 +56,33 @@ class BookingConfirmedView extends StatelessWidget {
                       ),
                     ),
                     Divider(height: 20.h, color: AppColors.divider),
-                    const BookingInfoRow(
-                      icon: Icons.calendar_month_outlined,
-                      label: 'Appointment Type',
-                      value: 'In Person',
+                    BookingInfoRow(
+                      icon: Icons.payment_outlined,
+                      label: 'Payment',
+                      value: paymentLabel,
                     ),
                   ],
                 ),
-                SizedBox(height: AppSpacing.xl),
-                ConfirmedInfoSection(
-                  title: 'Doctor Information',
-                  children: [
-                    DoctorInfoRow(
-                      doctor: HomeStaticData.recommendedDoctors.first,
-                    ),
-                  ],
-                ),
+                if (doctor != null) ...[
+                  SizedBox(height: AppSpacing.xl),
+                  ConfirmedInfoSection(
+                    title: 'Doctor Information',
+                    children: [
+                      DoctorInfoRow(doctor: doctor),
+                    ],
+                  ),
+                ],
               ],
             ),
           ),
           BookingConfirmedActions(
             onDone: () => context.goNamed(Routes.homeView),
-            onReview: () => context.pushNamed(
-              Routes.bookingReviewView,
-              extra: HomeStaticData.recommendedDoctors.first,
-            ),
+            onReview: doctor != null
+                ? () => context.pushNamed(
+                      Routes.bookingReviewView,
+                      extra: doctor,
+                    )
+                : () => context.goNamed(Routes.homeView),
           ),
         ],
       ),

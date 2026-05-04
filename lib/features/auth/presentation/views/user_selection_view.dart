@@ -117,7 +117,7 @@ class UserSelectionView extends StatelessWidget {
                     ],
                   ),
 
-                  const Spacer(),
+                  SizedBox(height: 48.h),
 
                   // Login Link
                   Padding(

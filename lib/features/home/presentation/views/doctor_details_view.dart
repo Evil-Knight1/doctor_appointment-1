@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:map_launcher/map_launcher.dart';
 import 'package:doctor_appointment/core/utils/app_dimensions.dart';
 import 'package:doctor_appointment/features/home/data/models/home_model.dart';
 import 'package:doctor_appointment/core/utils/routes.dart';
 import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
+import 'package:doctor_appointment/features/doctors/logic/doctor_details_cubit.dart';
+import 'package:doctor_appointment/features/doctors/logic/doctor_details_state.dart';
 import '../widgets/doctor_details_widgets.dart';
 import '../widgets/shared_app_bar.dart';
 
@@ -45,7 +49,13 @@ class _DoctorDetailViewState extends State<DoctorDetailView>
             child: Row(
               children: [
                 GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    context.pushNamed(
+                      Routes.chatView,
+                      pathParameters: {'userId': widget.doctor.id.toString()},
+                      extra: widget.doctor.name,
+                    );
+                  },
                   child: Container(
                     width: 36.w,
                     height: 36.h,
@@ -136,12 +146,24 @@ class _AddressTab extends StatelessWidget {
         SizedBox(height: AppSpacing.xl),
         Text('Location Map', style: AppTextStyles.headingSmall),
         SizedBox(height: AppSpacing.md),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(AppRadius.xl),
-          child: Container(
-            height: 220.h,
-            color: const Color(0xFFE8F0FE),
-            child: CustomPaint(painter: _MiniMapPainter()),
+        GestureDetector(
+          onTap: () async {
+            final availableMaps = await MapLauncher.installedMaps;
+            if (availableMaps.isNotEmpty) {
+              await availableMaps.first.showMarker(
+                coords: Coords(30.0444, 31.2357), // Cairo coords
+                title: doctor.name,
+                description: 'Clinic Location',
+              );
+            }
+          },
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(AppRadius.xl),
+            child: Container(
+              height: 220.h,
+              color: const Color(0xFFE8F0FE),
+              child: CustomPaint(painter: _MiniMapPainter()),
+            ),
           ),
         ),
       ],
@@ -202,36 +224,33 @@ class _MiniMapPainter extends CustomPainter {
 class _ReviewsTab extends StatelessWidget {
   const _ReviewsTab();
 
-  static const _reviews = [
-    (
-      'Jane Cooper',
-      'As someone who lives in a remote area, this telemedicine app has been a game changer. I can easily schedule virtual appointments.',
-      5,
-    ),
-    (
-      'Robert Fox',
-      'I was initially skeptical but this app has exceeded my expectations. The doctors are highly qualified and provide excellent care.',
-      5,
-    ),
-    (
-      'Jacob Jones',
-      'Very professional team. Booking was seamless and the doctor was punctual and thorough during consultation.',
-      5,
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
-      padding: EdgeInsets.all(AppSpacing.lg),
-      itemCount: _reviews.length,
-      separatorBuilder: (_, _) =>
-          Divider(height: AppSpacing.xxl, color: AppColors.divider),
-      itemBuilder: (_, index) => _ReviewTile(
-        name: _reviews[index].$1,
-        text: _reviews[index].$2,
-        stars: _reviews[index].$3,
-      ),
+    return BlocBuilder<DoctorDetailsCubit, DoctorDetailsState>(
+      builder: (context, state) {
+        if (state is DoctorDetailsLoading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state is DoctorDetailsError) {
+          return Center(child: Text(state.message, style: AppTextStyles.bodyMedium.copyWith(color: AppColors.error)));
+        } else if (state is DoctorDetailsLoaded) {
+          final reviews = state.reviews;
+          if (reviews.isEmpty) {
+            return Center(child: Text('No reviews yet', style: AppTextStyles.bodyMedium));
+          }
+          return ListView.separated(
+            padding: EdgeInsets.all(AppSpacing.lg),
+            itemCount: reviews.length,
+            separatorBuilder: (_, _) =>
+                Divider(height: AppSpacing.xxl, color: AppColors.divider),
+            itemBuilder: (_, index) => _ReviewTile(
+              name: reviews[index]['name'],
+              text: reviews[index]['text'],
+              stars: reviews[index]['stars'],
+            ),
+          );
+        }
+        return const SizedBox.shrink();
+      },
     );
   }
 }

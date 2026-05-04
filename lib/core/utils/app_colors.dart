@@ -17,7 +17,7 @@ class AppColors {
   static const textHint = Color(0xFFB0B7C3);
 
   // Neutral Colors (Dark Mode)
-  static const darkBg = Color(0xFF0F172A); 
+  static const darkBg = Color(0xFF0F172A);
   static const darkSurface = Color(0xFF1E293B);
   static const darkBorder = Color(0xFF334155);
   static const darkTextPrimary = Color(0xFFF8FAFC);
@@ -48,4 +48,6 @@ class AppColors {
   // ── Header gradient ──
   static const headerGradientStart = Color(0xFF2563EB);
   static const headerGradientEnd = Color(0xFF1D4ED8);
+
+  static const error = Color(0xFFEF4444);
 }

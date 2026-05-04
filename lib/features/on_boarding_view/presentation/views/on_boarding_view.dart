@@ -27,6 +27,12 @@ class OnBoardingView extends StatelessWidget {
                     'assets/images/docdoc_logo.svg',
                     width: 140.w,
                   ),
+                  Text(
+                    'MedLink',
+                    style: AppStyles.styleBold32.copyWith(
+                      color: AppColors.black,
+                    ),
+                  ),
                 ],
               ),
               SizedBox(height: 30.h),
@@ -51,7 +57,9 @@ class OnBoardingView extends StatelessWidget {
                           end: Alignment.topCenter,
                           colors: [
                             Theme.of(context).scaffoldBackgroundColor,
-                            Theme.of(context).scaffoldBackgroundColor.withAlpha(0),
+                            Theme.of(
+                              context,
+                            ).scaffoldBackgroundColor.withAlpha(0),
                           ],
                         ),
                       ),
@@ -87,7 +95,8 @@ class OnBoardingView extends StatelessWidget {
                   text: 'Get Started',
                   onPressed: () async {
                     await SharedPreferencesHelper.saveHasSeenOnboarding(true);
-                    if (context.mounted) context.go(AppRouter.kUserSelectionView);
+                    if (context.mounted)
+                      context.go(AppRouter.kUserSelectionView);
                   },
                   buttonColor: AppColors.primary,
                   textStyle: AppStyles.styleSemiBold16,

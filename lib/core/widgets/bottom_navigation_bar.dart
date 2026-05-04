@@ -8,7 +8,7 @@ import 'package:doctor_appointment/features/calendar/presentation/views/calendar
 
 import 'package:doctor_appointment/features/home/presentation/views/home_view.dart';
 import 'package:doctor_appointment/features/profile/presentation/views/profile_view.dart';
-import 'package:doctor_appointment/features/chatbot/presentation/views/chat_history_view.dart';
+import 'package:doctor_appointment/features/chat/ui/screens/conversations_screen.dart';
 import 'package:doctor_appointment/features/search/presentation/views/search_view.dart';
 
 class Root extends StatefulWidget {
@@ -22,7 +22,7 @@ class _RootState extends State<Root> {
   int _currentIndex = 0;
   static const List<Widget> _widgetOptions = [
     HomeView(),
-    ChatHistoryView(),
+    ConversationsScreen(),
     SearchView(),
     CalendarView(),
     ProfileView(),

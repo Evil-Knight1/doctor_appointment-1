@@ -42,4 +42,6 @@ abstract class Routes {
   static const newAppointment = 'newAppointment';
   static const patientDetails = 'patientDetails';
   static const appointmentSuccess = 'appointmentSuccess';
+  static const conversationsView = 'conversationsView';
+  static const chatView = 'chatView';
 }

@@ -46,6 +46,7 @@ import 'package:doctor_appointment/features/doctor_flow/presentation/views/docto
 import 'package:doctor_appointment/features/payments/presentation/views/payment_history_view.dart';
 import 'package:doctor_appointment/features/payments/presentation/views/transaction_details_view.dart';
 import 'package:doctor_appointment/features/payments/presentation/views/checkout_view.dart';
+import 'package:doctor_appointment/features/payments/logic/payment_cubit.dart';
 import 'package:doctor_appointment/features/chatbot/presentation/views/chat_history_view.dart';
 import 'package:doctor_appointment/features/chatbot/logic/chat_cubit.dart';
 import 'package:doctor_appointment/features/chatbot/logic/chat_history_cubit.dart';
@@ -56,8 +57,11 @@ import 'package:doctor_appointment/features/doctor_flow/logic/doctor_stats_cubit
 import 'package:doctor_appointment/features/doctor_flow/logic/doctor_appointments_cubit.dart';
 import 'package:doctor_appointment/features/doctor_flow/logic/doctor_profile_cubit.dart';
 import 'package:doctor_appointment/features/doctors/logic/doctors_cubit.dart';
+import 'package:doctor_appointment/features/doctors/logic/doctor_details_cubit.dart';
 import 'package:doctor_appointment/features/appointment/logic/appointments_cubit.dart';
 import 'package:doctor_appointment/features/profile/logic/profile_cubit.dart';
+import 'package:doctor_appointment/features/chat/ui/screens/conversations_screen.dart';
+import 'package:doctor_appointment/features/chat/ui/screens/chat_screen.dart';
 
 abstract class AppRouter {
   static const kLoginView = '/loginView';
@@ -89,6 +93,8 @@ abstract class AppRouter {
   static const kForgotPasswordView = '/forgotPasswordView';
   static const kVerifyOtpView = '/verifyOtpView';
   static const kResetPasswordView = '/resetPasswordView';
+  static const kConversationsView = '/conversationsView';
+  static const kChatView = '/chat/:userId';
 
   // ── Home sub-routes ──
   static const kNotificationView = '/notificationView';
@@ -354,7 +360,10 @@ abstract class AppRouter {
         path: kHomeDoctorDetailsView,
         builder: (context, state) {
           final doctor = state.extra as home_models.DoctorModel;
-          return home_doctor_details.DoctorDetailView(doctor: doctor);
+          return BlocProvider(
+            create: (context) => getIt<DoctorDetailsCubit>()..loadDoctorDetails(doctor.id),
+            child: home_doctor_details.DoctorDetailView(doctor: doctor),
+          );
         },
       ),
       GoRoute(
@@ -378,13 +387,19 @@ abstract class AppRouter {
         path: kBookingSummaryView,
         builder: (context, state) {
           final args = state.extra as Map<String, dynamic>;
-          return BookingSummaryView(args: args);
+          return BlocProvider(
+            create: (_) => getIt<PaymentCubit>(),
+            child: BookingSummaryView(args: args),
+          );
         },
       ),
       GoRoute(
         name: Routes.bookingConfirmedView,
         path: kBookingConfirmedView,
-        builder: (context, state) => const BookingConfirmedView(),
+        builder: (context, state) {
+          final args = state.extra as Map<String, dynamic>?;
+          return BookingConfirmedView(args: args);
+        },
       ),
       GoRoute(
         name: Routes.bookingReviewView,
@@ -392,6 +407,20 @@ abstract class AppRouter {
         builder: (context, state) {
           final doctor = state.extra as home_models.DoctorModel;
           return BookingReviewView(doctor: doctor);
+        },
+      ),
+      GoRoute(
+        name: Routes.conversationsView,
+        path: kConversationsView,
+        builder: (context, state) => const ConversationsScreen(),
+      ),
+      GoRoute(
+        name: Routes.chatView,
+        path: kChatView,
+        builder: (context, state) {
+          final userId = int.parse(state.pathParameters['userId']!);
+          final userName = state.extra as String? ?? 'Chat';
+          return ChatScreen(otherUserId: userId, otherUserName: userName);
         },
       ),
     ],

@@ -28,7 +28,6 @@ class _SplashViewState extends State<SplashView> {
 
   Future<void> _handleStartup() async {
     // 1. Minimum splash time for branding
-    await Future.delayed(const Duration(seconds: 3));
 
     if (!mounted) return;
 
@@ -61,7 +60,6 @@ class _SplashViewState extends State<SplashView> {
       }
     }
 
-    // 5. No token in secured prefs or failure, go to login
     if (mounted) context.go(AppRouter.kLoginView);
   }
 

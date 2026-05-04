@@ -1,4 +1,3 @@
-
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/core/utils/go_router.dart';
 import 'package:doctor_appointment/features/auth/presentation/widgets/doctor_signup/doctor_signup_footer.dart';
@@ -158,11 +157,16 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
       builder: (context) {
         final theme = Theme.of(context);
         return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.r),
+          ),
           backgroundColor: theme.cardColor,
           title: Row(
             children: [
-              Icon(Icons.help_outline_rounded, color: theme.colorScheme.primary),
+              Icon(
+                Icons.help_outline_rounded,
+                color: theme.colorScheme.primary,
+              ),
               SizedBox(width: 12.w),
               Text('Registration Help', style: AppStyles.styleBold18),
             ],
@@ -187,7 +191,10 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
                 SizedBox(height: 12.h),
                 Text(
                   'Note: All registrations are reviewed by our administration team before approval.',
-                  style: AppStyles.styleRegular12.copyWith(color: theme.hintColor, fontStyle: FontStyle.italic),
+                  style: AppStyles.styleRegular12.copyWith(
+                    color: theme.hintColor,
+                    fontStyle: FontStyle.italic,
+                  ),
                 ),
               ],
             ),
@@ -195,7 +202,12 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text('Got it', style: AppStyles.styleSemiBold16.copyWith(color: theme.colorScheme.primary)),
+              child: Text(
+                'Got it',
+                style: AppStyles.styleSemiBold16.copyWith(
+                  color: theme.colorScheme.primary,
+                ),
+              ),
             ),
           ],
         );
@@ -209,7 +221,12 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: AppStyles.styleSemiBold14.copyWith(color: Theme.of(context).colorScheme.primary)),
+          Text(
+            title,
+            style: AppStyles.styleSemiBold14.copyWith(
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          ),
           SizedBox(height: 4.h),
           Text(description, style: AppStyles.styleRegular14),
         ],
@@ -226,22 +243,6 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
         backgroundColor: theme.colorScheme.error,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ),
-    );
-  }
-
-  void _showHelpDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Help'),
-        content: const Text('Please fill out the form to register as a doctor. For further assistance, contact support.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
-          ),
-        ],
       ),
     );
   }
@@ -294,7 +295,9 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
                               shaderCallback: (bounds) => LinearGradient(
                                 colors: [
                                   Theme.of(context).colorScheme.primary,
-                                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.7),
+                                  Theme.of(
+                                    context,
+                                  ).colorScheme.primary.withValues(alpha: 0.7),
                                 ],
                               ).createShader(bounds),
                               child: Text(
@@ -308,7 +311,9 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
                             Text(
                               'Step ${_currentStep + 1} of 3',
                               style: AppStyles.styleMedium12.copyWith(
-                                color: Theme.of(context).textTheme.bodyMedium?.color,
+                                color: Theme.of(
+                                  context,
+                                ).textTheme.bodyMedium?.color,
                               ),
                             ),
                           ],
@@ -334,17 +339,17 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
                     duration: const Duration(milliseconds: 400),
                     transitionBuilder:
                         (Widget child, Animation<double> animation) {
-                      return FadeTransition(
-                        opacity: animation,
-                        child: SlideTransition(
-                          position: Tween<Offset>(
-                            begin: const Offset(0.05, 0),
-                            end: Offset.zero,
-                          ).animate(animation),
-                          child: child,
-                        ),
-                      );
-                    },
+                          return FadeTransition(
+                            opacity: animation,
+                            child: SlideTransition(
+                              position: Tween<Offset>(
+                                begin: const Offset(0.05, 0),
+                                end: Offset.zero,
+                              ).animate(animation),
+                              child: child,
+                            ),
+                          );
+                        },
                     child: KeyedSubtree(
                       key: ValueKey<int>(_currentStep),
                       child: _buildCurrentStep(),
@@ -386,9 +391,12 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Account Credentials', style: AppStyles.styleSemiBold20.copyWith(
-            color: Theme.of(context).textTheme.headlineMedium?.color,
-          )),
+          Text(
+            'Account Credentials',
+            style: AppStyles.styleSemiBold20.copyWith(
+              color: Theme.of(context).textTheme.headlineMedium?.color,
+            ),
+          ),
           SizedBox(height: 8.h),
           Text(
             'Enter your email, password and phone to get started.',
@@ -405,8 +413,10 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
             confirmPasswordController: _confirmPasswordController,
             fieldErrors: _fieldErrors,
             formKey: _formKey,
-            onShowClinicLocationPicker: () => _showLocationPicker(forClinic: true),
-            onShowHospitalLocationPicker: () => _showLocationPicker(forClinic: false),
+            onShowClinicLocationPicker: () =>
+                _showLocationPicker(forClinic: true),
+            onShowHospitalLocationPicker: () =>
+                _showLocationPicker(forClinic: false),
             nameController: _nameController,
             yearsController: _yearsController,
             licenseController: _licenseController,
@@ -414,15 +424,19 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
             clinicAddressController: _clinicAddressController,
             hospitalController: _hospitalController,
             selectedSpecialization: _selectedSpecialization,
-            onSpecializationChanged: (spec) => setState(() => _selectedSpecialization = spec),
+            onSpecializationChanged: (spec) =>
+                setState(() => _selectedSpecialization = spec),
             profilePicturePath: _profilePicturePath,
-            onProfilePictureChanged: (path) => setState(() => _profilePicturePath = path),
+            onProfilePictureChanged: (path) =>
+                setState(() => _profilePicturePath = path),
             clinicImagesPaths: _clinicImagesPaths,
-            onClinicImagesChanged: (paths) => setState(() => _clinicImagesPaths = paths),
+            onClinicImagesChanged: (paths) =>
+                setState(() => _clinicImagesPaths = paths),
             selectedDateOfBirth: _dateOfBirth,
             onDateOfBirthChanged: (date) => setState(() => _dateOfBirth = date),
             selectedGender: _selectedGender,
-            onGenderChanged: (gender) => setState(() => _selectedGender = gender),
+            onGenderChanged: (gender) =>
+                setState(() => _selectedGender = gender),
           ),
           SizedBox(height: 24.h),
         ],
@@ -436,9 +450,12 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Personal Information', style: AppStyles.styleSemiBold20.copyWith(
-            color: Theme.of(context).textTheme.headlineMedium?.color,
-          )),
+          Text(
+            'Personal Information',
+            style: AppStyles.styleSemiBold20.copyWith(
+              color: Theme.of(context).textTheme.headlineMedium?.color,
+            ),
+          ),
           SizedBox(height: 8.h),
           Text(
             'Tell us more about your professional background.',
@@ -466,8 +483,10 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
             onDateOfBirthChanged: (date) => setState(() => _dateOfBirth = date),
             fieldErrors: _fieldErrors,
             formKey: _formKey,
-            onShowClinicLocationPicker: () => _showLocationPicker(forClinic: true),
-            onShowHospitalLocationPicker: () => _showLocationPicker(forClinic: false),
+            onShowClinicLocationPicker: () =>
+                _showLocationPicker(forClinic: true),
+            onShowHospitalLocationPicker: () =>
+                _showLocationPicker(forClinic: false),
             emailController: _emailController,
             phoneController: _phoneController,
             passwordController: _passwordController,
@@ -475,7 +494,8 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
             clinicAddressController: _clinicAddressController,
             hospitalController: _hospitalController,
             clinicImagesPaths: _clinicImagesPaths,
-            onClinicImagesChanged: (paths) => setState(() => _clinicImagesPaths = paths),
+            onClinicImagesChanged: (paths) =>
+                setState(() => _clinicImagesPaths = paths),
           ),
           SizedBox(height: 24.h),
         ],
@@ -489,9 +509,12 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Clinic Information', style: AppStyles.styleSemiBold20.copyWith(
-            color: Theme.of(context).textTheme.headlineMedium?.color,
-          )),
+          Text(
+            'Clinic Information',
+            style: AppStyles.styleSemiBold20.copyWith(
+              color: Theme.of(context).textTheme.headlineMedium?.color,
+            ),
+          ),
           SizedBox(height: 8.h),
           Text(
             'Provide details about your practice location.',
@@ -522,31 +545,29 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
             licenseController: _licenseController,
             bioController: _bioController,
             selectedSpecialization: _selectedSpecialization,
-            onSpecializationChanged: (spec) => setState(() => _selectedSpecialization = spec),
+            onSpecializationChanged: (spec) =>
+                setState(() => _selectedSpecialization = spec),
             profilePicturePath: _profilePicturePath,
-            onProfilePictureChanged: (path) => setState(() => _profilePicturePath = path),
+            onProfilePictureChanged: (path) =>
+                setState(() => _profilePicturePath = path),
             selectedDateOfBirth: _dateOfBirth,
             onDateOfBirthChanged: (date) => setState(() => _dateOfBirth = date),
             selectedGender: _selectedGender,
-            onGenderChanged: (gender) => setState(() => _selectedGender = gender),
+            onGenderChanged: (gender) =>
+                setState(() => _selectedGender = gender),
           ),
           SizedBox(height: 24.h),
         ],
       ),
     );
   }
-
-
 }
 
 class _HeaderButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
 
-  const _HeaderButton({
-    required this.icon,
-    required this.onTap,
-  });
+  const _HeaderButton({required this.icon, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -557,7 +578,9 @@ class _HeaderButton extends StatelessWidget {
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: theme.brightness == Brightness.dark ? 0.3 : 0.05),
+            color: Colors.black.withValues(
+              alpha: theme.brightness == Brightness.dark ? 0.3 : 0.05,
+            ),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),

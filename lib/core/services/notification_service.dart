@@ -2,6 +2,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import 'dart:convert';
+import 'package:doctor_appointment/core/utils/go_router.dart';
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
@@ -42,7 +44,14 @@ class NotificationService {
     await _flutterLocalNotificationsPlugin.initialize(
       settings: initializationSettings,
       onDidReceiveNotificationResponse: (NotificationResponse response) {
-        // Handle notification tap
+        if (response.payload != null) {
+          try {
+            final data = jsonDecode(response.payload!);
+            _navigateBasedOnData(data);
+          } catch (e) {
+            print('Error parsing notification payload: $e');
+          }
+        }
       },
     );
 
@@ -53,10 +62,20 @@ class NotificationService {
           id: message.hashCode,
           title: message.notification!.title ?? 'New Notification',
           body: message.notification!.body ?? '',
-          payload: message.data.toString(),
+          payload: jsonEncode(message.data),
         );
       }
     });
+
+    // 4. Handle Notification Taps (Background & Terminated)
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      _navigateBasedOnData(message.data);
+    });
+
+    final initialMessage = await _fcm.getInitialMessage();
+    if (initialMessage != null) {
+      _navigateBasedOnData(initialMessage.data);
+    }
 
     // Request permission for Android 13+
     _flutterLocalNotificationsPlugin
@@ -128,5 +147,12 @@ class NotificationService {
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       payload: payload,
     );
+  }
+  void _navigateBasedOnData(Map<String, dynamic> data) {
+    if (data['type'] == 'chat' && data['userId'] != null) {
+      final userId = data['userId'];
+      final userName = data['userName'] ?? 'Chat';
+      AppRouter.router.push('/chat/$userId', extra: userName);
+    }
   }
 }
