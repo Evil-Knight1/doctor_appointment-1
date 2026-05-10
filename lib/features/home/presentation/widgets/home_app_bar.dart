@@ -50,7 +50,7 @@ class _UserInfoRow extends StatelessWidget {
         String? image = SharedPreferencesHelper.getProfileImage();
 
         if (state is ProfileSuccess) {
-          name = state.profile.fullName.split(' ').first;
+          name = state.profile.fullName;
           image = state.profile.profilePicture;
         }
 

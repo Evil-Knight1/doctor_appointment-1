@@ -358,25 +358,55 @@ class _AppointmentButton extends StatelessWidget {
       ),
       child: SizedBox(
         height: 50.h,
-        width: double.infinity,
-        child: ElevatedButton(
-          onPressed: () =>
-              context.pushNamed(Routes.bookingDateView, extra: doctor),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppRadius.lg),
+        child: Row(
+          children: [
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () =>
+                    context.pushNamed(Routes.bookingDateView, extra: doctor),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppRadius.lg),
+                  ),
+                  elevation: 0,
+                ),
+                child: Text(
+                  'Book Now',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 15.sp,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
             ),
-            elevation: 0,
-          ),
-          child: Text(
-            'Make An Appointment',
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-              fontSize: 15.sp,
+            SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: OutlinedButton(
+                onPressed: () => context.pushNamed(
+                  Routes.chatView,
+                  pathParameters: {'userId': doctor.id.toString()},
+                  extra: doctor.name,
+                ),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.primary,
+                  side: BorderSide(color: AppColors.primary, width: 1.5.w),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppRadius.lg),
+                  ),
+                ),
+                child: Text(
+                  'Chat',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 15.sp,
+                  ),
+                ),
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );

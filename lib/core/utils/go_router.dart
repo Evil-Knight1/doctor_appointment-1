@@ -173,7 +173,10 @@ abstract class AppRouter {
       GoRoute(
         name: Routes.profileView,
         path: kProfileView,
-        builder: (context, state) => const ProfileView(),
+        builder: (context, state) => BlocProvider(
+          create: (context) => getIt<ProfileCubit>()..loadProfile(),
+          child: const ProfileView(),
+        ),
       ),
       GoRoute(
         name: Routes.editProfileView,
@@ -377,8 +380,8 @@ abstract class AppRouter {
         name: Routes.bookingDateView,
         path: kBookingDateView,
         builder: (context, state) {
-          final doctor = state.extra as HomeDoctorModel;
-          return BookingDateView(doctor: doctor.doctor);
+          final doctor = state.extra as Doctor;
+          return BookingDateView(doctor: doctor);
         },
       ),
       GoRoute(

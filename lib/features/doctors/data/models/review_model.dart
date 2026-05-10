@@ -14,14 +14,18 @@ class ReviewModel extends Review {
 
   factory ReviewModel.fromJson(Map<String, dynamic> json) {
     return ReviewModel(
-      id: json['id'] as int,
-      patientId: json['patientId'] as int,
+      id: json['id'] as int? ?? 0,
+      patientId: json['patientId'] as int? ?? 0,
       patientName: json['patientName'] as String? ?? 'Anonymous',
-      doctorId: json['doctorId'] as int,
-      stars: json['stars'] as int,
+      doctorId: json['doctorId'] as int? ?? 0,
+      stars: json['stars'] as int? ?? 0,
       comment: json['comment'] as String? ?? '',
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      updatedAt: DateTime.parse(json['updatedAt'] as String),
+      createdAt: json['createdAt'] != null 
+          ? DateTime.tryParse(json['createdAt'] as String) ?? DateTime.now() 
+          : DateTime.now(),
+      updatedAt: json['updatedAt'] != null 
+          ? DateTime.tryParse(json['updatedAt'] as String) ?? DateTime.now() 
+          : DateTime.now(),
     );
   }
 

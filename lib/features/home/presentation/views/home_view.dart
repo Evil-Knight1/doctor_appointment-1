@@ -1,3 +1,5 @@
+import 'package:doctor_appointment/core/services/shared_preferences_helper.dart';
+import 'package:doctor_appointment/features/profile/logic/profile_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:doctor_appointment/core/services/service_locator.dart';
@@ -22,15 +24,15 @@ class HomeView extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => getIt<SpecializationsCubit>()..fetchSpecializations(),
+          create: (context) =>
+              getIt<SpecializationsCubit>()..fetchSpecializations(),
         ),
         BlocProvider(
-          create: (context) => getIt<DoctorsCubit>()
-            ..fetchDoctors(pageNumber: 1, pageSize: 10, minRating: 3.5),
+          create: (context) =>
+              getIt<DoctorsCubit>()
+                ..fetchDoctors(pageNumber: 1, pageSize: 10, minRating: 3.5),
         ),
-        BlocProvider(
-          create: (context) => getIt<ProfileCubit>()..loadProfile(),
-        ),
+        BlocProvider(create: (context) => getIt<ProfileCubit>()..loadProfile()),
       ],
       child: Scaffold(
         backgroundColor: AppColors.backgroundLight,
@@ -54,7 +56,16 @@ class _HomeBody extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: AppSpacing.sm),
-              const HomeHeader(userName: 'Omar'),
+              BlocBuilder<ProfileCubit, ProfileState>(
+                builder: (context, state) {
+                  String name =
+                      SharedPreferencesHelper.getProfileName() ?? 'User';
+                  if (state is ProfileSuccess) {
+                    name = state.profile.fullName;
+                  }
+                  return HomeHeader(userName: name);
+                },
+              ),
               SizedBox(height: AppSpacing.xl),
               const HomeSearchBar(),
               SizedBox(height: AppSpacing.xl),

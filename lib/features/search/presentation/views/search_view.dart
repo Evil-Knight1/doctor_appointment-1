@@ -324,7 +324,7 @@ class _SearchViewState extends State<SearchView> {
                   doctor: doctorModel,
                   onTap: () => context.pushNamed(
                     Routes.doctorDetailsView,
-                    extra: doctorModel.doctor,
+                    extra: doctorModel,
                   ),
                 );
               }

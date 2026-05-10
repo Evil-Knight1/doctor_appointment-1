@@ -15,16 +15,16 @@ class PatientProfileModel extends PatientProfile {
 
   factory PatientProfileModel.fromJson(Map<String, dynamic> json) {
     return PatientProfileModel(
-      id: json['id'] as int? ?? 0,
-      fullName: json['fullName'] as String? ?? '',
-      email: json['email'] as String? ?? '',
-      phone: json['phone'] as String? ?? '',
-      profilePicture: json['profilePicture'] as String?,
-      dateOfBirth: DateTime.tryParse(json['dateOfBirth'] as String? ?? ''),
-      gender: json['gender'] as String?,
-      address: json['address'] as String?,
+      id: (json['id'] is int) ? json['id'] as int : int.tryParse(json['id']?.toString() ?? '0') ?? 0,
+      fullName: json['fullName']?.toString() ?? '',
+      email: json['email']?.toString() ?? '',
+      phone: json['phone']?.toString() ?? '',
+      profilePicture: json['profilePicture']?.toString(),
+      dateOfBirth: DateTime.tryParse(json['dateOfBirth']?.toString() ?? ''),
+      gender: json['gender']?.toString(),
+      address: json['address']?.toString(),
       createdAt:
-          DateTime.tryParse(json['createdAt'] as String? ?? '') ??
+          DateTime.tryParse(json['createdAt']?.toString() ?? '') ??
               DateTime.fromMillisecondsSinceEpoch(0),
     );
   }

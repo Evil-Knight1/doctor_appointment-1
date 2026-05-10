@@ -108,6 +108,9 @@ void setupServiceLocator() {
       BaseOptions(
         baseUrl: getIt<AppConfig>().apiUrl,
         receiveDataWhenStatusError: true,
+        connectTimeout: const Duration(seconds: 5),
+        receiveTimeout: const Duration(seconds: 5),
+        sendTimeout: const Duration(seconds: 5),
       ),
     ),
   );

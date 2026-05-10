@@ -4,7 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:doctor_appointment/features/auth/data/datasources/auth_local_data_source.dart';
 import 'package:doctor_appointment/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:doctor_appointment/core/services/shared_preferences_helper.dart';
-
+import 'package:doctor_appointment/core/utils/go_router.dart';
 class AuthTokenInterceptor extends Interceptor {
   final AuthLocalDataSource localDataSource;
   final AuthRemoteDataSource remoteDataSource;
@@ -41,6 +41,7 @@ class AuthTokenInterceptor extends Interceptor {
     final statusCode = err.response?.statusCode;
     final requestOptions = err.requestOptions;
 
+    // Do not redirect or refresh if it's an auth endpoint
     if (statusCode != 401 || _shouldSkipRefresh(requestOptions)) {
       return handler.next(err);
     }
@@ -51,6 +52,7 @@ class AuthTokenInterceptor extends Interceptor {
       if (retryResponse != null) {
         return handler.resolve(retryResponse);
       }
+      _navigateToLogin();
       return handler.next(err);
     }
 
@@ -62,6 +64,7 @@ class AuthTokenInterceptor extends Interceptor {
       if (session == null) {
         _refreshCompleter?.complete();
         _isRefreshing = false;
+        _navigateToLogin();
         return handler.next(err);
       }
 
@@ -78,10 +81,12 @@ class AuthTokenInterceptor extends Interceptor {
       if (retryResponse != null) {
         return handler.resolve(retryResponse);
       }
+      _navigateToLogin();
       return handler.next(err);
     } catch (_) {
       _refreshCompleter?.complete();
       _isRefreshing = false;
+      _navigateToLogin();
       return handler.next(err);
     }
   }
@@ -108,5 +113,12 @@ class AuthTokenInterceptor extends Interceptor {
     requestOptions.headers['Authorization'] = 'Bearer $token';
     requestOptions.extra['retry'] = true;
     return dio.fetch(requestOptions);
+  }
+
+  void _navigateToLogin() {
+    SharedPreferencesHelper.removeToken();
+    SharedPreferencesHelper.removeUserData();
+    localDataSource.clearSession();
+    AppRouter.router.go(AppRouter.kLoginView);
   }
 }

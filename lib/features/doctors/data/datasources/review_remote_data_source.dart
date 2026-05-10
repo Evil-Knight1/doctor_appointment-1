@@ -27,30 +27,40 @@ class ReviewRemoteDataSourceImpl implements ReviewRemoteDataSource {
       data: {'doctorId': doctorId, 'stars': stars, 'comment': comment},
     );
 
-    final success = response['success'] == true;
-    if (!success) {
-      throw ApiException(_extractMessage(response));
+    dynamic data = response;
+    if (response is Map<String, dynamic>) {
+      if (response['success'] == false) {
+        throw ApiException(_extractMessage(response));
+      }
+      data = response.containsKey('data') ? response['data'] : response;
     }
 
-    return ReviewModel.fromJson(response['data']);
+    if (data is Map<String, dynamic>) {
+      return ReviewModel.fromJson(data);
+    }
+    throw const ApiException('Unexpected response payload');
   }
 
   @override
   Future<List<ReviewModel>> getDoctorReviews(int doctorId) async {
     final response = await apiService.get('/api/Review/doctor/$doctorId');
 
-    final success = response['success'] == true;
-    if (!success) {
-      throw ApiException(_extractMessage(response));
+    dynamic data = response;
+    if (response is Map<String, dynamic>) {
+      if (response['success'] == false) {
+        throw ApiException(_extractMessage(response));
+      }
+      data = response.containsKey('data') ? response['data'] : response;
     }
 
-    final List data = response['data'] ?? [];
-    return data.map((json) => ReviewModel.fromJson(json)).toList();
+    final List listData = data is List ? data : [];
+    return listData.map((json) => ReviewModel.fromJson(json as Map<String, dynamic>)).toList();
   }
 
-  String _extractMessage(Map<String, dynamic> response) {
-    if (response['message'] != null) return response['message'] as String;
-    final errors = response['errors'];
+  String _extractMessage(dynamic json) {
+    if (json is! Map<String, dynamic>) return 'Operation failed';
+    if (json['message'] != null) return json['message'] as String;
+    final errors = json['errors'];
     if (errors is List && errors.isNotEmpty) return errors.first.toString();
     return 'Operation failed';
   }

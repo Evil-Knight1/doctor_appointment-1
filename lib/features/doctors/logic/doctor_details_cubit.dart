@@ -5,11 +5,13 @@ import 'package:doctor_appointment/features/doctors/logic/doctor_details_state.d
 
 class DoctorDetailsCubit extends Cubit<DoctorDetailsState> {
   final ReviewRepository reviewRepository;
+  int? doctorId;
 
   DoctorDetailsCubit({required this.reviewRepository})
       : super(DoctorDetailsInitial());
 
   void loadDoctorDetails(int doctorId) async {
+    this.doctorId = doctorId;
     emit(DoctorDetailsLoading());
 
     final result = await reviewRepository.getDoctorReviews(doctorId);

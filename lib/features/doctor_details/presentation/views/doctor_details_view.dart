@@ -1,6 +1,5 @@
 import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
-import 'package:doctor_appointment/core/utils/app_dimensions.dart';
 import 'package:doctor_appointment/core/utils/routes.dart';
 import 'package:doctor_appointment/features/home/data/models/home_doctor_model.dart';
 import 'package:doctor_appointment/features/doctor_details/presentation/widgets/doctor_info_widget.dart';
@@ -48,12 +47,15 @@ class _DoctorDetailsViewState extends State<DoctorDetailsView>
           CustomScrollView(
             slivers: [
               SliverToBoxAdapter(child: _buildHeader(context)),
-              SliverToBoxAdapter(child: DoctorInfoWidget(doctor: widget.doctor)),
+              SliverToBoxAdapter(
+                child: DoctorInfoWidget(doctor: widget.doctor),
+              ),
               SliverToBoxAdapter(
                 child: DoctorStatsWidget(
                   rating: widget.doctor.rating,
                   reviewCount: widget.doctor.reviewCount,
-                  yearsOfExperience: widget.doctor.doctor.yearsOfExperience ?? 5,
+                  yearsOfExperience:
+                      widget.doctor.doctor.yearsOfExperience ?? 5,
                 ),
               ),
               SliverToBoxAdapter(child: SizedBox(height: 20.h)),
@@ -91,7 +93,9 @@ class _DoctorDetailsViewState extends State<DoctorDetailsView>
         ),
         indicatorSize: TabBarIndicatorSize.tab,
         labelStyle: AppStyles.styleSemiBold16.copyWith(fontSize: 13.sp),
-        unselectedLabelStyle: AppStyles.styleRegular14.copyWith(fontSize: 13.sp),
+        unselectedLabelStyle: AppStyles.styleRegular14.copyWith(
+          fontSize: 13.sp,
+        ),
         labelColor: Colors.white,
         unselectedLabelColor: AppColors.textSecondary,
         dividerColor: Colors.transparent,
@@ -111,23 +115,14 @@ class _DoctorDetailsViewState extends State<DoctorDetailsView>
           width: double.infinity,
           height: 300.h,
           color: AppColors.primaryLight,
-          child:
-              widget.doctor.doctor.profilePictureUrl != null
-                  ? Image.network(
-                    widget.doctor.doctor.profilePictureUrl!,
-                    fit: BoxFit.cover,
-                    errorBuilder:
-                        (_, _, _) => Icon(
-                          Icons.person,
-                          size: 80.sp,
-                          color: AppColors.primary,
-                        ),
-                  )
-                  : Icon(
-                    Icons.person,
-                    size: 80.sp,
-                    color: AppColors.primary,
-                  ),
+          child: widget.doctor.doctor.profilePictureUrl != null
+              ? Image.network(
+                  widget.doctor.doctor.profilePictureUrl!,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, _, _) =>
+                      Icon(Icons.person, size: 80.sp, color: AppColors.primary),
+                )
+              : Icon(Icons.person, size: 80.sp, color: AppColors.primary),
         ),
         Positioned(
           top: 48.h,
@@ -147,7 +142,9 @@ class _DoctorDetailsViewState extends State<DoctorDetailsView>
                 onTap: () {
                   context.pushNamed(
                     Routes.chatView,
-                    pathParameters: {'userId': widget.doctor.doctor.id.toString()},
+                    pathParameters: {
+                      'userId': widget.doctor.doctor.id.toString(),
+                    },
                     extra: widget.doctor.name,
                   );
                 },
@@ -160,7 +157,9 @@ class _DoctorDetailsViewState extends State<DoctorDetailsView>
                     widget.doctor.name,
                   );
                   return _buildHeaderButton(
-                    icon: isFav ? Icons.favorite_rounded : Icons.favorite_border,
+                    icon: isFav
+                        ? Icons.favorite_rounded
+                        : Icons.favorite_border,
                     color: isFav ? AppColors.accent : AppColors.textPrimary,
                     onTap: () async =>
                         await SharedPreferencesHelper.toggleFavoriteDoctor(
@@ -207,11 +206,7 @@ class _DoctorDetailsViewState extends State<DoctorDetailsView>
             ),
           ],
         ),
-        child: Icon(
-          icon,
-          size: 18.sp,
-          color: color ?? AppColors.textPrimary,
-        ),
+        child: Icon(icon, size: 18.sp, color: color ?? AppColors.textPrimary),
       ),
     );
   }
@@ -224,20 +219,57 @@ class _DoctorDetailsViewState extends State<DoctorDetailsView>
       child: Container(
         padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 32.h),
         color: Colors.white,
-        child: ElevatedButton(
-          onPressed: () => context.pushNamed(
-            Routes.bookingDateView,
-            extra: widget.doctor.doctor, // Passing the entity
-          ),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(14.r),
+        child: Row(
+          children: [
+            Expanded(
+              flex: 1,
+              child: ElevatedButton(
+                onPressed: () => context.pushNamed(
+                  Routes.chatView,
+                  pathParameters: {
+                    'userId': widget.doctor.doctor.id.toString(),
+                  },
+                  extra: widget.doctor.name,
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primaryLight,
+                  foregroundColor: AppColors.primary,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14.r),
+                  ),
+                  minimumSize: Size(double.infinity, 52.h),
+                  elevation: 0,
+                ),
+                child: Text(
+                  'Chat',
+                  style: AppStyles.styleSemiBold16.copyWith(color: AppColors.primary),
+                ),
+              ),
             ),
-            minimumSize: Size(double.infinity, 52.h),
-            elevation: 0,
-          ),
-          child: Text('Book Appointment', style: AppStyles.styleSemiBold16),
+            SizedBox(width: 12.w),
+            Expanded(
+              flex: 2,
+              child: ElevatedButton(
+                onPressed: () => context.pushNamed(
+                  Routes.bookingDateView,
+                  extra: widget.doctor.doctor, // Passing the entity
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14.r),
+                  ),
+                  minimumSize: Size(double.infinity, 52.h),
+                  elevation: 0,
+                ),
+                child: Text(
+                  'Book Appointment',
+                  style: AppStyles.styleSemiBold16.copyWith(color: Colors.white),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -269,6 +301,7 @@ class _AboutTab extends StatelessWidget {
         ),
         SizedBox(height: 20.h),
         const DoctorWorkingTimeWidget(),
+        SizedBox(height: 100.h), // padding for bottom buttons
       ],
     );
   }
@@ -291,10 +324,15 @@ class _AddressTab extends StatelessWidget {
         SizedBox(height: 8.h),
         Text(
           doctor.doctor.clinicAddress ?? 'No address provided',
-          style: AppStyles.styleRegular14.copyWith(color: AppColors.textSecondary),
+          style: AppStyles.styleRegular14.copyWith(
+            color: AppColors.textSecondary,
+          ),
         ),
         SizedBox(height: 20.h),
-        Text('Location Map', style: AppStyles.styleSemiBold22.copyWith(fontSize: 16.sp)),
+        Text(
+          'Location Map',
+          style: AppStyles.styleSemiBold22.copyWith(fontSize: 16.sp),
+        ),
         SizedBox(height: 12.h),
         GestureDetector(
           onTap: () async {
@@ -313,11 +351,16 @@ class _AddressTab extends StatelessWidget {
               height: 200.h,
               color: AppColors.primaryLight,
               child: Center(
-                child: Icon(Icons.map_rounded, color: AppColors.primary, size: 40.sp),
+                child: Icon(
+                  Icons.map_rounded,
+                  color: AppColors.primary,
+                  size: 40.sp,
+                ),
               ),
             ),
           ),
         ),
+        SizedBox(height: 100.h), // padding for bottom buttons
       ],
     );
   }
@@ -325,6 +368,83 @@ class _AddressTab extends StatelessWidget {
 
 class _ReviewsTab extends StatelessWidget {
   const _ReviewsTab();
+
+  void _showAddReviewDialog(BuildContext context, int doctorId) {
+    int selectedStars = 5;
+    final commentController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (statefulContext, setState) {
+            return AlertDialog(
+              title: const Text('Add Review'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(5, (index) {
+                      return IconButton(
+                        icon: Icon(
+                          index < selectedStars
+                              ? Icons.star_rounded
+                              : Icons.star_border_rounded,
+                          color: AppColors.star,
+                          size: 32.sp,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            selectedStars = index + 1;
+                          });
+                        },
+                      );
+                    }),
+                  ),
+                  SizedBox(height: 16.h),
+                  TextField(
+                    controller: commentController,
+                    decoration: InputDecoration(
+                      hintText: 'Write your review here...',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                    ),
+                    maxLines: 3,
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    final comment = commentController.text.trim();
+                    if (comment.isNotEmpty) {
+                      context.read<DoctorDetailsCubit>().addReview(
+                            doctorId: doctorId,
+                            stars: selectedStars,
+                            comment: comment,
+                          );
+                      Navigator.pop(dialogContext);
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                  ),
+                  child: const Text('Submit'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -341,19 +461,51 @@ class _ReviewsTab extends StatelessWidget {
           );
         } else if (state is DoctorDetailsLoaded) {
           final reviews = state.reviews;
-          if (reviews.isEmpty) {
-            return Center(child: Text('No reviews yet', style: AppStyles.styleMedium14));
-          }
-          return ListView.separated(
+          final doctorId = context.read<DoctorDetailsCubit>().doctorId ?? 0;
+          return ListView(
             padding: EdgeInsets.all(20.w),
-            itemCount: reviews.length,
             physics: const NeverScrollableScrollPhysics(),
-            separatorBuilder: (_, _) => Divider(height: 30.h, color: AppColors.border),
-            itemBuilder: (_, index) => _ReviewTile(
-              name: reviews[index].patientName,
-              text: reviews[index].comment,
-              stars: reviews[index].stars,
-            ),
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '${reviews.length} Reviews',
+                    style: AppStyles.styleSemiBold22.copyWith(fontSize: 16.sp),
+                  ),
+                  TextButton.icon(
+                    onPressed: () => _showAddReviewDialog(context, doctorId),
+                    icon: Icon(Icons.add, size: 20.sp, color: AppColors.primary),
+                    label: Text(
+                      'Add Review',
+                      style: AppStyles.styleMedium14.copyWith(color: AppColors.primary),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 16.h),
+              if (reviews.isEmpty)
+                Center(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 40.h),
+                    child: Text('No reviews yet', style: AppStyles.styleMedium14),
+                  ),
+                )
+              else
+                ...reviews.map(
+                  (review) => Column(
+                    children: [
+                      _ReviewTile(
+                        name: review.patientName,
+                        text: review.comment,
+                        stars: review.stars,
+                      ),
+                      Divider(height: 30.h, color: AppColors.border),
+                    ],
+                  ),
+                ),
+              SizedBox(height: 100.h), // padding for bottom buttons
+            ],
           );
         }
         return const SizedBox.shrink();
@@ -383,7 +535,7 @@ class _ReviewTile extends StatelessWidget {
               radius: 18.r,
               backgroundColor: AppColors.primaryLight,
               child: Text(
-                name[0],
+                name.isNotEmpty ? name[0].toUpperCase() : 'U',
                 style: TextStyle(
                   color: AppColors.primary,
                   fontWeight: FontWeight.w700,
@@ -396,14 +548,19 @@ class _ReviewTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(name, style: AppStyles.styleSemiBold16.copyWith(fontSize: 14.sp)),
+                  Text(
+                    name.isNotEmpty ? name : 'Anonymous',
+                    style: AppStyles.styleSemiBold16.copyWith(fontSize: 14.sp),
+                  ),
                   Row(
                     children: List.generate(
                       5,
                       (index) => Icon(
                         Icons.star_rounded,
                         size: 14.sp,
-                        color: index < stars ? AppColors.star : AppColors.divider,
+                        color: index < stars
+                            ? AppColors.star
+                            : AppColors.divider,
                       ),
                     ),
                   ),

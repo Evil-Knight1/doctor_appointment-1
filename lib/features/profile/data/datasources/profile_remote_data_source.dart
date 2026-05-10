@@ -24,12 +24,15 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
   @override
   Future<PatientProfileModel> getPatientProfile() async {
     final response = await apiService.get('/api/Patient/profile');
-    final success = response['success'] == true;
-    if (!success) {
-      throw ApiException(_extractMessage(response));
+    
+    dynamic data = response;
+    if (response is Map<String, dynamic>) {
+      if (response['success'] == false) {
+        throw ApiException(_extractMessage(response));
+      }
+      data = response.containsKey('data') ? response['data'] : response;
     }
 
-    final data = response['data'];
     if (data is Map<String, dynamic>) {
       return PatientProfileModel.fromJson(data);
     }
@@ -74,12 +77,15 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
       '/api/Patient/profile',
       data: requestData,
     );
-    final success = response['success'] == true;
-    if (!success) {
-      throw ApiException(_extractMessage(response));
+    
+    dynamic data = response;
+    if (response is Map<String, dynamic>) {
+      if (response['success'] == false) {
+        throw ApiException(_extractMessage(response));
+      }
+      data = response.containsKey('data') ? response['data'] : response;
     }
 
-    final data = response['data'];
     if (data is Map<String, dynamic>) {
       return PatientProfileModel.fromJson(data);
     }
@@ -87,7 +93,8 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
     throw const ApiException('Unexpected response payload');
   }
 
-  String _extractMessage(Map<String, dynamic> json) {
+  String _extractMessage(dynamic json) {
+    if (json is! Map<String, dynamic>) return 'Request failed';
     final message = json['message'] as String?;
     if (message != null && message.trim().isNotEmpty) {
       return message;

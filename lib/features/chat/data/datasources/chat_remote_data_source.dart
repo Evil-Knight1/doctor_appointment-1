@@ -17,34 +17,34 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
 
   @override
   Future<List<ChatMessageModel>> getChatHistory(int otherUserId) async {
-    final response = await _apiService.get('api/Chat/history/$otherUserId');
+    final response = await _apiService.get('/api/Chat/history/$otherUserId');
     final List data = response['data'];
     return data.map((json) => ChatMessageModel.fromJson(json)).toList();
   }
 
   @override
   Future<List<ConversationModel>> getConversations() async {
-    final response = await _apiService.get('api/Chat/conversations');
+    final response = await _apiService.get('/api/Chat/conversations');
     final List data = response['data'];
     return data.map((json) => ConversationModel.fromJson(json)).toList();
   }
 
   @override
   Future<bool> markAsRead(int otherUserId) async {
-    final response = await _apiService.put('api/Chat/read/$otherUserId');
+    final response = await _apiService.put('/api/Chat/read/$otherUserId');
     return response['data'] as bool;
   }
 
   @override
   Future<int> getUnreadCount() async {
-    final response = await _apiService.get('api/Chat/unread-count');
+    final response = await _apiService.get('/api/Chat/unread-count');
     return response['data'] as int;
   }
 
   @override
   Future<ChatMessageModel> sendMessage(int receiverId, String message) async {
     final response = await _apiService.post(
-      'api/Chat/send',
+      '/api/Chat/send',
       data: {
         'receiverId': receiverId,
         'message': message,
