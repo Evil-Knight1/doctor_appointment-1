@@ -1,0 +1,14 @@
+{
+  "app_title": "حجز موعد الطبيب",
+  "login": "تسجيل الدخول",
+  "register": "إنشاء حساب",
+  "email": "البريد الإلكتروني",
+  "password": "كلمة المرور",
+  "forgot_password": "نسيت كلمة المرور؟",
+  "dont_have_account": "ليس لديك حساب؟",
+  "already_have_account": "لديك حساب بالفعل؟",
+  "home": "الرئيسية",
+  "search": "بحث",
+  "appointments": "المواعيد",
+  "profile": "الملف الشخصي"
+}

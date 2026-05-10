@@ -1,0 +1,17 @@
+{
+  "app_title": "Doctor Appointment",
+  "@app_title": {
+    "description": "The title of the application"
+  },
+  "login": "Login",
+  "register": "Register",
+  "email": "Email",
+  "password": "Password",
+  "forgot_password": "Forgot Password?",
+  "dont_have_account": "Don't have an account?",
+  "already_have_account": "Already have an account?",
+  "home": "Home",
+  "search": "Search",
+  "appointments": "Appointments",
+  "profile": "Profile"
+}

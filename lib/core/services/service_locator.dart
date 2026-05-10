@@ -86,10 +86,13 @@ import 'package:doctor_appointment/features/chat/data/services/chat_signalr_serv
 import 'package:doctor_appointment/features/chat/logic/user_chat_cubit.dart';
 import 'package:doctor_appointment/features/chat/logic/conversations_cubit.dart';
 
+import 'package:doctor_appointment/core/logic/locale_cubit.dart';
+
 final getIt = GetIt.instance;
 
 void setupServiceLocator() {
   getIt.registerLazySingleton<ThemeCubit>(() => ThemeCubit());
+  getIt.registerLazySingleton<LocaleCubit>(() => LocaleCubit());
   getIt.registerLazySingleton<AppConfig>(() {
     final config = AppConfig(
       apiUrl: Env.apiUrl,

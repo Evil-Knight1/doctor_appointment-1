@@ -18,6 +18,8 @@ import 'package:doctor_appointment/core/logic/theme_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_offline/flutter_offline.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:doctor_appointment/core/logic/locale_cubit.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -43,74 +45,81 @@ void main() async {
   }, appRunner: () => runApp(const DoctorAppointment()));
 }
 
-
-
 class DoctorAppointment extends StatelessWidget {
   const DoctorAppointment({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => getIt<ThemeCubit>(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => getIt<ThemeCubit>()),
+        BlocProvider(create: (context) => getIt<LocaleCubit>()),
+      ],
       child: BlocBuilder<ThemeCubit, ThemeMode>(
         builder: (context, themeMode) {
-          return ScreenUtilInit(
-            designSize: const Size(375, 812),
-            splitScreenMode: true,
-            builder: (context, child) {
-              return AnnotatedRegion<SystemUiOverlayStyle>(
-                value: SystemUiOverlayStyle(
-                  statusBarColor: Colors.transparent,
-                  statusBarIconBrightness: themeMode == ThemeMode.dark ? Brightness.light : Brightness.dark,
-                  systemNavigationBarColor: themeMode == ThemeMode.dark ? AppColors.darkBg : AppColors.bg,
-                  systemNavigationBarIconBrightness: themeMode == ThemeMode.dark ? Brightness.light : Brightness.dark,
-                ),
-                child: MaterialApp.router(
-                  theme: AppTheme.theme,
-                  darkTheme: AppTheme.darkTheme,
-                  themeMode: themeMode,
-                  // ignore: deprecated_member_use
-                  useInheritedMediaQuery: true,
-                  builder: (context, child) {
-                    final appChild = DevicePreview.appBuilder(context, child);
-                    return OfflineBuilder(
-                      connectivityBuilder: (
-                        BuildContext context,
-                        List<ConnectivityResult> connectivity,
-                        Widget child,
-                      ) {
-                        final bool connected = !connectivity.contains(ConnectivityResult.none);
-                        return Stack(
-                          fit: StackFit.expand,
-                          children: [
-                            child,
-                            if (!connected)
-                              Positioned(
-                                top: MediaQuery.of(context).padding.top,
-                                left: 0,
-                                right: 0,
-                                child: Material(
-                                  color: Colors.red,
-                                  child: const Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 8.0),
-                                    child: Text(
-                                      'No Internet Connection',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(color: Colors.white, fontSize: 14),
+          return BlocBuilder<LocaleCubit, Locale>(
+            builder: (context, locale) {
+              return ScreenUtilInit(
+                designSize: const Size(375, 812),
+                splitScreenMode: true,
+                builder: (context, child) {
+                  return AnnotatedRegion<SystemUiOverlayStyle>(
+                    value: SystemUiOverlayStyle(
+                      statusBarColor: Colors.transparent,
+                      statusBarIconBrightness: themeMode == ThemeMode.dark ? Brightness.light : Brightness.dark,
+                      systemNavigationBarColor: themeMode == ThemeMode.dark ? AppColors.darkBg : AppColors.bg,
+                      systemNavigationBarIconBrightness: themeMode == ThemeMode.dark ? Brightness.light : Brightness.dark,
+                    ),
+                    child: MaterialApp.router(
+                      theme: AppTheme.theme,
+                      darkTheme: AppTheme.darkTheme,
+                      themeMode: themeMode,
+                      locale: locale,
+                      localizationsDelegates: AppLocalizations.localizationsDelegates,
+                      supportedLocales: AppLocalizations.supportedLocales,
+                      // ignore: deprecated_member_use
+                      useInheritedMediaQuery: true,
+                      builder: (context, child) {
+                        final appChild = DevicePreview.appBuilder(context, child);
+                        return OfflineBuilder(
+                          connectivityBuilder: (
+                            BuildContext context,
+                            List<ConnectivityResult> connectivity,
+                            Widget child,
+                          ) {
+                            final bool connected = !connectivity.contains(ConnectivityResult.none);
+                            return Stack(
+                              fit: StackFit.expand,
+                              children: [
+                                child,
+                                if (!connected)
+                                  Positioned(
+                                    top: MediaQuery.of(context).padding.top,
+                                    left: 0,
+                                    right: 0,
+                                    child: Material(
+                                      color: Colors.red,
+                                      child: const Padding(
+                                        padding: EdgeInsets.symmetric(vertical: 8.0),
+                                        child: Text(
+                                          'No Internet Connection',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(color: Colors.white, fontSize: 14),
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ),
-                          ],
+                              ],
+                            );
+                          },
+                          child: appChild,
                         );
                       },
-                      child: appChild,
-                    );
-                  },
-                  locale: DevicePreview.locale(context),
-                  routerConfig: AppRouter.router,
-                  debugShowCheckedModeBanner: false,
-                ),
+                      routerConfig: AppRouter.router,
+                      debugShowCheckedModeBanner: false,
+                    ),
+                  );
+                },
               );
             },
           );
