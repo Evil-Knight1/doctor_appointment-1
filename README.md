@@ -56,6 +56,10 @@ Each feature is divided into 4 layers:
 - `geolocator` & `flutter_osm_plugin` for location mapping
 - `image_picker` & `file_picker` for media uploads
 
+**Localization:**
+- Multi-language support (English & Arabic) using `flutter_localizations` and `intl`.
+- Persistence of language preference via `LocaleCubit`.
+
 **Observability:**
 - `sentry_flutter` & `sentry_dio` for crash and performance monitoring
 
