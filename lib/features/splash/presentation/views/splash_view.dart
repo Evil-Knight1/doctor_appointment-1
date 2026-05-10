@@ -11,6 +11,9 @@ import 'package:doctor_appointment/core/services/service_locator.dart';
 import 'package:doctor_appointment/features/auth/domain/usecases/get_cached_session_usecase.dart';
 import 'package:doctor_appointment/core/utils/result.dart';
 import 'package:doctor_appointment/features/auth/domain/entities/auth_response.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:doctor_appointment/features/auth/domain/usecases/refresh_token_usecase.dart';
+import 'package:doctor_appointment/features/auth/data/datasources/auth_local_data_source.dart';
 
 class SplashView extends StatefulWidget {
   const SplashView({super.key});
@@ -38,17 +41,33 @@ class _SplashViewState extends State<SplashView> {
       return;
     }
 
-    // 3. Check for secured session and try to refresh
+    // 3. Check for secured session
     final getCachedSession = getIt<GetCachedSessionUseCase>();
     final result = await getCachedSession();
 
     if (result is Success<AuthResponse?>) {
-      final session = result.data;
+      AuthResponse? session = result.data;
       if (session != null && session.token.isNotEmpty) {
-        // 4. Token exists in secured preferences. The AuthTokenInterceptor will
-        // automatically attempt a refresh if the token is expired when a request is made,
-        // but to be absolutely sure we're valid on startup, we can just route to root
-        // and let the interceptor/repository handle 401s.
+        // 4. Proactive Token Refresh Check
+        // Check if the JWT token is already expired
+        if (JwtDecoder.isExpired(session.token)) {
+          final refreshTokenUseCase = getIt<RefreshTokenUseCase>();
+          final refreshResult = await refreshTokenUseCase(
+            RefreshTokenParams(
+                token: session.token, refreshToken: session.refreshToken),
+          );
+
+          if (refreshResult is Success<AuthResponse>) {
+            session = refreshResult.data;
+            // Update the locally cached session
+            final localDataSource = getIt<AuthLocalDataSource>();
+            await localDataSource.cacheAuthSession(session);
+          } else {
+            // Refresh token failed/expired -> force re-login
+            if (mounted) context.go(AppRouter.kLoginView);
+            return;
+          }
+        }
 
         final role = session.role.trim().toLowerCase();
         if (role == 'doctor') {

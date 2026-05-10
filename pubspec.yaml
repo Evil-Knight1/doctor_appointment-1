@@ -65,6 +65,7 @@ dependencies:
 
   signalr_core: ^1.1.2
   map_launcher: ^4.5.0
+  jwt_decoder: ^2.0.1
 
 dependency_overrides:
   web: ^1.1.0
