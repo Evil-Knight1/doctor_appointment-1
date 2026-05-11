@@ -95,8 +95,9 @@ class OnBoardingView extends StatelessWidget {
                   text: 'Get Started',
                   onPressed: () async {
                     await SharedPreferencesHelper.saveHasSeenOnboarding(true);
-                    if (context.mounted)
+                    if (context.mounted) {
                       context.go(AppRouter.kUserSelectionView);
+                    }
                   },
                   buttonColor: AppColors.primary,
                   textStyle: AppStyles.styleSemiBold16,

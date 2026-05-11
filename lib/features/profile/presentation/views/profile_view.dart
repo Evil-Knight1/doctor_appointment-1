@@ -1,5 +1,18 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:doctor_appointment/core/utils/app_colors.dart';
+import 'package:doctor_appointment/core/utils/app_styles.dart';
+import 'package:doctor_appointment/core/utils/go_router.dart';
+import 'package:doctor_appointment/core/services/shared_preferences_helper.dart';
+import 'package:doctor_appointment/core/logic/theme_cubit.dart';
 import 'package:doctor_appointment/core/logic/locale_cubit.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:doctor_appointment/features/profile/logic/profile_cubit.dart';
+import 'package:doctor_appointment/features/profile/logic/profile_state.dart';
+import 'package:doctor_appointment/features/profile/presentation/widgets/profile_header_widget.dart';
+import 'package:doctor_appointment/features/profile/presentation/widgets/profile_menu_item.dart';
+import 'package:doctor_appointment/l10n/app_localizations.dart';
+import 'package:go_router/go_router.dart';
 
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
@@ -15,7 +28,9 @@ class _ProfileViewState extends State<ProfileView> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final currentLocale = Localizations.localeOf(context);
-    final String selectedLanguage = currentLocale.languageCode == 'ar' ? l10n.arabic : l10n.english;
+    final String selectedLanguage = currentLocale.languageCode == 'ar'
+        ? l10n.arabic
+        : l10n.english;
 
     return Scaffold(
       appBar: AppBar(
@@ -33,7 +48,8 @@ class _ProfileViewState extends State<ProfileView> {
             padding: EdgeInsets.only(
               left: 20.w,
               right: 20.w,
-              bottom: 100.h, // prevents content from hiding under curved nav bar
+              bottom:
+                  100.h, // prevents content from hiding under curved nav bar
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -47,9 +63,7 @@ class _ProfileViewState extends State<ProfileView> {
                       );
                     }
                     if (state is ProfileSuccess) {
-                      return ProfileHeaderWidget(
-                        profile: state.profile,
-                      );
+                      return ProfileHeaderWidget(profile: state.profile);
                     }
                     if (state is ProfileFailure) {
                       return Padding(
@@ -76,7 +90,9 @@ class _ProfileViewState extends State<ProfileView> {
                       onTap: () async {
                         if (state is! ProfileSuccess) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                             SnackBar(content: Text(l10n.seeAll)), // Placeholder for error
+                            SnackBar(
+                              content: Text(l10n.seeAll),
+                            ), // Placeholder for error
                           );
                           return;
                         }
@@ -128,7 +144,9 @@ class _ProfileViewState extends State<ProfileView> {
                 ProfileMenuItem(
                   icon: Icons.notifications_outlined,
                   title: l10n.notifications,
-                  subtitle: _notificationsEnabled ? l10n.enabled : l10n.disabled,
+                  subtitle: _notificationsEnabled
+                      ? l10n.enabled
+                      : l10n.disabled,
                   trailing: Switch(
                     value: _notificationsEnabled,
                     onChanged: (v) => setState(() => _notificationsEnabled = v),
@@ -344,11 +362,7 @@ class _LanguageOption extends StatelessWidget {
           children: [
             Text(label, style: AppStyles.styleMedium14),
             if (isSelected)
-              Icon(
-                Icons.check_rounded,
-                color: AppColors.primary,
-                size: 18.sp,
-              ),
+              Icon(Icons.check_rounded, color: AppColors.primary, size: 18.sp),
           ],
         ),
       ),

@@ -17,8 +17,7 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:doctor_appointment/core/logic/theme_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_offline/flutter_offline.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:doctor_appointment/l10n/app_localizations.dart';
 import 'package:doctor_appointment/core/logic/locale_cubit.dart';
 
 @pragma('vm:entry-point')

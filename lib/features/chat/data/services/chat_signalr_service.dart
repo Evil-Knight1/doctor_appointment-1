@@ -3,6 +3,8 @@ import 'package:doctor_appointment/core/config/app_config.dart';
 import 'package:doctor_appointment/features/auth/data/datasources/auth_local_data_source.dart';
 import 'package:doctor_appointment/features/chat/data/models/chat_message_model.dart';
 import 'dart:async';
+import 'package:doctor_appointment/core/logging/log_service.dart';
+import 'package:doctor_appointment/core/services/service_locator.dart';
 
 abstract class ChatSignalRService {
   Future<void> connect();
@@ -49,7 +51,7 @@ class ChatSignalRServiceImpl implements ChatSignalRService {
           hubUrl,
           HttpConnectionOptions(
             accessTokenFactory: () async => session.token,
-            logging: (level, message) => print('SignalR [$level]: $message'),
+            logging: (level, message) => getIt<LogService>().d('SignalR [$level]: $message'),
           ),
         )
         .withAutomaticReconnect()
@@ -77,9 +79,9 @@ class ChatSignalRServiceImpl implements ChatSignalRService {
 
     try {
       await _connection!.start();
-      print('SignalR: Connected to chat hub');
+      getIt<LogService>().i('SignalR: Connected to chat hub');
     } catch (e) {
-      print('SignalR: Connection error: $e');
+      getIt<LogService>().e('SignalR: Connection error', e);
       _errorController.add("Failed to connect to chat server");
     }
   }
@@ -100,7 +102,7 @@ class ChatSignalRServiceImpl implements ChatSignalRService {
     try {
       await _connection!.invoke('SendMessage', args: [receiverId, message]);
     } catch (e) {
-      print('SignalR: Error sending message: $e');
+      getIt<LogService>().e('SignalR: Error sending message', e);
       _errorController.add("Failed to send message");
     }
   }

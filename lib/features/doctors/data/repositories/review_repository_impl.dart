@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:doctor_appointment/core/errors/exceptions.dart';
 import 'package:doctor_appointment/core/errors/failures.dart'
-    show Failure, NetworkFailure, ServerFailure, UnknownFailure;
+    show NetworkFailure, ServerFailure, UnknownFailure;
 import 'package:doctor_appointment/core/utils/result.dart';
 import 'package:doctor_appointment/features/doctors/data/datasources/review_remote_data_source.dart';
 import 'package:doctor_appointment/features/doctors/domain/entities/review.dart';

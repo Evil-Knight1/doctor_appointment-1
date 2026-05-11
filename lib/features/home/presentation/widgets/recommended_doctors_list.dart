@@ -9,14 +9,13 @@ import 'package:doctor_appointment/features/doctors/logic/doctors_state.dart';
 import 'package:doctor_appointment/features/doctors/domain/entities/doctor.dart';
 import 'doctor_card.dart';
 import 'section_header.dart';
+import 'package:doctor_appointment/l10n/app_localizations.dart';
 
 extension DoctorToHomeModel on Doctor {
   HomeDoctorModel toHomeModel() {
     return HomeDoctorModel(doctor: this);
   }
 }
-
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class RecommendedDoctorsList extends StatelessWidget {
   const RecommendedDoctorsList({super.key});
@@ -42,7 +41,9 @@ class RecommendedDoctorsList extends StatelessWidget {
               final doctors = state.page.items;
               if (doctors.isEmpty) {
                 return Center(
-                  child: Text(l10n.seeAll), // Or add a specific "No doctors" key
+                  child: Text(
+                    l10n.seeAll,
+                  ), // Or add a specific "No doctors" key
                 );
               }
               return ListView.separated(

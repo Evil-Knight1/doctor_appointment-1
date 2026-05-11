@@ -46,7 +46,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get step => 'Step';
 
   @override
-  String get of => 'of';
+  String get stepOf => 'of';
 
   @override
   String get accountInfo => 'Account Info';
@@ -133,4 +133,94 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get seeAll => 'See All';
+
+  @override
+  String get videoCall => 'Video\nCall';
+
+  @override
+  String get phoneCall => 'Phone\nCall';
+
+  @override
+  String get myRecords => 'My\nRecords';
+
+  @override
+  String get findNearbyGrid => 'Find\nNearby';
+
+  @override
+  String get profile => 'Profile';
+
+  @override
+  String get account => 'Account';
+
+  @override
+  String get personalInfo => 'Personal Information';
+
+  @override
+  String get personalInfoSubtitle => 'Name, email, phone';
+
+  @override
+  String get changePassword => 'Change Password';
+
+  @override
+  String get changePasswordSubtitle => 'Update your password';
+
+  @override
+  String get health => 'Health';
+
+  @override
+  String get medicalRecords => 'Medical Records';
+
+  @override
+  String get medicalRecordsSubtitle => 'View your health documents';
+
+  @override
+  String get paymentHistory => 'Payment History';
+
+  @override
+  String get paymentHistorySubtitle => 'Check past transactions';
+
+  @override
+  String get preferences => 'Preferences';
+
+  @override
+  String get language => 'Language';
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get darkMode => 'Dark Mode';
+
+  @override
+  String get enabled => 'Enabled';
+
+  @override
+  String get disabled => 'Disabled';
+
+  @override
+  String get support => 'Support';
+
+  @override
+  String get helpSupport => 'Help & Support';
+
+  @override
+  String get privacyPolicy => 'Privacy Policy';
+
+  @override
+  String get logout => 'Log Out';
+
+  @override
+  String get logoutConfirm => 'Are you sure you want to log out?';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get selectLanguage => 'Select Language';
+
+  @override
+  String get english => 'English';
+
+  @override
+  String get arabic => 'Arabic';
 }

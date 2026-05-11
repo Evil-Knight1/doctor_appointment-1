@@ -144,8 +144,9 @@ class _NotificationButton extends StatelessWidget {
               GestureDetector(
                 onTap: () =>
                     context.pushNamed(Routes.notificationView).then((_) {
-                      // Refresh count when coming back
-                      context.read<NotificationCubit>().fetchUnreadCount();
+                      if (context.mounted) {
+                        context.read<NotificationCubit>().fetchUnreadCount();
+                      }
                     }),
                 child: Container(
                   width: 40.w,

@@ -11,7 +11,7 @@
   "signUp": "Sign Up",
   "patientRegistration": "Patient Registration",
   "step": "Step",
-  "of": "of",
+  "stepOf": "of",
   "accountInfo": "Account Info",
   "accountInfoSubtitle": "Set up your login credentials to get started.",
   "emailRequired": "Email is required",

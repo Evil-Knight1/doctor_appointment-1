@@ -4,6 +4,8 @@ import 'package:doctor_appointment/features/chat/data/datasources/chat_remote_da
 import 'package:doctor_appointment/features/chat/data/services/chat_signalr_service.dart';
 import 'package:doctor_appointment/features/chat/logic/chat_state.dart';
 import 'package:doctor_appointment/features/chat/data/models/chat_message_model.dart';
+import 'package:doctor_appointment/core/logging/log_service.dart';
+import 'package:doctor_appointment/core/services/service_locator.dart';
 
 class UserChatCubit extends Cubit<ChatState> {
   final ChatRemoteDataSource _remoteDataSource;
@@ -67,7 +69,7 @@ class UserChatCubit extends Cubit<ChatState> {
       await _remoteDataSource.markAsRead(otherUserId);
     } catch (e) {
       // Log error but don't break UI for markAsRead failure
-      print('Error marking as read: $e');
+      getIt<LogService>().w('Error marking as read: $e');
     }
   }
 

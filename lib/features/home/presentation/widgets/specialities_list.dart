@@ -13,7 +13,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:doctor_appointment/features/doctors/logic/specializations_cubit.dart';
 import 'package:doctor_appointment/features/doctors/logic/specializations_state.dart';
 
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:doctor_appointment/l10n/app_localizations.dart';
 
 class SpecialitiesList extends StatelessWidget {
   const SpecialitiesList({super.key});

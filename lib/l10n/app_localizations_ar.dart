@@ -46,7 +46,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get step => 'خطوة';
 
   @override
-  String get of => 'من';
+  String get stepOf => 'من';
 
   @override
   String get accountInfo => 'معلومات الحساب';
@@ -133,4 +133,94 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get seeAll => 'عرض الكل';
+
+  @override
+  String get videoCall => 'اتصال\nفيديو';
+
+  @override
+  String get phoneCall => 'اتصال\nهاتفي';
+
+  @override
+  String get myRecords => 'سجلاتي\nالطبية';
+
+  @override
+  String get findNearbyGrid => 'الأطباء\nبالقرب منك';
+
+  @override
+  String get profile => 'الملف الشخصي';
+
+  @override
+  String get account => 'الحساب';
+
+  @override
+  String get personalInfo => 'المعلومات الشخصية';
+
+  @override
+  String get personalInfoSubtitle => 'الاسم، البريد، الهاتف';
+
+  @override
+  String get changePassword => 'تغيير كلمة المرور';
+
+  @override
+  String get changePasswordSubtitle => 'تحديث كلمة المرور الخاصة بك';
+
+  @override
+  String get health => 'الصحة';
+
+  @override
+  String get medicalRecords => 'السجلات الطبية';
+
+  @override
+  String get medicalRecordsSubtitle => 'عرض وثائقك الصحية';
+
+  @override
+  String get paymentHistory => 'سجل المدفوعات';
+
+  @override
+  String get paymentHistorySubtitle => 'تحقق من المعاملات السابقة';
+
+  @override
+  String get preferences => 'التفضيلات';
+
+  @override
+  String get language => 'اللغة';
+
+  @override
+  String get notifications => 'الإشعارات';
+
+  @override
+  String get darkMode => 'الوضع الداكن';
+
+  @override
+  String get enabled => 'مفعل';
+
+  @override
+  String get disabled => 'معطل';
+
+  @override
+  String get support => 'الدعم';
+
+  @override
+  String get helpSupport => 'المساعدة والدعم';
+
+  @override
+  String get privacyPolicy => 'سياسة الخصوصية';
+
+  @override
+  String get logout => 'تسجيل الخروج';
+
+  @override
+  String get logoutConfirm => 'هل أنت متأكد أنك تريد تسجيل الخروج؟';
+
+  @override
+  String get cancel => 'إلغاء';
+
+  @override
+  String get selectLanguage => 'اختر اللغة';
+
+  @override
+  String get english => 'الإنجليزية';
+
+  @override
+  String get arabic => 'العربية';
 }

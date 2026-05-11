@@ -4,7 +4,7 @@ import 'package:doctor_appointment/core/utils/app_dimensions.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/core/utils/app_colors.dart';
 
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:doctor_appointment/l10n/app_localizations.dart';
 
 class HomeHeader extends StatelessWidget {
   const HomeHeader({super.key, required this.userName});

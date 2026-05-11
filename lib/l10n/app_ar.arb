@@ -11,7 +11,7 @@
   "signUp": "إنشاء حساب",
   "patientRegistration": "تسجيل المريض",
   "step": "خطوة",
-  "of": "من",
+  "stepOf": "من",
   "accountInfo": "معلومات الحساب",
   "accountInfoSubtitle": "قم بإعداد بيانات اعتماد تسجيل الدخول الخاصة بك للبدء.",
   "emailRequired": "البريد الإلكتروني مطلوب",

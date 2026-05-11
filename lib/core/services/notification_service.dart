@@ -5,6 +5,9 @@ import 'package:timezone/timezone.dart' as tz;
 import 'dart:convert';
 import 'package:doctor_appointment/core/utils/go_router.dart';
 
+import 'package:doctor_appointment/core/logging/log_service.dart';
+import 'package:doctor_appointment/core/services/service_locator.dart';
+
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
   factory NotificationService() => _instance;
@@ -49,7 +52,7 @@ class NotificationService {
             final data = jsonDecode(response.payload!);
             _navigateBasedOnData(data);
           } catch (e) {
-            print('Error parsing notification payload: $e');
+            getIt<LogService>().e('Error parsing notification payload', e);
           }
         }
       },

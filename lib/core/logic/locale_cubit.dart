@@ -1,5 +1,4 @@
 import 'dart:ui';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:doctor_appointment/core/services/shared_preferences_helper.dart';
 
@@ -7,20 +6,21 @@ class LocaleCubit extends Cubit<Locale> {
   LocaleCubit() : super(_getInitialLocale());
 
   static Locale _getInitialLocale() {
-    final savedLanguageCode = SharedPreferencesHelper.getString('language_code');
+    final savedLanguageCode = SharedPreferencesHelper.getString(
+      'language_code',
+    );
     if (savedLanguageCode != null) {
       return Locale(savedLanguageCode);
     }
-    
-    // Get system locale
+
     final systemLocale = PlatformDispatcher.instance.locale;
     final systemLanguageCode = systemLocale.languageCode;
-    
+
     // Check if system language is supported, else default to 'en'
     if (['en', 'ar'].contains(systemLanguageCode)) {
       return Locale(systemLanguageCode);
     }
-    
+
     return const Locale('en');
   }
 

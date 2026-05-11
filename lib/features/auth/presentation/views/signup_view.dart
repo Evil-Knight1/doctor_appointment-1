@@ -11,14 +11,13 @@ import 'package:doctor_appointment/features/auth/presentation/widgets/registrati
 import 'package:doctor_appointment/features/auth/presentation/widgets/patient_signup/patient_signup_footer.dart';
 import 'package:doctor_appointment/features/auth/presentation/widgets/step_progress_indicator.dart';
 import 'package:doctor_appointment/features/auth/presentation/widgets/location_picker_sheet.dart';
+import 'package:doctor_appointment/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:phone_form_field/phone_form_field.dart';
 import 'package:doctor_appointment/core/widgets/image_picker_widget.dart';
-
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SignUpView extends StatefulWidget {
   const SignUpView({super.key});
@@ -160,17 +159,17 @@ class _SignUpViewState extends State<SignUpView> {
                       duration: const Duration(milliseconds: 400),
                       transitionBuilder:
                           (Widget child, Animation<double> animation) {
-                        return FadeTransition(
-                          opacity: animation,
-                          child: SlideTransition(
-                            position: Tween<Offset>(
-                              begin: const Offset(0.05, 0),
-                              end: Offset.zero,
-                            ).animate(animation),
-                            child: child,
-                          ),
-                        );
-                      },
+                            return FadeTransition(
+                              opacity: animation,
+                              child: SlideTransition(
+                                position: Tween<Offset>(
+                                  begin: const Offset(0.05, 0),
+                                  end: Offset.zero,
+                                ).animate(animation),
+                                child: child,
+                              ),
+                            );
+                          },
                       child: KeyedSubtree(
                         key: ValueKey<int>(_currentPage),
                         child: _currentPage == 0
@@ -181,11 +180,18 @@ class _SignUpViewState extends State<SignUpView> {
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 24.w,
+                    vertical: 20.h,
+                  ),
                   child: PatientSignUpFooter(
                     isLoading: isLoading,
-                    label: _currentPage == 0 ? l10n.continueButton : l10n.createAccount,
-                    onPressed: isLoading ? null : (_currentPage == 0 ? _nextPage : _submitForm),
+                    label: _currentPage == 0
+                        ? l10n.continueButton
+                        : l10n.createAccount,
+                    onPressed: isLoading
+                        ? null
+                        : (_currentPage == 0 ? _nextPage : _submitForm),
                   ),
                 ),
               ],
@@ -223,24 +229,18 @@ class _SignUpViewState extends State<SignUpView> {
                   ),
                   SizedBox(height: 2.h),
                   Text(
-                    '${l10n.step} ${_currentPage + 1} ${l10n.of} 2',
+                    '${l10n.step} ${_currentPage + 1} ${l10n.stepOf} 2',
                     style: AppStyles.styleMedium12.copyWith(
                       color: Theme.of(context).textTheme.bodyMedium?.color,
                     ),
                   ),
                 ],
               ),
-              _HeaderButton(
-                icon: Icons.help_outline_rounded,
-                onTap: () {},
-              ),
+              _HeaderButton(icon: Icons.help_outline_rounded, onTap: () {}),
             ],
           ),
           SizedBox(height: 24.h),
-          StepProgressIndicator(
-            currentStep: _currentPage,
-            totalSteps: 2,
-          ),
+          StepProgressIndicator(currentStep: _currentPage, totalSteps: 2),
         ],
       ),
     );
@@ -254,10 +254,10 @@ class _SignUpViewState extends State<SignUpView> {
         children: [
           SizedBox(height: 12.h),
           Text(
-            l10n.accountInfo, 
+            l10n.accountInfo,
             style: AppStyles.styleSemiBold24.copyWith(
               color: Theme.of(context).textTheme.headlineMedium?.color,
-            )
+            ),
           ),
           SizedBox(height: 8.h),
           Text(
@@ -350,10 +350,10 @@ class _SignUpViewState extends State<SignUpView> {
         children: [
           SizedBox(height: 12.h),
           Text(
-            l10n.personalDetails, 
+            l10n.personalDetails,
             style: AppStyles.styleSemiBold24.copyWith(
               color: Theme.of(context).textTheme.headlineMedium?.color,
-            )
+            ),
           ),
           SizedBox(height: 8.h),
           Text(
@@ -442,10 +442,7 @@ class _HeaderButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
 
-  const _HeaderButton({
-    required this.icon,
-    required this.onTap,
-  });
+  const _HeaderButton({required this.icon, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -456,7 +453,9 @@ class _HeaderButton extends StatelessWidget {
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: theme.brightness == Brightness.dark ? 0.3 : 0.05),
+            color: Colors.black.withValues(
+              alpha: theme.brightness == Brightness.dark ? 0.3 : 0.05,
+            ),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),

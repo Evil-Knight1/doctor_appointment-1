@@ -170,11 +170,11 @@ abstract class AppLocalizations {
   /// **'Step'**
   String get step;
 
-  /// No description provided for @of.
+  /// No description provided for @stepOf.
   ///
   /// In en, this message translates to:
   /// **'of'**
-  String get of;
+  String get stepOf;
 
   /// No description provided for @accountInfo.
   ///
@@ -343,6 +343,186 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'See All'**
   String get seeAll;
+
+  /// No description provided for @videoCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Video\nCall'**
+  String get videoCall;
+
+  /// No description provided for @phoneCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone\nCall'**
+  String get phoneCall;
+
+  /// No description provided for @myRecords.
+  ///
+  /// In en, this message translates to:
+  /// **'My\nRecords'**
+  String get myRecords;
+
+  /// No description provided for @findNearbyGrid.
+  ///
+  /// In en, this message translates to:
+  /// **'Find\nNearby'**
+  String get findNearbyGrid;
+
+  /// No description provided for @profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get profile;
+
+  /// No description provided for @account.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get account;
+
+  /// No description provided for @personalInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal Information'**
+  String get personalInfo;
+
+  /// No description provided for @personalInfoSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Name, email, phone'**
+  String get personalInfoSubtitle;
+
+  /// No description provided for @changePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Password'**
+  String get changePassword;
+
+  /// No description provided for @changePasswordSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Update your password'**
+  String get changePasswordSubtitle;
+
+  /// No description provided for @health.
+  ///
+  /// In en, this message translates to:
+  /// **'Health'**
+  String get health;
+
+  /// No description provided for @medicalRecords.
+  ///
+  /// In en, this message translates to:
+  /// **'Medical Records'**
+  String get medicalRecords;
+
+  /// No description provided for @medicalRecordsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View your health documents'**
+  String get medicalRecordsSubtitle;
+
+  /// No description provided for @paymentHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment History'**
+  String get paymentHistory;
+
+  /// No description provided for @paymentHistorySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Check past transactions'**
+  String get paymentHistorySubtitle;
+
+  /// No description provided for @preferences.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferences'**
+  String get preferences;
+
+  /// No description provided for @language.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get language;
+
+  /// No description provided for @notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notifications;
+
+  /// No description provided for @darkMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark Mode'**
+  String get darkMode;
+
+  /// No description provided for @enabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Enabled'**
+  String get enabled;
+
+  /// No description provided for @disabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Disabled'**
+  String get disabled;
+
+  /// No description provided for @support.
+  ///
+  /// In en, this message translates to:
+  /// **'Support'**
+  String get support;
+
+  /// No description provided for @helpSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Help & Support'**
+  String get helpSupport;
+
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get privacyPolicy;
+
+  /// No description provided for @logout.
+  ///
+  /// In en, this message translates to:
+  /// **'Log Out'**
+  String get logout;
+
+  /// No description provided for @logoutConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to log out?'**
+  String get logoutConfirm;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @selectLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Language'**
+  String get selectLanguage;
+
+  /// No description provided for @english.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get english;
+
+  /// No description provided for @arabic.
+  ///
+  /// In en, this message translates to:
+  /// **'Arabic'**
+  String get arabic;
 }
 
 class _AppLocalizationsDelegate

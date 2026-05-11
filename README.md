@@ -42,9 +42,12 @@ Each feature is divided into 4 layers:
 - `go_router` for declarative routing and deep linking
 - `get_it` for Dependency Injection (Service Locator)
 
-**Networking & Real-Time:**
+**Networking, Real-Time & Offline:**
 - `dio` for REST API HTTP requests
 - `signalr_core` for real-time WebSockets messaging
+- `api_cache_manager` for persistent API response caching
+- `flutter_offline` for handling global and local offline states
+- `liquid_pull_to_refresh` for smooth data refreshing UX
 
 **Storage & Security:**
 - `flutter_secure_storage` for encrypted JWT storage
@@ -62,6 +65,7 @@ Each feature is divided into 4 layers:
 
 **Observability:**
 - `sentry_flutter` & `sentry_dio` for crash and performance monitoring
+- `logger` for structured application logging and file-based log persistence
 
 ## 🔐 Authentication & Token Refresh
 

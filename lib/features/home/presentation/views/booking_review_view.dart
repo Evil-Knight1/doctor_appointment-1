@@ -127,7 +127,7 @@ class _BookingReviewViewState extends State<BookingReviewView> {
                               stars: _rating,
                               comment: _reviewController.text,
                             );
-                            if (mounted) {
+                            if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text('Review submitted successfully!'),
