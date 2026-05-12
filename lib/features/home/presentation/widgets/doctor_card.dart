@@ -1,3 +1,4 @@
+import 'package:doctor_appointment/core/utils/image_url_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -78,6 +79,7 @@ class _DoctorAvatar extends StatelessWidget {
           child: doctor.imageAsset.startsWith('http')
               ? CachedNetworkImage(
                   imageUrl: doctor.imageAsset,
+                                  httpHeaders: ImageUrlHelper.getImageHeaders(),
                   fit: BoxFit.cover,
                   placeholder: (context, url) => const Center(
                     child: CircularProgressIndicator(strokeWidth: 2),

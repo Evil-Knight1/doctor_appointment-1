@@ -30,56 +30,63 @@ class _SplashViewState extends State<SplashView> {
   }
 
   Future<void> _handleStartup() async {
-    // 1. Minimum splash time for branding
-
     if (!mounted) return;
 
-    // 2. Check if user has seen onboarding
+    // 1. Onboarding gate
     final hasSeenOnboarding = SharedPreferencesHelper.getHasSeenOnboarding();
     if (!hasSeenOnboarding) {
       context.go(AppRouter.kOnBoardingView);
       return;
     }
 
-    // 3. Check for secured session
+    // 2. Load stored session
     final getCachedSession = getIt<GetCachedSessionUseCase>();
     final result = await getCachedSession();
 
-    if (result is Success<AuthResponse?>) {
-      AuthResponse? session = result.data;
-      if (session != null && session.token.isNotEmpty) {
-        // 4. Proactive Token Refresh Check
-        // Check if the JWT token is already expired
-        if (JwtDecoder.isExpired(session.token)) {
-          final refreshTokenUseCase = getIt<RefreshTokenUseCase>();
-          final refreshResult = await refreshTokenUseCase(
-            RefreshTokenParams(
-                token: session.token, refreshToken: session.refreshToken),
-          );
-
-          if (refreshResult is Success<AuthResponse>) {
-            session = refreshResult.data;
-            // Update the locally cached session
-            final localDataSource = getIt<AuthLocalDataSource>();
-            await localDataSource.cacheAuthSession(session);
-          } else {
-            // Refresh token failed/expired -> force re-login
-            if (mounted) context.go(AppRouter.kLoginView);
-            return;
-          }
-        }
-
-        final role = session.role.trim().toLowerCase();
-        if (role == 'doctor') {
-          if (mounted) context.go(AppRouter.kDoctorRoot);
-        } else {
-          if (mounted) context.go(AppRouter.kRoot);
-        }
-        return;
-      }
+    if (result is! Success<AuthResponse?>) {
+      if (mounted) context.go(AppRouter.kLoginView);
+      return;
     }
 
-    if (mounted) context.go(AppRouter.kLoginView);
+    final session = result.data;
+    if (session == null || session.token.isEmpty) {
+      if (mounted) context.go(AppRouter.kLoginView);
+      return;
+    }
+
+    // 3. Always attempt a proactive refresh on startup so the new token is
+    //    ready before any screen makes its first API call.
+    //    - If the refresh token itself has expired the server will 401 →
+    //      we catch that and redirect to login.
+    //    - If the server is unreachable we fall back to the cached token and
+    //      let the interceptor handle any subsequent 401.
+    AuthResponse freshSession = session;
+    final refreshTokenUseCase = getIt<RefreshTokenUseCase>();
+    final refreshResult = await refreshTokenUseCase(
+      RefreshTokenParams(
+        token: session.token,
+        refreshToken: session.refreshToken,
+      ),
+    );
+
+    if (refreshResult is Success<AuthResponse>) {
+      freshSession = refreshResult.data;
+      // Persist to both stores so the interceptor always reads a fresh token.
+      final localDataSource = getIt<AuthLocalDataSource>();
+      await localDataSource.cacheAuthSession(freshSession);
+      await SharedPreferencesHelper.saveToken(freshSession.token);
+    } else if (JwtDecoder.isExpired(session.token)) {
+      // Refresh failed AND the local token is already expired → force login.
+      if (mounted) context.go(AppRouter.kLoginView);
+      return;
+    }
+    // If refresh failed but the cached token is still valid, proceed anyway.
+
+    // 4. Route by role
+    final role = freshSession.role.trim().toLowerCase();
+    if (mounted) {
+      context.go(role == 'doctor' ? AppRouter.kDoctorRoot : AppRouter.kRoot);
+    }
   }
 
   @override

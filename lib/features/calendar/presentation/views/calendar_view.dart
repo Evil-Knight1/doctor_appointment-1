@@ -8,6 +8,7 @@ import 'package:doctor_appointment/features/calendar/presentation/widgets/appoin
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
 class CalendarView extends StatefulWidget {
   const CalendarView({super.key});
@@ -59,13 +60,19 @@ class _CalendarViewState extends State<CalendarView>
           ),
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          _buildList(AppointmentTab.upcoming),
-          _buildList(AppointmentTab.completed),
-          _buildList(AppointmentTab.cancelled),
-        ],
+      body: LiquidPullToRefresh(
+        onRefresh: () => context.read<AppointmentsCubit>().loadAppointments(),
+        color: AppColors.primary,
+        backgroundColor: Colors.white,
+        showChildOpacityTransition: false,
+        child: TabBarView(
+          controller: _tabController,
+          children: [
+            _buildList(AppointmentTab.upcoming),
+            _buildList(AppointmentTab.completed),
+            _buildList(AppointmentTab.cancelled),
+          ],
+        ),
       ),
     );
   }

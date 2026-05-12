@@ -58,6 +58,7 @@ class AppointmentDetailsView extends StatelessWidget {
                             image.startsWith('/')))
                     ? CachedNetworkImage(
                         imageUrl: ImageUrlHelper.getFullUrl(image),
+                                  httpHeaders: ImageUrlHelper.getImageHeaders(),
                         width: 100.w,
                         height: 100.w,
                         fit: BoxFit.cover,

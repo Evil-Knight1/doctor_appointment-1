@@ -10,6 +10,7 @@ import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/core/utils/routes.dart';
 import 'package:go_router/go_router.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
 class ConversationsScreen extends StatefulWidget {
   const ConversationsScreen({super.key});
@@ -38,68 +39,75 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
           children: [
             _buildHeader(context),
             Expanded(
-              child: BlocBuilder<ConversationsCubit, ConversationsState>(
-                builder: (context, state) {
-                  if (state.status == ConversationsStatus.loading &&
-                      state.conversations.isEmpty) {
-                    return Center(
-                      child: CircularProgressIndicator(
-                        color: AppColors.primary,
-                        strokeWidth: 2.5,
-                      ),
-                    );
-                  }
-
-                  final all = state.conversations;
-                  final filtered = _query.isEmpty
-                      ? all
-                      : all
-                          .where((c) => c.otherUserName
-                              .toLowerCase()
-                              .contains(_query.toLowerCase()))
-                          .toList();
-
-                  // AI entry + filtered real conversations
-                  final bool showAi = _query.isEmpty ||
-                      'ai health assistant'.contains(_query.toLowerCase());
-
-                  final int total = filtered.length + (showAi ? 1 : 0);
-
-                  if (total == 0) {
-                    return _buildEmpty();
-                  }
-
-                  return ListView.builder(
-                    padding: EdgeInsets.only(top: 8.h, bottom: 24.h),
-                    itemCount: total,
-                    itemBuilder: (context, index) {
-                      if (showAi && index == 0) {
-                        return ConversationTile(
-                          conversation: ConversationModel(
-                            otherUserId: -1,
-                            otherUserName: 'AI Health Assistant',
-                            otherUserRole: 'AI',
-                            unreadCount: 0,
-                            lastMessage: 'Your smart health companion',
-                            lastMessageTime: DateTime.now(),
-                          ),
-                          isAi: true,
-                          onTap: () =>
-                              context.pushNamed(Routes.chatHistoryView),
-                        );
-                      }
-                      final conversation =
-                          filtered[showAi ? index - 1 : index];
-                      return ConversationTile(
-                        conversation: conversation,
-                        onTap: () => context.push(
-                          '/chat/${conversation.otherUserId}',
-                          extra: conversation.otherUserName,
+              child: LiquidPullToRefresh(
+                onRefresh: () =>
+                    context.read<ConversationsCubit>().fetchConversations(),
+                color: AppColors.primary,
+                backgroundColor: Colors.white,
+                showChildOpacityTransition: false,
+                child: BlocBuilder<ConversationsCubit, ConversationsState>(
+                  builder: (context, state) {
+                    if (state.status == ConversationsStatus.loading &&
+                        state.conversations.isEmpty) {
+                      return Center(
+                        child: CircularProgressIndicator(
+                          color: AppColors.primary,
+                          strokeWidth: 2.5,
                         ),
                       );
-                    },
-                  );
-                },
+                    }
+
+                    final all = state.conversations;
+                    final filtered = _query.isEmpty
+                        ? all
+                        : all
+                            .where((c) => c.otherUserName
+                                .toLowerCase()
+                                .contains(_query.toLowerCase()))
+                            .toList();
+
+                    // AI entry + filtered real conversations
+                    final bool showAi = _query.isEmpty ||
+                        'ai health assistant'.contains(_query.toLowerCase());
+
+                    final int total = filtered.length + (showAi ? 1 : 0);
+
+                    if (total == 0) {
+                      return _buildEmpty();
+                    }
+
+                    return ListView.builder(
+                      padding: EdgeInsets.only(top: 8.h, bottom: 24.h),
+                      itemCount: total,
+                      itemBuilder: (context, index) {
+                        if (showAi && index == 0) {
+                          return ConversationTile(
+                            conversation: ConversationModel(
+                              otherUserId: -1,
+                              otherUserName: 'AI Health Assistant',
+                              otherUserRole: 'AI',
+                              unreadCount: 0,
+                              lastMessage: 'Your smart health companion',
+                              lastMessageTime: DateTime.now(),
+                            ),
+                            isAi: true,
+                            onTap: () =>
+                                context.pushNamed(Routes.chatHistoryView),
+                          );
+                        }
+                        final conversation =
+                            filtered[showAi ? index - 1 : index];
+                        return ConversationTile(
+                          conversation: conversation,
+                          onTap: () => context.push(
+                            '/chat/${conversation.otherUserId}',
+                            extra: conversation.otherUserName,
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
             ),
           ],

@@ -167,6 +167,7 @@ class _ProfileHeaderWidgetState extends State<ProfileHeaderWidget> {
                             widget.profile.profilePicture != null
                                 ? CachedNetworkImage(
                                   imageUrl: ImageUrlHelper.getFullUrl(widget.profile.profilePicture),
+                                  httpHeaders: ImageUrlHelper.getImageHeaders(),
                                   fit: BoxFit.cover,
                                   placeholder:
                                       (context, url) => Center(

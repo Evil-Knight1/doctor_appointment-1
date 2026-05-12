@@ -16,7 +16,7 @@ abstract class AppointmentRepository {
 
   Future<Result<List<Appointment>>> getMyAppointments();
   
-  Future<Result<List<SlotModel>>> getDoctorSlots(int doctorId, DateTime date);
+  Future<Result<List<SlotModel>>> getDoctorSlots(int doctorId);
 }
 
 class AppointmentRepositoryImpl implements AppointmentRepository {
@@ -64,9 +64,9 @@ class AppointmentRepositoryImpl implements AppointmentRepository {
   }
 
   @override
-  Future<Result<List<SlotModel>>> getDoctorSlots(int doctorId, DateTime date) async {
+  Future<Result<List<SlotModel>>> getDoctorSlots(int doctorId) async {
     try {
-      final result = await remoteDataSource.getDoctorSlots(doctorId, date);
+      final result = await remoteDataSource.getDoctorSlots(doctorId);
       return Result.success(result);
     } on ApiException catch (e) {
       return Result.failure(ServerFailure(e.message));

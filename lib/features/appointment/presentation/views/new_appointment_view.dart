@@ -30,23 +30,41 @@ class _NewAppointmentViewState extends State<NewAppointmentView> {
   String _selectedConsultation = 'Hospital';
   SlotModel? _selectedSlot;
 
+  /// All slots returned by the API (across all dates).
+  List<SlotModel> _allSlots = [];
+
+  /// Dates that have at least one available slot — used to mark the calendar.
+  Set<DateTime> get _availableDates {
+    return _allSlots
+        .where((s) => s.isAvailable && !s.isBooked)
+        .map((s) => DateUtils.dateOnly(s.startTime))
+        .toSet();
+  }
+
+  /// Slots that belong to [_selectedDate] and are still available.
+  List<SlotModel> get _slotsForSelectedDate {
+    return _allSlots
+        .where(
+          (s) =>
+              DateUtils.isSameDay(s.startTime, _selectedDate) &&
+              s.isAvailable &&
+              !s.isBooked,
+        )
+        .toList();
+  }
+
+  /// The next 60 days — dates with no slots will appear dimmed in the picker.
   List<DateTime> get _weekDays {
     final start = DateTime.now();
-    return List.generate(14, (i) => start.add(Duration(days: i)));
+    return List.generate(60, (i) => start.add(Duration(days: i)));
   }
 
   @override
   void initState() {
     super.initState();
     _slotsCubit = getIt<DoctorSlotsCubit>();
-    _fetchSlots();
-  }
-
-  void _fetchSlots() {
-    _slotsCubit.fetchSlots(widget.doctor.doctor.id, _selectedDate);
-    setState(() {
-      _selectedSlot = null; // Reset selection on date change
-    });
+    // Fetch ALL slots once — no date param needed.
+    _slotsCubit.fetchSlots(widget.doctor.doctor.id);
   }
 
   @override
@@ -78,69 +96,93 @@ class _NewAppointmentViewState extends State<NewAppointmentView> {
       ),
       body: BlocProvider(
         create: (context) => _slotsCubit,
-        child: Stack(
-          children: [
-            SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: 20.w),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 8.h),
-                  DatePickerWidget(
-                    selectedDate: _selectedDate,
-                    weekDays: _weekDays,
-                    onDateSelected: (d) {
-                      setState(() => _selectedDate = d);
-                      _fetchSlots();
-                    },
-                  ),
-                  SizedBox(height: 24.h),
-                  _sectionTitle('Consultation Type'),
-                  SizedBox(height: 12.h),
-                  ConsultationTypeWidget(
-                    selected: _selectedConsultation,
-                    onSelected: (t) =>
-                        setState(() => _selectedConsultation = t),
-                  ),
-                  SizedBox(height: 24.h),
-                  _sectionTitle('Available Slots'),
-                  SizedBox(height: 12.h),
-                  BlocBuilder<DoctorSlotsCubit, DoctorSlotsState>(
-                    builder: (context, state) {
-                      if (state is DoctorSlotsLoading) {
-                        return const Center(child: CircularProgressIndicator());
-                      } else if (state is DoctorSlotsError) {
-                        return Center(
-                          child: Text(
-                            state.message,
-                            style: AppStyles.styleMedium14.copyWith(
-                              color: Colors.redAccent,
-                            ),
-                          ),
+        child: BlocListener<DoctorSlotsCubit, DoctorSlotsState>(
+          listener: (context, state) {
+            if (state is DoctorSlotsLoaded) {
+              setState(() {
+                _allSlots = state.slots;
+                _selectedSlot = null;
+                // Auto-jump to first date that has slots, if today has none.
+                if (_slotsForSelectedDate.isEmpty &&
+                    _availableDates.isNotEmpty) {
+                  final sorted = _availableDates.toList()..sort();
+                  _selectedDate = sorted.first;
+                }
+              });
+            }
+          },
+          child: Stack(
+            children: [
+              SingleChildScrollView(
+                padding: EdgeInsets.symmetric(horizontal: 20.w),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 8.h),
+                    BlocBuilder<DoctorSlotsCubit, DoctorSlotsState>(
+                      builder: (context, state) {
+                        return DatePickerWidget(
+                          selectedDate: _selectedDate,
+                          weekDays: _weekDays,
+                          availableDates: _availableDates,
+                          onDateSelected: (d) {
+                            setState(() {
+                              _selectedDate = d;
+                              _selectedSlot = null;
+                            });
+                          },
                         );
-                      } else if (state is DoctorSlotsLoaded) {
+                      },
+                    ),
+                    SizedBox(height: 24.h),
+                    _sectionTitle('Consultation Type'),
+                    SizedBox(height: 12.h),
+                    ConsultationTypeWidget(
+                      selected: _selectedConsultation,
+                      onSelected: (t) =>
+                          setState(() => _selectedConsultation = t),
+                    ),
+                    SizedBox(height: 24.h),
+                    _sectionTitle('Available Slots'),
+                    SizedBox(height: 12.h),
+                    BlocBuilder<DoctorSlotsCubit, DoctorSlotsState>(
+                      builder: (context, state) {
+                        if (state is DoctorSlotsLoading) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+                        if (state is DoctorSlotsError) {
+                          return Center(
+                            child: Text(
+                              state.message,
+                              style: AppStyles.styleMedium14.copyWith(
+                                color: Colors.redAccent,
+                              ),
+                            ),
+                          );
+                        }
+                        // Filter to the selected date on the client side.
                         return AvailableTimeWidget(
-                          slots: state.slots,
+                          slots: _slotsForSelectedDate,
                           selectedSlot: _selectedSlot,
                           onSlotSelected: (s) =>
                               setState(() => _selectedSlot = s),
                         );
-                      }
-                      return const SizedBox.shrink();
-                    },
-                  ),
-                  SizedBox(height: 24.h),
-                  _sectionTitle('Consultation Fees'),
-                  SizedBox(height: 12.h),
-                  ConsultationFeesWidget(
-                    fee: widget.doctor.doctor.consultationFee ?? 0.0,
-                  ),
-                  SizedBox(height: 100.h),
-                ],
+                      },
+                    ),
+                    SizedBox(height: 24.h),
+                    _sectionTitle('Consultation Fees'),
+                    SizedBox(height: 12.h),
+                    ConsultationFeesWidget(
+                      fee: widget.doctor.doctor.consultationFee ?? 0.0,
+                    ),
+                    SizedBox(height: 100.h),
+                  ],
+                ),
               ),
-            ),
-            _buildBottomButton(context),
-          ],
+              _buildBottomButton(context),
+            ],
+          ),
         ),
       ),
     );

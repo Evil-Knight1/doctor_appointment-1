@@ -19,7 +19,11 @@ class AvailableTimeWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (slots.isEmpty) {
+    // Only show slots that are available and not yet booked
+    final availableSlots =
+        slots.where((s) => s.isAvailable && !s.isBooked).toList();
+
+    if (availableSlots.isEmpty) {
       return Center(
         child: Padding(
           padding: EdgeInsets.symmetric(vertical: 20.h),
@@ -43,11 +47,13 @@ class AvailableTimeWidget extends StatelessWidget {
       );
     }
 
-    final morningSlots = slots.where((s) => s.startTime.hour < 12).toList();
-    final afternoonSlots = slots
+    final morningSlots =
+        availableSlots.where((s) => s.startTime.hour < 12).toList();
+    final afternoonSlots = availableSlots
         .where((s) => s.startTime.hour >= 12 && s.startTime.hour < 17)
         .toList();
-    final eveningSlots = slots.where((s) => s.startTime.hour >= 17).toList();
+    final eveningSlots =
+        availableSlots.where((s) => s.startTime.hour >= 17).toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

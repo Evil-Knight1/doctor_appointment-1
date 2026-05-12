@@ -87,6 +87,7 @@ class _AvatarButton extends StatelessWidget {
         child: userImageUrl != null
             ? CachedNetworkImage(
                 imageUrl: ImageUrlHelper.getFullUrl(userImageUrl),
+                                  httpHeaders: ImageUrlHelper.getImageHeaders(),
                 fit: BoxFit.cover,
                 placeholder: (context, url) => Container(
                   color: AppColors.primaryLight,

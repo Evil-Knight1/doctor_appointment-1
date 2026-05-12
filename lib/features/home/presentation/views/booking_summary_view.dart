@@ -90,6 +90,7 @@ class BookingSummaryView extends StatelessWidget {
                             child: doctor.profilePictureUrl != null && doctor.profilePictureUrl!.isNotEmpty
                                 ? CachedNetworkImage(
                                     imageUrl: ImageUrlHelper.getFullUrl(doctor.profilePictureUrl),
+                                  httpHeaders: ImageUrlHelper.getImageHeaders(),
                                     fit: BoxFit.cover,
                                     placeholder: (context, url) => const Center(
                                       child: CircularProgressIndicator(),

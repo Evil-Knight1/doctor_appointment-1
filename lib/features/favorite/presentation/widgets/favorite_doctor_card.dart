@@ -1,3 +1,4 @@
+import 'package:doctor_appointment/core/utils/image_url_helper.dart';
 import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/core/utils/go_router.dart';
@@ -42,6 +43,7 @@ class FavoriteDoctorCard extends StatelessWidget {
               child: doctor.imageAsset.startsWith('http')
                   ? CachedNetworkImage(
                       imageUrl: doctor.imageAsset,
+                                  httpHeaders: ImageUrlHelper.getImageHeaders(),
                       width: 65.w,
                       height: 65.h,
                       fit: BoxFit.cover,

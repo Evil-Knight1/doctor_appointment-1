@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
+import 'package:doctor_appointment/core/utils/image_url_helper.dart';
 
 class FullScreenImageViewer extends StatelessWidget {
   final List<String> images;
@@ -31,7 +32,7 @@ class FullScreenImageViewer extends StatelessWidget {
         scrollPhysics: const BouncingScrollPhysics(),
         builder: (BuildContext context, int index) {
           return PhotoViewGalleryPageOptions(
-            imageProvider: CachedNetworkImageProvider(images[index]),
+            imageProvider: CachedNetworkImageProvider(images[index], headers: ImageUrlHelper.getImageHeaders()),
             initialScale: PhotoViewComputedScale.contained,
             heroAttributes: PhotoViewHeroAttributes(tag: images[index]),
           );

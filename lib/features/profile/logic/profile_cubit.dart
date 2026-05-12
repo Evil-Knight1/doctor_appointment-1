@@ -1,4 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:doctor_appointment/core/utils/image_url_helper.dart';
 import 'package:doctor_appointment/core/utils/result.dart';
 import 'package:doctor_appointment/features/profile/domain/usecases/get_patient_profile_usecase.dart';
 import 'package:doctor_appointment/features/profile/domain/usecases/update_patient_profile_usecase.dart';
@@ -47,6 +49,9 @@ class ProfileCubit extends Cubit<ProfileState> {
 
     switch (result) {
       case Success():
+        if (result.data.profilePicture != null) {
+          await CachedNetworkImage.evictFromCache(ImageUrlHelper.getFullUrl(result.data.profilePicture));
+        }
         emit(ProfileSuccess(result.data));
       case FailureResult():
         emit(ProfileFailure(result.failure.message));

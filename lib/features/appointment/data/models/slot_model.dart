@@ -16,13 +16,26 @@ class SlotModel {
   });
 
   factory SlotModel.fromJson(Map<String, dynamic> json) {
+    // Support both camelCase (old) and snake_case / alternate keys (new endpoint)
+    final rawStart =
+        json['startTime'] as String? ?? json['start_time'] as String? ?? '';
+    final rawEnd =
+        json['endTime'] as String? ?? json['end_time'] as String? ?? '';
+
     return SlotModel(
-      id: json['id'] as int,
-      startTime: DateTime.parse(json['startTime'] as String).toLocal(),
-      endTime: DateTime.parse(json['endTime'] as String).toLocal(),
-      durationMinutes: json['durationMinutes'] as int,
-      isBooked: json['isBooked'] as bool,
-      isAvailable: json['isAvailable'] as bool,
+      id: (json['id'] as num).toInt(),
+      startTime: DateTime.parse(rawStart).toLocal(),
+      endTime: DateTime.parse(rawEnd).toLocal(),
+      durationMinutes:
+          (json['durationMinutes'] as num? ??
+                  json['duration_minutes'] as num? ??
+                  30)
+              .toInt(),
+      isBooked: json['isBooked'] as bool? ?? json['is_booked'] as bool? ?? false,
+      isAvailable:
+          json['isAvailable'] as bool? ??
+          json['is_available'] as bool? ??
+          !(json['isBooked'] as bool? ?? false),
     );
   }
 
@@ -37,3 +50,4 @@ class SlotModel {
     };
   }
 }
+

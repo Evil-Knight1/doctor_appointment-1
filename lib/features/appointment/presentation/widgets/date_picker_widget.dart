@@ -9,11 +9,15 @@ class DatePickerWidget extends StatelessWidget {
   final List<DateTime> weekDays;
   final ValueChanged<DateTime> onDateSelected;
 
+  /// Dates that have at least one available slot — shown with a dot indicator.
+  final Set<DateTime> availableDates;
+
   const DatePickerWidget({
     super.key,
     required this.selectedDate,
     required this.weekDays,
     required this.onDateSelected,
+    this.availableDates = const {},
   });
 
   @override
@@ -72,9 +76,13 @@ class DatePickerWidget extends StatelessWidget {
             itemBuilder: (context, index) {
               final date = weekDays[index];
               final isSelected = DateUtils.isSameDay(date, selectedDate);
+              final hasSlots = availableDates.any(
+                (d) => DateUtils.isSameDay(d, date),
+              );
               return _DateItem(
                 date: date,
                 isSelected: isSelected,
+                hasSlots: hasSlots,
                 onTap: () => onDateSelected(date),
               );
             },
@@ -112,12 +120,14 @@ class DatePickerWidget extends StatelessWidget {
 class _DateItem extends StatelessWidget {
   final DateTime date;
   final bool isSelected;
+  final bool hasSlots;
   final VoidCallback onTap;
 
   const _DateItem({
     required this.date,
     required this.isSelected,
     required this.onTap,
+    this.hasSlots = false,
   });
 
   @override
@@ -128,10 +138,18 @@ class _DateItem extends StatelessWidget {
         duration: const Duration(milliseconds: 250),
         width: 54.w,
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary : Colors.white,
+          color: isSelected
+              ? AppColors.primary
+              : hasSlots
+              ? Colors.white
+              : AppColors.bg,
           borderRadius: BorderRadius.circular(16.r),
           border: Border.all(
-            color: isSelected ? AppColors.primary : AppColors.border,
+            color: isSelected
+                ? AppColors.primary
+                : hasSlots
+                ? AppColors.border
+                : AppColors.border.withValues(alpha: 0.4),
             width: 1.5,
           ),
           boxShadow: isSelected
@@ -151,7 +169,11 @@ class _DateItem extends StatelessWidget {
               DateFormat('EEE').format(date),
               style: AppStyles.styleMedium14.copyWith(
                 fontSize: 12.sp,
-                color: isSelected ? Colors.white70 : AppColors.textSecondary,
+                color: isSelected
+                    ? Colors.white70
+                    : hasSlots
+                    ? AppColors.textSecondary
+                    : AppColors.textSecondary.withValues(alpha: 0.4),
               ),
             ),
             SizedBox(height: 4.h),
@@ -159,20 +181,27 @@ class _DateItem extends StatelessWidget {
               '${date.day}',
               style: AppStyles.styleSemiBold18.copyWith(
                 fontSize: 18.sp,
-                color: isSelected ? Colors.white : AppColors.textPrimary,
+                color: isSelected
+                    ? Colors.white
+                    : hasSlots
+                    ? AppColors.textPrimary
+                    : AppColors.textPrimary.withValues(alpha: 0.35),
               ),
             ),
-            if (isSelected) ...[
-              SizedBox(height: 4.h),
-              Container(
-                width: 4.w,
-                height: 4.h,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                ),
+            SizedBox(height: 4.h),
+            // Dot: white on selected, primary-color on days with slots, invisible otherwise
+            Container(
+              width: 4.w,
+              height: 4.h,
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? Colors.white
+                    : hasSlots
+                    ? AppColors.primary
+                    : Colors.transparent,
+                shape: BoxShape.circle,
               ),
-            ],
+            ),
           ],
         ),
       ),

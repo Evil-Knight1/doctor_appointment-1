@@ -140,6 +140,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                                         ? CachedNetworkImage(
                                             imageUrl:
                                                 ImageUrlHelper.getFullUrl(widget.profile.profilePicture),
+                                            httpHeaders: ImageUrlHelper.getImageHeaders(),
                                             fit: BoxFit.cover,
                                             placeholder: (context, url) =>
                                                 const Center(

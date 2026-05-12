@@ -48,10 +48,16 @@ class _HomeBody extends StatelessWidget {
   const _HomeBody();
 
   Future<void> _handleRefresh(BuildContext context) async {
-    context.read<SpecializationsCubit>().fetchSpecializations();
-    context.read<DoctorsCubit>().fetchDoctors(pageNumber: 1, pageSize: 10, minRating: 3.5);
-    context.read<ProfileCubit>().loadProfile();
-    await Future.delayed(const Duration(milliseconds: 1500));
+    // Kick off all three refreshes in parallel and wait for the slowest one.
+    await Future.wait([
+      context.read<SpecializationsCubit>().fetchSpecializations(),
+      context.read<DoctorsCubit>().fetchDoctors(
+            pageNumber: 1,
+            pageSize: 10,
+            minRating: 3.5,
+          ),
+      context.read<ProfileCubit>().loadProfile(),
+    ]);
   }
 
   @override

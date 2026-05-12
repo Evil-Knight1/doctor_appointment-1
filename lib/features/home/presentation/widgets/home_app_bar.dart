@@ -77,6 +77,7 @@ class _UserInfoRow extends StatelessWidget {
                   child: image != null
                       ? CachedNetworkImage(
                           imageUrl: ImageUrlHelper.getFullUrl(image),
+                                  httpHeaders: ImageUrlHelper.getImageHeaders(),
                           fit: BoxFit.cover,
                           placeholder: (context, url) => Container(
                             color: AppColors.primaryLight,

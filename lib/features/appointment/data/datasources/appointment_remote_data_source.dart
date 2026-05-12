@@ -14,7 +14,7 @@ abstract class AppointmentRemoteDataSource {
 
   Future<List<AppointmentModel>> getMyAppointments();
   
-  Future<List<SlotModel>> getDoctorSlots(int doctorId, DateTime date);
+  Future<List<SlotModel>> getDoctorSlots(int doctorId);
 }
 
 class AppointmentRemoteDataSourceImpl implements AppointmentRemoteDataSource {
@@ -74,24 +74,35 @@ class AppointmentRemoteDataSourceImpl implements AppointmentRemoteDataSource {
   }
 
   @override
-  Future<List<SlotModel>> getDoctorSlots(int doctorId, DateTime date) async {
-    final dateString = date.toIso8601String().split('T').first;
-    final response = await apiService.get('/api/Appointment/slots/$doctorId?date=$dateString');
-    
-    final success = response['success'] == true;
-    if (!success) {
-      throw ApiException(_extractMessage(response));
+  Future<List<SlotModel>> getDoctorSlots(int doctorId) async {
+    final response = await apiService.get(
+      '/api/doctor/$doctorId/availability',
+    );
+
+    // The availability endpoint may return:
+    //   { "success": true, "data": [...] }   ← wrapped
+    //   [...]                                 ← bare list (direct response)
+    List<dynamic> rawList;
+
+    if (response is List) {
+      rawList = response;
+    } else if (response is Map<String, dynamic>) {
+      final success = response['success'] == true;
+      if (!success) throw ApiException(_extractMessage(response));
+      final data = response['data'];
+      if (data is List) {
+        rawList = data;
+      } else {
+        throw const ApiException('Unexpected response payload');
+      }
+    } else {
+      throw const ApiException('Unexpected response payload');
     }
 
-    final data = response['data'];
-    if (data is List) {
-      return data
-          .whereType<Map<String, dynamic>>()
-          .map(SlotModel.fromJson)
-          .toList();
-    }
-
-    throw const ApiException('Unexpected response payload');
+    return rawList
+        .whereType<Map<String, dynamic>>()
+        .map(SlotModel.fromJson)
+        .toList();
   }
 
   String _extractMessage(Map<String, dynamic> json) {

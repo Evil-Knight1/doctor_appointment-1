@@ -89,12 +89,9 @@ class AppointmentRepositoryImpl implements AppointmentRepository {
   }
 
   @override
-  Future<Result<List<SlotModel>>> getDoctorSlots(
-    int doctorId,
-    DateTime date,
-  ) async {
+  Future<Result<List<SlotModel>>> getDoctorSlots(int doctorId) async {
     try {
-      final response = await remoteDataSource.getDoctorSlots(doctorId, date);
+      final response = await remoteDataSource.getDoctorSlots(doctorId);
       return Result.success(response);
     } on ApiException catch (exception) {
       return Result.failure(

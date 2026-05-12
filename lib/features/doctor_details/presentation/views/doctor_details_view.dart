@@ -133,6 +133,7 @@ class _DoctorDetailsViewState extends State<DoctorDetailsView>
                   },
                   child: CachedNetworkImage(
                     imageUrl: ImageUrlHelper.getFullUrl(widget.doctor.doctor.profilePictureUrl),
+                                  httpHeaders: ImageUrlHelper.getImageHeaders(),
                     fit: BoxFit.cover,
                     placeholder: (context, url) => Center(
                       child: CircularProgressIndicator(
@@ -381,6 +382,7 @@ class _AddressTab extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12.r),
                     child: CachedNetworkImage(
                       imageUrl: ImageUrlHelper.getFullUrl(doctor.doctor.clinicImagesUrls![index]),
+                                  httpHeaders: ImageUrlHelper.getImageHeaders(),
                       width: 150.w,
                       height: 100.h,
                       fit: BoxFit.cover,
