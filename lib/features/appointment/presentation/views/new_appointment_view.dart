@@ -27,7 +27,7 @@ class NewAppointmentView extends StatefulWidget {
 class _NewAppointmentViewState extends State<NewAppointmentView> {
   late DoctorSlotsCubit _slotsCubit;
   DateTime _selectedDate = DateTime.now();
-  String _selectedConsultation = 'Hospital';
+  String _selectedConsultation = 'Clinic';
   SlotModel? _selectedSlot;
 
   /// All slots returned by the API (across all dates).
@@ -63,8 +63,8 @@ class _NewAppointmentViewState extends State<NewAppointmentView> {
   void initState() {
     super.initState();
     _slotsCubit = getIt<DoctorSlotsCubit>();
-    // Fetch ALL slots once — no date param needed.
-    _slotsCubit.fetchSlots(widget.doctor.doctor.id);
+    // Fetch slots for today's date
+    _slotsCubit.fetchSlots(widget.doctor.doctor.id, DateTime.now());
   }
 
   @override
@@ -100,7 +100,7 @@ class _NewAppointmentViewState extends State<NewAppointmentView> {
       ),
       body: BlocProvider(
         create: (context) => _slotsCubit,
-        child: BlocListener<DoctorSlotsCubit, DoctorSlotsState>(
+        child: BlocConsumer<DoctorSlotsCubit, DoctorSlotsState>(
           listener: (context, state) {
             if (state is DoctorSlotsLoaded) {
               setState(() {
@@ -115,88 +115,152 @@ class _NewAppointmentViewState extends State<NewAppointmentView> {
               });
             }
           },
-          child: Stack(
-            children: [
-              SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: 20.w),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 8.h),
-                    BlocBuilder<DoctorSlotsCubit, DoctorSlotsState>(
-                      builder: (context, state) {
-                        return DatePickerWidget(
-                          selectedDate: _selectedDate,
-                          weekDays: _weekDays,
-                          availableDates: _availableDates,
-                          onDateSelected: (d) {
-                            setState(() {
-                              _selectedDate = d;
-                              _selectedSlot = null;
-                            });
-                          },
-                        );
-                      },
-                    ),
-                    SizedBox(height: 24.h),
-                    _sectionTitle('Consultation Type', colorScheme),
-                    SizedBox(height: 12.h),
-                    ConsultationTypeWidget(
-                      selected: _selectedConsultation,
-                      onSelected: (t) =>
-                          setState(() => _selectedConsultation = t),
-                    ),
-                    SizedBox(height: 24.h),
-                    _sectionTitle('Available Slots', colorScheme),
-                    SizedBox(height: 12.h),
-                    BlocBuilder<DoctorSlotsCubit, DoctorSlotsState>(
-                      builder: (context, state) {
-                        if (state is DoctorSlotsLoading) {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        }
-                        if (state is DoctorSlotsError) {
-                          return Center(
-                            child: Text(
-                              state.message,
-                              style: context.styleMedium14.copyWith(
-                                color: colorScheme.error,
-                              ),
-                            ),
-                          );
-                        }
-                        // Filter to the selected date on the client side.
-                        return AvailableTimeWidget(
-                          slots: _slotsForSelectedDate,
-                          selectedSlot: _selectedSlot,
-                          onSlotSelected: (s) =>
-                              setState(() => _selectedSlot = s),
-                        );
-                      },
-                    ),
-                    SizedBox(height: 24.h),
-                    _sectionTitle('Consultation Fees', colorScheme),
-                    SizedBox(height: 12.h),
-                    ConsultationFeesWidget(
-                      fee: widget.doctor.doctor.consultationFee ?? 0.0,
-                    ),
-                    SizedBox(height: 100.h),
-                  ],
+          builder: (context, state) {
+            if (state is DoctorSlotsLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (state is DoctorSlotsError) {
+              return Center(
+                child: Padding(
+                  padding: EdgeInsets.all(24.w),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.error_outline_rounded, size: 64.sp, color: colorScheme.error),
+                      SizedBox(height: 16.h),
+                      Text(
+                        state.message,
+                        textAlign: TextAlign.center,
+                        style: context.styleMedium14.copyWith(color: colorScheme.error),
+                      ),
+                      SizedBox(height: 24.h),
+                      ElevatedButton(
+                        onPressed: () => _slotsCubit.fetchSlots(
+                          widget.doctor.doctor.id,
+                          DateTime.now(),
+                        ),
+                        child: const Text('Try Again'),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              _buildBottomButton(context),
-            ],
-          ),
+              );
+            }
+
+            if (state is DoctorSlotsLoaded && _availableDates.isEmpty) {
+              return Center(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 40.w),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(24.w),
+                        decoration: BoxDecoration(
+                          color: colorScheme.surfaceContainerHighest,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.calendar_today_outlined,
+                          size: 64.sp,
+                          color: colorScheme.primary,
+                        ),
+                      ),
+                      SizedBox(height: 24.h),
+                      Text(
+                        'No Availability Found',
+                        style: context.styleSemiBold22.copyWith(fontSize: 20.sp),
+                      ),
+                      SizedBox(height: 12.h),
+                      Text(
+                        'This doctor hasn\'t set any available slots yet. Please check back later or try another doctor.',
+                        textAlign: TextAlign.center,
+                        style: context.styleRegular14.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                          height: 1.5,
+                        ),
+                      ),
+                      SizedBox(height: 32.h),
+                      OutlinedButton(
+                        onPressed: () => context.pop(),
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: Size(200.w, 48.h),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12.r),
+                          ),
+                        ),
+                        child: const Text('Go Back'),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+
+            return Stack(
+              children: [
+                SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(horizontal: 20.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 16.h),
+                      DatePickerWidget(
+                        selectedDate: _selectedDate,
+                        weekDays: _weekDays,
+                        availableDates: _availableDates,
+                        onDateSelected: (d) {
+                          setState(() {
+                            _selectedDate = d;
+                            _selectedSlot = null;
+                          });
+                        },
+                      ),
+                      SizedBox(height: 24.h),
+                      _sectionTitle('Consultation Type', colorScheme),
+                      SizedBox(height: 12.h),
+                      ConsultationTypeWidget(
+                        selected: _selectedConsultation,
+                        onSelected: (t) =>
+                            setState(() => _selectedConsultation = t),
+                      ),
+                      SizedBox(height: 24.h),
+                      _sectionTitle('Available Slots', colorScheme),
+                      SizedBox(height: 12.h),
+                      AvailableTimeWidget(
+                        slots: _slotsForSelectedDate,
+                        selectedSlot: _selectedSlot,
+                        onSlotSelected: (s) =>
+                            setState(() => _selectedSlot = s),
+                      ),
+                      SizedBox(height: 24.h),
+                      _sectionTitle('Consultation Fees', colorScheme),
+                      SizedBox(height: 12.h),
+                      ConsultationFeesWidget(
+                        fee: widget.doctor.doctor.consultationFee ?? 0.0,
+                        selectedType: _selectedConsultation,
+                      ),
+                      SizedBox(height: 120.h),
+                    ],
+                  ),
+                ),
+                _buildBottomButton(context),
+              ],
+            );
+          },
         ),
       ),
     );
   }
 
-  Widget _sectionTitle(String title, ColorScheme colorScheme) =>
-      Text(title, style: context.styleSemiBold22.copyWith(
-        fontSize: 15.sp,
-        color: colorScheme.onSurface,
-      ));
+  Widget _sectionTitle(String title, ColorScheme colorScheme) => Text(
+    title,
+    style: context.styleSemiBold22.copyWith(
+      fontSize: 15.sp,
+      color: colorScheme.onSurface,
+    ),
+  );
 
   Widget _buildBottomButton(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -211,11 +275,15 @@ class _NewAppointmentViewState extends State<NewAppointmentView> {
           onPressed: _selectedSlot == null
               ? null
               : () {
+                  final baseFee = widget.doctor.doctor.consultationFee ?? 0.0;
+                  final amount = _selectedConsultation == 'Home visit' ? baseFee * 1.5 : baseFee;
+                  
                   final draft = AppointmentDraft(
                     doctor: widget.doctor,
                     date: _selectedDate,
                     slot: _selectedSlot!,
                     consultationType: _selectedConsultation,
+                    amount: amount,
                   );
                   context.push(AppRouter.kPatientDetails, extra: draft);
                 },

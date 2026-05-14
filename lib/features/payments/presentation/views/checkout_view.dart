@@ -29,7 +29,7 @@ class CheckoutView extends StatefulWidget {
 }
 
 class _CheckoutViewState extends State<CheckoutView> {
-  int _selectedMethod = 4; // 4 = OnlineCard, 5 = MobileWallet, 3 = CashAtClinic
+  int _selectedMethod = 1; // 1 = Credit/Debit Card, 2 = Mobile Wallet, 3 = Cash at Clinic
   late final PaymentCubit _paymentCubit;
 
   @override
@@ -46,12 +46,7 @@ class _CheckoutViewState extends State<CheckoutView> {
 
   @override
   Widget build(BuildContext context) {
-    // Assuming a flat fee for consultation for now. You could pull this from doctor's fee.
-    final String doctorFeeStr = widget.payload.draft.doctor.fee.replaceAll(
-      RegExp(r'[^0-9.]'),
-      '',
-    );
-    final double amount = double.tryParse(doctorFeeStr) ?? 15.0;
+    final double amount = widget.payload.draft.amount;
 
     return BlocProvider.value(
       value: _paymentCubit,
@@ -85,13 +80,13 @@ class _CheckoutViewState extends State<CheckoutView> {
               ),
               SizedBox(height: 16.h),
               _buildPaymentMethod(
-                4,
+                1,
                 'Credit/Debit Card',
                 Icons.credit_card_rounded,
               ),
               SizedBox(height: 12.h),
               _buildPaymentMethod(
-                5,
+                2,
                 'Mobile Wallet',
                 Icons.account_balance_wallet_rounded,
               ),
@@ -108,8 +103,10 @@ class _CheckoutViewState extends State<CheckoutView> {
                     ),
                   ),
                   Text(
-                    '\$${amount.toStringAsFixed(2)}',
-                    style: context.styleSemiBold24.copyWith(color: Theme.of(context).colorScheme.primary),
+                    'EGP ${amount.toStringAsFixed(2)}',
+                    style: context.styleSemiBold24.copyWith(
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                   ),
                 ],
               ),
@@ -117,9 +114,9 @@ class _CheckoutViewState extends State<CheckoutView> {
               BlocConsumer<PaymentCubit, PaymentState>(
                 listener: (context, state) {
                   if (state is PaymentError) {
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(SnackBar(content: Text(state.message)));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(state.message)),
+                    );
                   } else if (state is PaymentSuccess) {
                     context.pushReplacement(AppRouter.kAppointmentSuccess);
                   } else if (state is PaymentRequiresAction) {
@@ -157,7 +154,9 @@ class _CheckoutViewState extends State<CheckoutView> {
                     width: double.infinity,
                     height: 50.h,
                     circleSize: 12.r,
-                    textStyle: context.styleSemiBold16.copyWith(color: Theme.of(context).colorScheme.onPrimary),
+                    textStyle: context.styleSemiBold16.copyWith(
+                      color: Theme.of(context).colorScheme.onPrimary,
+                    ),
                     buttonColor: isLoading
                         ? Theme.of(context).colorScheme.outlineVariant
                         : Theme.of(context).colorScheme.primary,
@@ -179,9 +178,7 @@ class _CheckoutViewState extends State<CheckoutView> {
         padding: EdgeInsets.all(16.w),
         decoration: BoxDecoration(
           color: isSelected
-              ? Theme.of(
-                  context,
-                ).colorScheme.primaryContainer.withValues(alpha: 0.1)
+              ? Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.1)
               : Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(12.r),
           border: Border.all(

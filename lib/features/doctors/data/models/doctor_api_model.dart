@@ -34,15 +34,16 @@ class DoctorApiModel extends Doctor {
       specialization: SpecializationModel(
         id: json['specializationId'] as int? ?? 0,
         name:
-            (json['specialization'] as String?) ??
             (json['specializationName'] as String?) ??
+            (json['specialization'] as String?) ??
             'General',
       ),
       bio: json['bio'] as String?,
       yearsOfExperience: json['yearsOfExperience'] as int?,
       clinicAddress: json['clinicAddress'] as String?,
       hospital: json['hospital'] as String?,
-      isApproved: json['isApproved'] as bool? ?? false,
+      isApproved:
+          (json['isApproved'] as bool?) ?? (json['verified'] as bool?) ?? false,
       averageRating: (json['averageRating'] as num?)?.toDouble(),
       totalReviews: json['totalReviews'] as int? ?? 0,
       createdAt:
@@ -50,10 +51,14 @@ class DoctorApiModel extends Doctor {
           DateTime.fromMillisecondsSinceEpoch(0),
       specializationId: json['specializationId'] as int? ?? 0,
       isAvailable: json['isAvailable'] as bool? ?? false,
-      profilePictureUrl: json['profilePictureUrl'] as String?,
-      clinicImagesUrls: (json['clinicImagesUrls'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList(),
+      profilePictureUrl:
+          (json['profilePicture'] as String?) ??
+          (json['profilePictureUrl'] as String?),
+      clinicImagesUrls:
+          ((json['clinicImages'] as List<dynamic>?) ??
+                  (json['clinicImagesUrls'] as List<dynamic>?))
+              ?.map((e) => e as String)
+              .toList(),
       consultationFee: (json['consultationFee'] as num?)?.toDouble(),
       latitude: (json['latitude'] as num?)?.toDouble(),
       longitude: (json['longitude'] as num?)?.toDouble(),

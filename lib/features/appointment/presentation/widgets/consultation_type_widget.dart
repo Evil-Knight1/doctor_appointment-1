@@ -1,5 +1,4 @@
 import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -13,11 +12,11 @@ class ConsultationTypeWidget extends StatelessWidget {
     required this.onSelected,
   });
 
-  static const List<String> types = ['Online', 'Home visit', 'Hospital'];
+  static const List<String> types = ['Online', 'Home visit', 'Clinic'];
   static const Map<String, IconData> icons = {
     'Online': Icons.laptop_mac_outlined,
     'Home visit': Icons.home_outlined,
-    'Hospital': Icons.local_hospital_outlined,
+    'Clinic': Icons.local_hospital_outlined,
   };
 
   @override
@@ -60,4 +59,3 @@ class ConsultationTypeWidget extends StatelessWidget {
     );
   }
 }
-

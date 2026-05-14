@@ -1,3 +1,4 @@
+import 'package:doctor_appointment/features/doctors/data/models/availability_model.dart';
 import 'package:doctor_appointment/features/doctors/domain/entities/review.dart';
 import 'package:equatable/equatable.dart';
 
@@ -14,11 +15,15 @@ class DoctorDetailsLoading extends DoctorDetailsState {}
 
 class DoctorDetailsLoaded extends DoctorDetailsState {
   final List<Review> reviews;
+  final List<AvailabilityModel> availability;
 
-  const DoctorDetailsLoaded({required this.reviews});
+  const DoctorDetailsLoaded({
+    required this.reviews,
+    this.availability = const [],
+  });
 
   @override
-  List<Object?> get props => [reviews];
+  List<Object?> get props => [reviews, availability];
 }
 
 class DoctorDetailsError extends DoctorDetailsState {

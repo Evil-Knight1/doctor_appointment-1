@@ -40,8 +40,8 @@ class HomeDoctorModel {
   int get reviewCount => doctor.totalReviews;
   String get reviews => reviewCount.toString(); // For favorite_doctor_card.dart
   String get fee => doctor.consultationFee != null
-      ? '\$${doctor.consultationFee!.toInt()}'
-      : '\$100';
+      ? 'EGP ${doctor.consultationFee!.toInt()}'
+      : 'EGP 0';
   String get imageAsset =>
       (doctor.profilePictureUrl != null && doctor.profilePictureUrl!.isNotEmpty)
       ? ImageUrlHelper.getFullUrl(doctor.profilePictureUrl!)

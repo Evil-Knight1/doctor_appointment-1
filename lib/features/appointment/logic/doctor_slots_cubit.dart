@@ -9,9 +9,9 @@ class DoctorSlotsCubit extends Cubit<DoctorSlotsState> {
   DoctorSlotsCubit({required this.getDoctorSlotsUseCase})
     : super(const DoctorSlotsInitial());
 
-  Future<void> fetchSlots(int doctorId) async {
+  Future<void> fetchSlots(int doctorId, DateTime date) async {
     emit(const DoctorSlotsLoading());
-    final result = await getDoctorSlotsUseCase(doctorId);
+    final result = await getDoctorSlotsUseCase(doctorId, date);
 
     switch (result) {
       case Success():

@@ -201,7 +201,10 @@ void setupServiceLocator() {
     () => DoctorsCubit(searchDoctorsUseCase: getIt<SearchDoctorsUseCase>()),
   );
   getIt.registerFactory(
-    () => DoctorDetailsCubit(reviewRepository: getIt<ReviewRepository>()),
+    () => DoctorDetailsCubit(
+      reviewRepository: getIt<ReviewRepository>(),
+      doctorsRemoteDataSource: getIt<DoctorsRemoteDataSource>(),
+    ),
   );
 
   getIt.registerLazySingleton<ProfileRemoteDataSource>(

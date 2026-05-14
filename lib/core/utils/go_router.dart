@@ -358,10 +358,10 @@ abstract class AppRouter {
         name: Routes.recommendationView,
         path: kRecommendationView,
         builder: (context, state) {
-          final speciality = state.extra as String?;
+          final specializationId = state.extra as int?;
           return BlocProvider(
             create: (context) => getIt<DoctorsCubit>(),
-            child: RecommendationView(filterSpeciality: speciality),
+            child: RecommendationView(filterSpecializationId: specializationId),
           );
         },
       ),
@@ -384,8 +384,7 @@ abstract class AppRouter {
         builder: (context, state) {
           final doctor = state.extra as Doctor;
           return BlocProvider(
-            create: (context) =>
-                getIt<DoctorSlotsCubit>()..fetchSlots(doctor.id),
+            create: (context) => getIt<DoctorSlotsCubit>(),
             child: BookingDateView(doctor: doctor),
           );
         },

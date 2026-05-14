@@ -2,6 +2,7 @@ import 'package:doctor_appointment/core/errors/exceptions.dart';
 import 'package:doctor_appointment/core/services/api_service.dart';
 import 'package:doctor_appointment/features/appointment/data/models/appointment_model.dart';
 import 'package:doctor_appointment/features/appointment/data/models/slot_model.dart';
+import 'package:intl/intl.dart';
 
 abstract class AppointmentRemoteDataSource {
   Future<AppointmentModel> createAppointment({
@@ -13,8 +14,8 @@ abstract class AppointmentRemoteDataSource {
   });
 
   Future<List<AppointmentModel>> getMyAppointments();
-  
-  Future<List<SlotModel>> getDoctorSlots(int doctorId);
+
+  Future<List<SlotModel>> getDoctorSlots(int doctorId, DateTime date);
   Future<void> cancelAppointment(int appointmentId);
 }
 
@@ -31,16 +32,16 @@ class AppointmentRemoteDataSourceImpl implements AppointmentRemoteDataSource {
     int? paymentMethod,
     double? amount,
   }) async {
-    final response = await apiService.post(
-      '/api/Appointment',
-      data: {
-        'doctorId': doctorId,
-        'slotId': slotId,
-        'reason': reason,
-        'paymentMethod': paymentMethod,
-        'amount': amount,
-      },
-    );
+    final body = {
+      'doctorId': doctorId,
+      'slotId': slotId,
+      'reason': reason,
+      'paymentMethod': paymentMethod,
+      // Send as whole number — backend may reject float for currency
+      'amount': amount?.round(),
+    };
+
+    final response = await apiService.post('/api/Appointment', data: body);
 
     final success = response['success'] == true;
     if (!success) {
@@ -57,7 +58,9 @@ class AppointmentRemoteDataSourceImpl implements AppointmentRemoteDataSource {
 
   @override
   Future<List<AppointmentModel>> getMyAppointments() async {
-    final response = await apiService.get('/api/Appointment/patient/my-appointments');
+    final response = await apiService.get(
+      '/api/Appointment/patient/my-appointments',
+    );
     final success = response['success'] == true;
     if (!success) {
       throw ApiException(_extractMessage(response));
@@ -75,14 +78,13 @@ class AppointmentRemoteDataSourceImpl implements AppointmentRemoteDataSource {
   }
 
   @override
-  Future<List<SlotModel>> getDoctorSlots(int doctorId) async {
+  Future<List<SlotModel>> getDoctorSlots(int doctorId, DateTime date) async {
+    final dateStr = DateFormat('yyyy-MM-dd').format(date);
     final response = await apiService.get(
-      '/api/doctor/$doctorId/availability',
+      '/api/Appointment/slots/$doctorId',
+      queryParameters: {'date': dateStr},
     );
 
-    // The availability endpoint may return:
-    //   { "success": true, "data": [...] }   ← wrapped
-    //   [...]                                 ← bare list (direct response)
     List<dynamic> rawList;
 
     if (response is List) {
@@ -94,10 +96,10 @@ class AppointmentRemoteDataSourceImpl implements AppointmentRemoteDataSource {
       if (data is List) {
         rawList = data;
       } else {
-        throw const ApiException('Unexpected response payload');
+        throw const ApiException('Unexpected slots payload');
       }
     } else {
-      throw const ApiException('Unexpected response payload');
+      throw const ApiException('Unexpected slots payload');
     }
 
     return rawList
@@ -124,10 +126,12 @@ class AppointmentRemoteDataSourceImpl implements AppointmentRemoteDataSource {
     if (errors is List && errors.isNotEmpty) {
       return errors.map((e) => e.toString()).join(', ');
     } else if (errors is Map) {
-      return errors.values.map((e) {
-        if (e is List) return e.join(', ');
-        return e.toString();
-      }).join(' | ');
+      return errors.values
+          .map((e) {
+            if (e is List) return e.join(', ');
+            return e.toString();
+          })
+          .join(' | ');
     }
     return 'Request failed';
   }

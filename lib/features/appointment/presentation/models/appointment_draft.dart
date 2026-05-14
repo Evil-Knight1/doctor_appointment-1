@@ -6,11 +6,13 @@ class AppointmentDraft {
   final DateTime date;
   final SlotModel slot;
   final String consultationType;
+  final double amount;
 
   const AppointmentDraft({
     required this.doctor,
     required this.date,
     required this.slot,
     required this.consultationType,
+    required this.amount,
   });
 }

@@ -1,5 +1,6 @@
 import 'package:doctor_appointment/core/errors/exceptions.dart';
 import 'package:doctor_appointment/core/services/api_service.dart';
+import 'package:doctor_appointment/features/doctors/data/models/availability_model.dart';
 import 'package:doctor_appointment/features/doctors/data/models/doctors_page_model.dart';
 
 abstract class DoctorsRemoteDataSource {
@@ -10,6 +11,8 @@ abstract class DoctorsRemoteDataSource {
     int pageNumber,
     int pageSize,
   });
+
+  Future<List<AvailabilityModel>> getDoctorAvailability(int doctorId);
 }
 
 class DoctorsRemoteDataSourceImpl implements DoctorsRemoteDataSource {
@@ -56,6 +59,33 @@ class DoctorsRemoteDataSourceImpl implements DoctorsRemoteDataSource {
     }
 
     throw const ApiException('Unexpected response payload');
+  }
+
+  @override
+  Future<List<AvailabilityModel>> getDoctorAvailability(int doctorId) async {
+    final response = await apiService.get('/api/Doctor/$doctorId/availability');
+
+    List<dynamic> rawList;
+    if (response is List) {
+      rawList = response;
+    } else if (response is Map<String, dynamic>) {
+      final success = response['success'] == true;
+      if (!success) throw ApiException(_extractMessage(response));
+      final data = response['data'];
+      if (data is List) {
+        rawList = data;
+      } else {
+        throw const ApiException('Unexpected availability payload');
+      }
+    } else {
+      throw const ApiException('Unexpected availability payload');
+    }
+
+    return rawList
+        .whereType<Map<String, dynamic>>()
+        .map(AvailabilityModel.fromJson)
+        .where((a) => a.isAvailable)
+        .toList();
   }
 
   String _extractMessage(Map<String, dynamic> json) {

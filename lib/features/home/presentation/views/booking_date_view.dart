@@ -25,19 +25,29 @@ class BookingDateView extends StatefulWidget {
 }
 
 class _BookingDateViewState extends State<BookingDateView> {
-  DateTime _selectedDate = DateTime.now().add(const Duration(days: 1));
+  DateTime _selectedDate = DateTime.now();
   SlotModel? _selectedSlot;
 
-  Map<String, List<SlotModel>> _groupSlots(List<SlotModel> slots) {
-    final filteredSlots = slots.where((slot) => isSameDay(slot.startTime, _selectedDate)).toList();
+  @override
+  void initState() {
+    super.initState();
+    // Fetch slots for today on initial load
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<DoctorSlotsCubit>().fetchSlots(
+        widget.doctor.id,
+        _selectedDate,
+      );
+    });
+  }
 
+  Map<String, List<SlotModel>> _groupSlots(List<SlotModel> slots) {
     final Map<String, List<SlotModel>> categorized = {
       'Morning': [],
       'Afternoon': [],
       'Evening': [],
     };
 
-    for (var slot in filteredSlots) {
+    for (var slot in slots) {
       final hour = slot.startTime.hour;
       if (hour < 12) {
         categorized['Morning']!.add(slot);
@@ -67,13 +77,25 @@ class _BookingDateViewState extends State<BookingDateView> {
               children: [
                 Text('Select Date', style: context.headingMedium),
                 SizedBox(height: AppSpacing.md),
-                _CalendarPicker(
-                  selectedDate: _selectedDate,
-                  onDateSelected: (d) {
-                    setState(() {
-                      _selectedDate = d;
-                      _selectedSlot = null; // Reset selection on date change
-                    });
+                BlocBuilder<DoctorSlotsCubit, DoctorSlotsState>(
+                  builder: (context, state) {
+                    final List<SlotModel> allSlots = state is DoctorSlotsLoaded ? state.slots : [];
+                    
+                    return _CalendarPicker(
+                      selectedDate: _selectedDate,
+                      slots: allSlots,
+                      onDateSelected: (d) {
+                        setState(() {
+                          _selectedDate = d;
+                          _selectedSlot = null;
+                        });
+                        // Re-fetch slots for the newly selected date
+                        context.read<DoctorSlotsCubit>().fetchSlots(
+                          widget.doctor.id,
+                          d,
+                        );
+                      },
+                    );
                   },
                 ),
                 SizedBox(height: AppSpacing.xl),
@@ -86,6 +108,10 @@ class _BookingDateViewState extends State<BookingDateView> {
                     } else if (state is DoctorSlotsError) {
                       return _buildErrorState(state.message);
                     } else if (state is DoctorSlotsLoaded) {
+                      if (state.slots.isEmpty) {
+                        return _buildGlobalNoSlotsAvailable();
+                      }
+                      
                       final categorized = _groupSlots(state.slots);
                       final hasAnySlots = categorized.values.any((list) => list.isNotEmpty);
 
@@ -162,7 +188,7 @@ class _BookingDateViewState extends State<BookingDateView> {
                         'date': _selectedDate,
                         'time': DateFormat('hh:mm a').format(_selectedSlot!.startTime),
                         'slotId': _selectedSlot!.id,
-                        'amount': widget.doctor.consultationFee,
+                        'amount': widget.doctor.consultationFee ?? 100.0,
                       },
                     ),
           ),
@@ -199,6 +225,48 @@ class _BookingDateViewState extends State<BookingDateView> {
     );
   }
 
+  Widget _buildGlobalNoSlotsAvailable() {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(vertical: AppSpacing.xxl, horizontal: AppSpacing.xl),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        border: Border.all(color: colorScheme.outlineVariant.withValues(alpha: 0.5)),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: EdgeInsets.all(AppSpacing.lg),
+            decoration: BoxDecoration(
+              color: colorScheme.errorContainer.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.event_busy_rounded,
+              size: 48.sp,
+              color: colorScheme.error.withValues(alpha: 0.7),
+            ),
+          ),
+          SizedBox(height: AppSpacing.lg),
+          Text(
+            'Doctor has no availability',
+            style: context.headingSmall.copyWith(fontWeight: FontWeight.w700),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: AppSpacing.xs),
+          Text(
+            'This doctor hasn\'t set any slots yet.\nPlease check back later or choose another doctor.',
+            style: context.bodySmall.copyWith(color: colorScheme.onSurfaceVariant),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildNoSlotsAvailable() {
     final colorScheme = Theme.of(context).colorScheme;
     return Container(
@@ -207,19 +275,25 @@ class _BookingDateViewState extends State<BookingDateView> {
       decoration: BoxDecoration(
         color: colorScheme.surfaceContainerLow,
         borderRadius: BorderRadius.circular(AppRadius.xl),
+        border: Border.all(color: colorScheme.outlineVariant.withValues(alpha: 0.5)),
       ),
       child: Column(
         children: [
-          Icon(Icons.calendar_today_outlined, size: 48.sp, color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5)),
+          Icon(
+            Icons.calendar_today_outlined,
+            size: 40.sp,
+            color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+          ),
           SizedBox(height: AppSpacing.md),
           Text(
-            'No slots available',
+            'No slots for this date',
             style: context.bodyLarge.copyWith(fontWeight: FontWeight.w600),
           ),
           SizedBox(height: 4.h),
           Text(
-            'Please select another date',
+            'Try selecting a date marked with a dot',
             style: context.bodySmall.copyWith(color: colorScheme.onSurfaceVariant),
+            textAlign: TextAlign.center,
           ),
         ],
       ),
@@ -235,7 +309,9 @@ class _BookingDateViewState extends State<BookingDateView> {
           SizedBox(height: AppSpacing.sm),
           Text(message, style: context.bodyMedium),
           TextButton(
-            onPressed: () => context.read<DoctorSlotsCubit>().fetchSlots(widget.doctor.id),
+            onPressed: () => context
+                .read<DoctorSlotsCubit>()
+                .fetchSlots(widget.doctor.id, _selectedDate),
             child: const Text('Retry'),
           ),
         ],
@@ -248,14 +324,19 @@ class _CalendarPicker extends StatelessWidget {
   const _CalendarPicker({
     required this.selectedDate,
     required this.onDateSelected,
+    required this.slots,
   });
 
   final DateTime selectedDate;
   final ValueChanged<DateTime> onDateSelected;
+  final List<SlotModel> slots;
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+
+    // Get unique days that have slots
+    final availableDays = slots.map((s) => DateTime(s.startTime.year, s.startTime.month, s.startTime.day)).toSet();
 
     return Container(
       decoration: BoxDecoration(
@@ -275,6 +356,12 @@ class _CalendarPicker extends StatelessWidget {
         focusedDay: selectedDate,
         currentDay: DateTime.now(),
         selectedDayPredicate: (day) => isSameDay(selectedDate, day),
+        enabledDayPredicate: (day) {
+          // Only allow selecting days that are today or in the future
+          final now = DateTime.now();
+          final today = DateTime(now.year, now.month, now.day);
+          return !day.isBefore(today);
+        },
         onDaySelected: (selectedDay, focusedDay) {
           onDateSelected(selectedDay);
         },
@@ -300,6 +387,31 @@ class _CalendarPicker extends StatelessWidget {
           outsideDaysVisible: false,
           defaultTextStyle: context.bodyMedium.copyWith(color: colorScheme.onSurface),
           weekendTextStyle: context.bodyMedium.copyWith(color: colorScheme.error),
+          // Custom marker for available slots
+          markersMaxCount: 1,
+          markerDecoration: BoxDecoration(
+            color: colorScheme.secondary,
+            shape: BoxShape.circle,
+          ),
+        ),
+        calendarBuilders: CalendarBuilders(
+          markerBuilder: (context, date, events) {
+            final day = DateTime(date.year, date.month, date.day);
+            if (availableDays.contains(day)) {
+              return Positioned(
+                bottom: 1,
+                child: Container(
+                  width: 5.r,
+                  height: 5.r,
+                  decoration: BoxDecoration(
+                    color: colorScheme.primary,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              );
+            }
+            return null;
+          },
         ),
         daysOfWeekStyle: DaysOfWeekStyle(
           weekdayStyle: context.labelMedium,

@@ -78,6 +78,7 @@ class SpecialitiesList extends StatelessWidget {
                       icon: theme.icon,
                       color: theme.color,
                       bgColor: theme.bgColor,
+                      specializationId: spec.id,
                     );
                     return SpecialityCard(speciality: model);
                   },
@@ -101,8 +102,10 @@ class SpecialityCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     return GestureDetector(
-      onTap: () =>
-          context.pushNamed(Routes.recommendationView, extra: speciality.name),
+      onTap: () => context.pushNamed(
+        Routes.recommendationView,
+        extra: speciality.specializationId,
+      ),
       child: Container(
         width: 76.w,
         decoration: BoxDecoration(

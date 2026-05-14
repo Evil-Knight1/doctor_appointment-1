@@ -7,7 +7,7 @@ class GetDoctorSlotsUseCase {
 
   const GetDoctorSlotsUseCase(this.repository);
 
-  Future<Result<List<SlotModel>>> call(int doctorId) {
-    return repository.getDoctorSlots(doctorId);
+  Future<Result<List<SlotModel>>> call(int doctorId, DateTime date) {
+    return repository.getDoctorSlots(doctorId, date);
   }
 }

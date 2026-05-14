@@ -26,10 +26,12 @@ class BookingSummaryView extends StatelessWidget {
     final Doctor doctor = args['doctor'];
     final String time = args['time'] ?? '';
     final int paymentMethodId = args['paymentMethod'] as int? ?? 3;
-    final String paymentLabel = args['paymentLabel'] as String? ?? 'Cash at Clinic';
+    final String paymentLabel =
+        args['paymentLabel'] as String? ?? 'Cash at Clinic';
     final int slotId = args['slotId'] as int? ?? 0;
     final String reason = args['reason'] as String? ?? '';
-    final double amount = args['amount'] as double? ?? 65.0;
+    final double amount =
+        args['amount'] as double? ?? doctor.consultationFee ?? 0.0;
 
     return BlocConsumer<PaymentCubit, PaymentState>(
       listener: (context, state) async {
@@ -89,17 +91,23 @@ class BookingSummaryView extends StatelessWidget {
                               borderRadius: BorderRadius.circular(AppRadius.lg),
                             ),
                             clipBehavior: Clip.antiAlias,
-                            child: doctor.profilePictureUrl != null && doctor.profilePictureUrl!.isNotEmpty
+                            child:
+                                doctor.profilePictureUrl != null &&
+                                    doctor.profilePictureUrl!.isNotEmpty
                                 ? CachedNetworkImage(
-                                    imageUrl: ImageUrlHelper.getFullUrl(doctor.profilePictureUrl),
-                                  httpHeaders: ImageUrlHelper.getImageHeaders(),
+                                    imageUrl: ImageUrlHelper.getFullUrl(
+                                      doctor.profilePictureUrl,
+                                    ),
+                                    httpHeaders:
+                                        ImageUrlHelper.getImageHeaders(),
                                     fit: BoxFit.cover,
                                     placeholder: (context, url) => Skeletonizer(
                                       enabled: true,
                                       child: Container(
                                         width: 60.w,
                                         height: 60.h,
-                                        color: colorScheme.surfaceContainerHighest,
+                                        color:
+                                            colorScheme.surfaceContainerHighest,
                                       ),
                                     ),
                                     errorWidget: (context, url, error) => Icon(
@@ -119,7 +127,10 @@ class BookingSummaryView extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(doctor.fullName, style: context.headingSmall),
+                                Text(
+                                  doctor.fullName,
+                                  style: context.headingSmall,
+                                ),
                                 Text(
                                   '${doctor.specialization.name} | ${doctor.hospital ?? 'Clinic'}',
                                   style: context.bodySmall.copyWith(
@@ -143,7 +154,10 @@ class BookingSummaryView extends StatelessWidget {
                             value: time,
                           ),
                           if (reason.isNotEmpty) ...[
-                            Divider(height: 24.h, color: colorScheme.outlineVariant),
+                            Divider(
+                              height: 24.h,
+                              color: colorScheme.outlineVariant,
+                            ),
                             _DetailRow(
                               icon: Icons.description_outlined,
                               label: 'Reason',
@@ -178,9 +192,19 @@ class BookingSummaryView extends StatelessWidget {
                       title: 'Cost Summary',
                       child: Column(
                         children: [
-                          _CostRow(label: 'Consultation', value: '${amount.toStringAsFixed(2)} EGP'),
-                          Divider(height: 24.h, color: colorScheme.outlineVariant),
-                          _CostRow(label: 'Total', value: '${amount.toStringAsFixed(2)} EGP', isTotal: true),
+                          _CostRow(
+                            label: 'Consultation',
+                            value: '${amount.toStringAsFixed(2)} EGP',
+                          ),
+                          Divider(
+                            height: 24.h,
+                            color: colorScheme.outlineVariant,
+                          ),
+                          _CostRow(
+                            label: 'Total',
+                            value: '${amount.toStringAsFixed(2)} EGP',
+                            isTotal: true,
+                          ),
                         ],
                       ),
                     ),
@@ -207,12 +231,12 @@ class BookingSummaryView extends StatelessWidget {
                 onConfirm: () {
                   final int doctorId = doctor.id;
                   context.read<PaymentCubit>().checkout(
-                        doctorId: doctorId,
-                        slotId: slotId,
-                        reason: reason.isEmpty ? 'General Consultation' : reason,
-                        paymentMethod: paymentMethodId,
-                        amount: amount,
-                      );
+                    doctorId: doctorId,
+                    slotId: slotId,
+                    reason: reason.isEmpty ? 'General Consultation' : reason,
+                    paymentMethod: paymentMethodId,
+                    amount: amount,
+                  );
                 },
               ),
             ],
@@ -255,7 +279,9 @@ class _InfoBanner extends StatelessWidget {
             : customColors.warning?.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(AppRadius.lg),
         border: Border.all(
-          color: isPaymob ? colorScheme.primary.withValues(alpha: 0.3) : customColors.warning!.withValues(alpha: 0.5),
+          color: isPaymob
+              ? colorScheme.primary.withValues(alpha: 0.3)
+              : customColors.warning!.withValues(alpha: 0.5),
         ),
       ),
       child: Row(
@@ -369,7 +395,11 @@ class _DetailRow extends StatelessWidget {
 // ─── Cost Row ─────────────────────────────────────────────────────────────────
 
 class _CostRow extends StatelessWidget {
-  const _CostRow({required this.label, required this.value, this.isTotal = false});
+  const _CostRow({
+    required this.label,
+    required this.value,
+    this.isTotal = false,
+  });
   final String label;
   final String value;
   final bool isTotal;
@@ -384,7 +414,9 @@ class _CostRow extends StatelessWidget {
         Text(
           label,
           style: (isTotal ? context.headingSmall : context.bodyMedium).copyWith(
-            color: isTotal ? colorScheme.onSurface : colorScheme.onSurfaceVariant,
+            color: isTotal
+                ? colorScheme.onSurface
+                : colorScheme.onSurfaceVariant,
           ),
         ),
         Text(
@@ -419,7 +451,10 @@ class _BottomAction extends StatelessWidget {
 
     return Container(
       padding: EdgeInsets.fromLTRB(
-        AppSpacing.lg, AppSpacing.md, AppSpacing.lg, AppSpacing.xl,
+        AppSpacing.lg,
+        AppSpacing.md,
+        AppSpacing.lg,
+        AppSpacing.xl,
       ),
       decoration: BoxDecoration(
         color: colorScheme.surface,

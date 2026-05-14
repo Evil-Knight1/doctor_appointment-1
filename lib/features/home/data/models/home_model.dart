@@ -5,12 +5,14 @@ class SpecialityModel {
   final IconData icon;
   final Color color;
   final Color bgColor;
+  final int? specializationId;
 
   const SpecialityModel({
     required this.name,
     required this.icon,
     required this.color,
     required this.bgColor,
+    this.specializationId,
   });
 }
 

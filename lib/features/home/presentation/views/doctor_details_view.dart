@@ -131,21 +131,19 @@ class _AboutTab extends StatelessWidget {
               'Dr. ${doctor.name} is a top specialist${doctor.doctor.hospital != null ? ' at ${doctor.doctor.hospital}' : ''}. They have received several awards for their outstanding contribution in the medical field and are available for private consultation.',
         ),
         SizedBox(height: AppSpacing.xl),
-        const LabelValue(
-          label: 'Working Time',
-          value: 'Monday - Friday, 08:00 AM - 20:00 PM',
-        ),
-        SizedBox(height: AppSpacing.lg),
+        if (doctor.doctor.yearsOfExperience != null) ...[
+          LabelValue(
+            label: 'Experience',
+            value: '${doctor.doctor.yearsOfExperience} years',
+          ),
+          SizedBox(height: AppSpacing.lg),
+        ],
         if (doctor.doctor.hospital != null) ...[
           LabelValue(label: 'Hospital', value: doctor.doctor.hospital!),
           SizedBox(height: AppSpacing.lg),
         ],
-        const LabelValue(label: 'STR', value: '4726482464'),
+        LabelValue(label: 'Contact', value: doctor.doctor.phone),
         SizedBox(height: AppSpacing.lg),
-        LabelValue(
-          label: 'Pengalaman Praktik',
-          value: '${doctor.doctor.hospital ?? "Klinik Utama"}\n2017 - sekarang',
-        ),
       ],
     );
   }

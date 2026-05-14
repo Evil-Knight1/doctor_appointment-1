@@ -368,7 +368,7 @@ class _AboutTab extends StatelessWidget {
           ),
         ],
         SizedBox(height: 20.h),
-        const DoctorWorkingTimeWidget(),
+        DoctorWorkingTimeWidget(),
         SizedBox(height: 100.h), // padding for bottom buttons
       ],
     );

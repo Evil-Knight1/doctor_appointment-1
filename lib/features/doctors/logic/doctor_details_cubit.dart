@@ -1,26 +1,44 @@
 import 'package:doctor_appointment/core/utils/result.dart';
+import 'package:doctor_appointment/features/doctors/data/datasources/doctors_remote_data_source.dart';
+import 'package:doctor_appointment/features/doctors/data/models/availability_model.dart';
 import 'package:doctor_appointment/features/doctors/domain/repositories/review_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:doctor_appointment/features/doctors/logic/doctor_details_state.dart';
 
 class DoctorDetailsCubit extends Cubit<DoctorDetailsState> {
   final ReviewRepository reviewRepository;
+  final DoctorsRemoteDataSource doctorsRemoteDataSource;
   int? doctorId;
 
-  DoctorDetailsCubit({required this.reviewRepository})
-      : super(DoctorDetailsInitial());
+  DoctorDetailsCubit({
+    required this.reviewRepository,
+    required this.doctorsRemoteDataSource,
+  }) : super(DoctorDetailsInitial());
 
   void loadDoctorDetails(int doctorId) async {
     this.doctorId = doctorId;
     emit(DoctorDetailsLoading());
 
-    final result = await reviewRepository.getDoctorReviews(doctorId);
+    // Fetch reviews and availability in parallel — availability failure is non-fatal
+    final reviewFuture = reviewRepository.getDoctorReviews(doctorId);
+    final availabilityFuture = _fetchAvailabilitySafe(doctorId);
 
-    switch (result) {
+    final reviewResult = await reviewFuture;
+    final availability = await availabilityFuture;
+
+    switch (reviewResult) {
       case Success():
-        emit(DoctorDetailsLoaded(reviews: result.data));
+        emit(DoctorDetailsLoaded(reviews: reviewResult.data, availability: availability));
       case FailureResult():
-        emit(DoctorDetailsError(result.failure.message));
+        emit(DoctorDetailsError(reviewResult.failure.message));
+    }
+  }
+
+  Future<List<AvailabilityModel>> _fetchAvailabilitySafe(int doctorId) async {
+    try {
+      return await doctorsRemoteDataSource.getDoctorAvailability(doctorId);
+    } catch (_) {
+      return [];
     }
   }
 
@@ -36,7 +54,7 @@ class DoctorDetailsCubit extends Cubit<DoctorDetailsState> {
     );
 
     if (result is Success) {
-      loadDoctorDetails(doctorId); // Reload reviews after adding one
+      loadDoctorDetails(doctorId);
     }
   }
 }

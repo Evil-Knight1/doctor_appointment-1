@@ -66,6 +66,10 @@ class AppointmentRepositoryImpl implements AppointmentRepository {
 
     final response = exception.response;
     final statusCode = response?.statusCode;
+
+    // ignore: avoid_print
+    print('[AppointmentRepo] HTTP $statusCode error body: ${response?.data}');
+
     final message =
         _extractMessage(response?.data) ??
         exception.message ??
@@ -89,9 +93,9 @@ class AppointmentRepositoryImpl implements AppointmentRepository {
   }
 
   @override
-  Future<Result<List<SlotModel>>> getDoctorSlots(int doctorId) async {
+  Future<Result<List<SlotModel>>> getDoctorSlots(int doctorId, DateTime date) async {
     try {
-      final response = await remoteDataSource.getDoctorSlots(doctorId);
+      final response = await remoteDataSource.getDoctorSlots(doctorId, date);
       return Result.success(response);
     } on ApiException catch (exception) {
       return Result.failure(

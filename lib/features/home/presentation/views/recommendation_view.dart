@@ -17,8 +17,8 @@ import 'package:doctor_appointment/features/doctors/logic/doctors_state.dart';
 import 'package:doctor_appointment/features/home/data/models/home_doctor_model.dart';
 
 class RecommendationView extends StatefulWidget {
-  const RecommendationView({super.key, this.filterSpeciality});
-  final String? filterSpeciality;
+  const RecommendationView({super.key, this.filterSpecializationId});
+  final int? filterSpecializationId;
 
   @override
   State<RecommendationView> createState() => _RecommendationViewState();
@@ -30,7 +30,7 @@ class _RecommendationViewState extends State<RecommendationView> {
     super.initState();
     // Initial fetch
     context.read<DoctorsCubit>().fetchDoctors(
-      searchTerm: widget.filterSpeciality ?? '',
+      specializationId: widget.filterSpecializationId,
     );
   }
 

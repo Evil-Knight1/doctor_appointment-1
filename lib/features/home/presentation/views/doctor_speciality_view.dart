@@ -76,12 +76,13 @@ class DoctorSpecialityView extends StatelessWidget {
                     icon: theme.icon,
                     color: theme.color,
                     bgColor: theme.bgColor,
+                    specializationId: spec.id,
                   );
                   return SpecialityGridCard(
                     speciality: model,
                     onTap: () => context.pushNamed(
                       Routes.recommendationView,
-                      extra: model.name,
+                      extra: spec.id,
                     ),
                   );
                 },
