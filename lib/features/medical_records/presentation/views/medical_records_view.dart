@@ -1,4 +1,3 @@
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/core/utils/go_router.dart';
 import 'package:flutter/material.dart';
@@ -10,38 +9,47 @@ class MedicalRecordsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: colorScheme.surface,
         elevation: 0,
         titleSpacing: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.textPrimary, size: 20.sp),
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: colorScheme.onSurface,
+            size: 20.sp,
+          ),
           onPressed: () => context.pop(),
         ),
         title: Text(
           'Medical Records',
-          style: AppStyles.styleSemiBold22.copyWith(fontSize: 18.sp),
+          style: AppStyles.styleSemiBold22.copyWith(
+            fontSize: 18.sp,
+            color: colorScheme.onSurface,
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push(AppRouter.kCreateRecordView),
-        backgroundColor: AppColors.primary,
-        child: const Icon(Icons.add_rounded, color: Colors.white),
+        backgroundColor: colorScheme.primary,
+        child: Icon(Icons.add_rounded, color: colorScheme.onPrimary),
       ),
       body: ListView.separated(
         padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
         itemCount: 4,
         separatorBuilder: (context, index) => SizedBox(height: 12.h),
         itemBuilder: (context, index) {
-          return _buildRecordCard(index);
+          return _buildRecordCard(context, index);
         },
       ),
     );
   }
 
-  Widget _buildRecordCard(int index) {
+  Widget _buildRecordCard(BuildContext context, int index) {
+    final colorScheme = Theme.of(context).colorScheme;
     final titles = [
       'Blood Test Results',
       'Dental X-Ray',
@@ -60,12 +68,12 @@ class MedicalRecordsView extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: Theme.of(context).dividerColor),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: Theme.of(context).shadowColor.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -76,10 +84,14 @@ class MedicalRecordsView extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(12.w),
             decoration: BoxDecoration(
-              color: AppColors.primaryLight,
+              color: colorScheme.primaryContainer,
               borderRadius: BorderRadius.circular(12.r),
             ),
-            child: Icon(icons[index % icons.length], color: AppColors.primary, size: 24.sp),
+            child: Icon(
+              icons[index % icons.length],
+              color: colorScheme.primary,
+              size: 24.sp,
+            ),
           ),
           SizedBox(width: 16.w),
           Expanded(
@@ -88,22 +100,32 @@ class MedicalRecordsView extends StatelessWidget {
               children: [
                 Text(
                   titles[index % titles.length],
-                  style: AppStyles.styleSemiBold16,
+                  style: AppStyles.styleSemiBold16.copyWith(
+                    color: colorScheme.onSurface,
+                  ),
                 ),
                 SizedBox(height: 4.h),
                 Text(
                   'Added by ${docs[index % docs.length]}',
-                  style: AppStyles.styleMedium14.copyWith(color: AppColors.textSecondary),
+                  style: AppStyles.styleMedium14.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
                 ),
                 SizedBox(height: 4.h),
                 Text(
                   dates[index % dates.length],
-                  style: AppStyles.styleRegular12.copyWith(color: AppColors.textLight),
+                  style: AppStyles.styleRegular12.copyWith(
+                    color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                  ),
                 ),
               ],
             ),
           ),
-          Icon(Icons.chevron_right_rounded, color: AppColors.textSecondary, size: 24.sp),
+          Icon(
+            Icons.chevron_right_rounded,
+            color: colorScheme.onSurfaceVariant,
+            size: 24.sp,
+          ),
         ],
       ),
     );

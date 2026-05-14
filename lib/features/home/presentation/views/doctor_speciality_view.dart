@@ -6,7 +6,6 @@ import 'package:doctor_appointment/core/utils/app_dimensions.dart';
 import 'package:doctor_appointment/core/services/service_locator.dart';
 import 'package:doctor_appointment/features/home/data/models/home_model.dart';
 import 'package:doctor_appointment/core/utils/routes.dart';
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/features/doctors/logic/specializations_cubit.dart';
 import 'package:doctor_appointment/features/doctors/logic/specializations_state.dart';
 import 'package:doctor_appointment/core/utils/specialty_mapper.dart';
@@ -18,11 +17,12 @@ class DoctorSpecialityView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return BlocProvider(
       create: (context) =>
           getIt<SpecializationsCubit>()..fetchSpecializations(),
       child: Scaffold(
-        backgroundColor: AppColors.backgroundLight,
+        backgroundColor: colorScheme.surface,
         appBar: const SharedAppBar(title: 'Doctor Speciality'),
         body: BlocBuilder<SpecializationsCubit, SpecializationsState>(
           builder: (context, state) {
@@ -69,7 +69,7 @@ class DoctorSpecialityView extends StatelessWidget {
                 itemCount: specialities.length,
                 itemBuilder: (context, index) {
                   final spec = specialities[index];
-                  final theme = SpecialtyMapper.getThemeForSpecialty(spec.name);
+                  final theme = SpecialtyMapper.getThemeForSpecialty(spec.name, colorScheme);
                   // Map API entity to SpecialityModel for UI
                   final model = SpecialityModel(
                     name: spec.name,

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:doctor_appointment/features/calendar/presentation/views/calendar_view.dart';
@@ -29,6 +28,7 @@ class _RootState extends State<Root> {
   ];
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
       extendBody: true,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -36,67 +36,87 @@ class _RootState extends State<Root> {
       bottomNavigationBar: CurvedNavigationBar(
         index: _currentIndex,
         backgroundColor: Colors.transparent,
-        color: Colors.white,
-        buttonBackgroundColor: AppColors.primary,
+        color: colorScheme.surface,
+        buttonBackgroundColor: colorScheme.primary,
         animationDuration: const Duration(milliseconds: 300),
         items: [
           CurvedNavigationBarItem(
             child: Icon(
               Icons.home_rounded,
-              color: _currentIndex == 0 ? Colors.white : AppColors.primary.withValues(alpha: 0.6),
+              color: _currentIndex == 0
+                  ? colorScheme.onPrimary
+                  : colorScheme.primary.withValues(alpha: 0.6),
               size: 26.sp,
             ),
             label: 'Home',
-            labelStyle: AppStyles.styleMedium14.copyWith(
-              color: _currentIndex == 0 ? AppColors.primary : AppColors.textSecondary,
+            labelStyle: AppStyles.styleMedium14(context).copyWith(
+              color: _currentIndex == 0
+                  ? colorScheme.primary
+                  : colorScheme.onSurfaceVariant,
               fontSize: 11.sp,
             ),
           ),
           CurvedNavigationBarItem(
             child: Icon(
               Icons.chat_bubble_rounded,
-              color: _currentIndex == 1 ? Colors.white : AppColors.primary.withValues(alpha: 0.6),
+              color: _currentIndex == 1
+                  ? colorScheme.onPrimary
+                  : colorScheme.primary.withValues(alpha: 0.6),
               size: 26.sp,
             ),
             label: 'Chat',
-            labelStyle: AppStyles.styleMedium14.copyWith(
-              color: _currentIndex == 1 ? AppColors.primary : AppColors.textSecondary,
+            labelStyle: AppStyles.styleMedium14(context).copyWith(
+              color: _currentIndex == 1
+                  ? colorScheme.primary
+                  : colorScheme.onSurfaceVariant,
               fontSize: 11.sp,
             ),
           ),
           CurvedNavigationBarItem(
             child: Icon(
               Icons.search_rounded,
-              color: _currentIndex == 2 ? Colors.white : AppColors.primary.withValues(alpha: 0.6),
+              color: _currentIndex == 2
+                  ? colorScheme.onPrimary
+                  : colorScheme.primary.withValues(alpha: 0.6),
               size: 26.sp,
             ),
             label: 'Search',
-            labelStyle: AppStyles.styleMedium14.copyWith(
-              color: _currentIndex == 2 ? AppColors.primary : AppColors.textSecondary,
+            labelStyle: AppStyles.styleMedium14(context).copyWith(
+              color: _currentIndex == 2
+                  ? colorScheme.primary
+                  : colorScheme.onSurfaceVariant,
               fontSize: 11.sp,
             ),
           ),
           CurvedNavigationBarItem(
             child: Icon(
               Icons.calendar_month_rounded,
-              color: _currentIndex == 3 ? Colors.white : AppColors.primary.withValues(alpha: 0.6),
+              color: _currentIndex == 3
+                  ? colorScheme.onPrimary
+                  : colorScheme.primary.withValues(alpha: 0.6),
               size: 26.sp,
             ),
             label: 'Bookings',
-            labelStyle: AppStyles.styleMedium14.copyWith(
-              color: _currentIndex == 3 ? AppColors.primary : AppColors.textSecondary,
+            labelStyle: AppStyles.styleMedium14(context).copyWith(
+              color: _currentIndex == 3
+                  ? colorScheme.primary
+                  : colorScheme.onSurfaceVariant,
               fontSize: 11.sp,
             ),
           ),
           CurvedNavigationBarItem(
             child: Icon(
               Icons.person_rounded,
-              color: _currentIndex == 4 ? Colors.white : AppColors.primary.withValues(alpha: 0.6),
+              color: _currentIndex == 4
+                  ? colorScheme.onPrimary
+                  : colorScheme.primary.withValues(alpha: 0.6),
               size: 26.sp,
             ),
             label: 'Profile',
-            labelStyle: AppStyles.styleMedium14.copyWith(
-              color: _currentIndex == 4 ? AppColors.primary : AppColors.textSecondary,
+            labelStyle: AppStyles.styleMedium14(context).copyWith(
+              color: _currentIndex == 4
+                  ? colorScheme.primary
+                  : colorScheme.onSurfaceVariant,
               fontSize: 11.sp,
             ),
           ),
@@ -105,6 +125,7 @@ class _RootState extends State<Root> {
       ),
     );
   }
+
 
   void _changeItem(int value) {
     setState(() {

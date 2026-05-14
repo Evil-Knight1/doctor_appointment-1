@@ -1,4 +1,3 @@
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -10,6 +9,7 @@ class SplashMobile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return SafeArea(
       child: Column(
         children: [
@@ -17,7 +17,7 @@ class SplashMobile extends StatelessWidget {
           Expanded(
             flex: 4,
             child: Center(
-              child: Row(
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(
@@ -26,18 +26,18 @@ class SplashMobile extends StatelessWidget {
                   ),
                   Text(
                     'MedLink',
-                    style: AppStyles.styleBold24.copyWith(
-                      color: AppColors.black,
-                    ),
+                    style: AppStyles.styleBold24(
+                      context,
+                    ).copyWith(color: colorScheme.onSurface),
                   ),
                 ],
               ),
             ),
           ),
-          const Expanded(
+          Expanded(
             flex: 2,
             child: Center(
-              child: SpinKitFadingCircle(color: AppColors.primary, size: 50),
+              child: SpinKitFadingCircle(color: colorScheme.primary, size: 50),
             ),
           ),
           const Spacer(),

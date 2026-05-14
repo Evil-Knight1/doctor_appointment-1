@@ -1,10 +1,10 @@
+import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:doctor_appointment/core/utils/app_dimensions.dart';
 import 'package:doctor_appointment/core/utils/routes.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 
 import 'package:doctor_appointment/l10n/app_localizations.dart';
 
@@ -28,30 +28,32 @@ class QuickAccessGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final colorScheme = Theme.of(context).colorScheme;
+    final customColors = context.customColors;
     final List<_QuickAccessItem> items = [
       _QuickAccessItem(
         label: l10n.findNearbyGrid,
         icon: Icons.location_on_outlined,
-        color: const Color(0xFF2563EB),
-        bgColor: const Color(0xFFEFF6FF),
+        color: colorScheme.primary,
+        bgColor: colorScheme.primary.withValues(alpha: 0.1),
       ),
       _QuickAccessItem(
         label: l10n.videoCall,
         icon: Icons.video_call_outlined,
-        color: const Color(0xFF059669),
-        bgColor: const Color(0xFFECFDF5),
+        color: customColors.success!,
+        bgColor: customColors.success!.withValues(alpha: 0.1),
       ),
       _QuickAccessItem(
         label: l10n.phoneCall,
         icon: Icons.phone_outlined,
-        color: const Color(0xFFD97706),
-        bgColor: const Color(0xFFFFFBEB),
+        color: customColors.warning!,
+        bgColor: customColors.warning!.withValues(alpha: 0.1),
       ),
       _QuickAccessItem(
         label: l10n.myRecords,
         icon: Icons.description_outlined,
-        color: const Color(0xFF7C3AED),
-        bgColor: const Color(0xFFF5F3FF),
+        color: customColors.appointmentPending!,
+        bgColor: customColors.appointmentPending!.withValues(alpha: 0.1),
       ),
     ];
 
@@ -66,10 +68,7 @@ class QuickAccessGrid extends StatelessWidget {
                 left: index == 0 ? 0 : (AppSpacing.sm / 2),
                 right: index == items.length - 1 ? 0 : (AppSpacing.sm / 2),
               ),
-              child: _QuickAccessCard(
-                item: items[index],
-                isNearby: index == 0,
-              ),
+              child: _QuickAccessCard(item: items[index], isNearby: index == 0),
             ),
           ),
         ),
@@ -86,6 +85,7 @@ class _QuickAccessCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: () {
         if (isNearby) {
@@ -95,11 +95,11 @@ class _QuickAccessCard extends StatelessWidget {
       child: Container(
         height: 80.h,
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: colorScheme.surface,
           borderRadius: BorderRadius.circular(AppRadius.lg),
           boxShadow: [
             BoxShadow(
-              color: AppColors.cardShadow.withValues(alpha: 0.08),
+              color: colorScheme.shadow.withValues(alpha: 0.08),
               blurRadius: 10.r,
               offset: Offset(0, 3.h),
             ),
@@ -120,10 +120,10 @@ class _QuickAccessCard extends StatelessWidget {
             SizedBox(height: 4.h),
             Text(
               item.label,
-              style: AppTextStyles.bodySmall.copyWith(
+              style: context.bodySmall.copyWith(
                 fontSize: 10.sp,
                 fontWeight: FontWeight.w500,
-                color: AppColors.textPrimary,
+                color: colorScheme.onSurface,
                 height: 1.2,
               ),
               textAlign: TextAlign.center,

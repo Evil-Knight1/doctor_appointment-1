@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:doctor_appointment/core/utils/app_dimensions.dart';
 import 'package:doctor_appointment/features/doctors/domain/entities/doctor.dart';
 import 'package:doctor_appointment/core/utils/routes.dart';
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import '../widgets/booking_confirmed_widgets.dart';
 import '../widgets/shared_app_bar.dart';
 
@@ -14,12 +13,13 @@ class BookingConfirmedView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final Doctor? doctor = args?['doctor'] as Doctor?;
     final String time = args?['time'] as String? ?? '';
     final String paymentLabel = args?['paymentLabel'] as String? ?? 'Cash at Clinic';
 
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
+      backgroundColor: colorScheme.surface,
       appBar: const SharedAppBar(title: 'Booking Confirmed'),
       body: Column(
         children: [
@@ -42,20 +42,20 @@ class BookingConfirmedView extends StatelessWidget {
                           vertical: 4.h,
                         ),
                         decoration: BoxDecoration(
-                          border: Border.all(color: AppColors.primary),
+                          border: Border.all(color: colorScheme.primary),
                           borderRadius: BorderRadius.circular(AppRadius.full),
                         ),
                         child: Text(
                           'Get Location',
                           style: TextStyle(
                             fontSize: 11.sp,
-                            color: AppColors.primary,
+                            color: colorScheme.primary,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
                     ),
-                    Divider(height: 20.h, color: AppColors.divider),
+                    Divider(height: 20.h, color: colorScheme.outlineVariant),
                     BookingInfoRow(
                       icon: Icons.payment_outlined,
                       label: 'Payment',

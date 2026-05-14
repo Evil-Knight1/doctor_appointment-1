@@ -1,7 +1,6 @@
 import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/features/chat/data/models/chat_message_model.dart';
 
@@ -17,6 +16,7 @@ class ChatBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final customColors = context.customColors;
     return Padding(
       padding: EdgeInsets.only(
@@ -60,8 +60,8 @@ class ChatBubble extends StatelessWidget {
                   boxShadow: [
                     BoxShadow(
                       color: isMe
-                          ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.25)
-                          : Colors.black.withValues(alpha: 0.06),
+                          ? colorScheme.primary.withValues(alpha: 0.25)
+                          : colorScheme.shadow.withValues(alpha: 0.06),
                       blurRadius: 8,
                       offset: const Offset(0, 3),
                     ),
@@ -75,9 +75,9 @@ class ChatBubble extends StatelessWidget {
                   children: [
                     Text(
                       message.message,
-                      style: AppTextStyles.bodyMedium.copyWith(
+                      style: context.bodyMedium.copyWith(
                         color:
-                            isMe ? Colors.white : AppColors.textPrimary,
+                            isMe ? Colors.white : colorScheme.onSurface,
                         height: 1.4,
                       ),
                     ),
@@ -91,7 +91,7 @@ class ChatBubble extends StatelessWidget {
                             fontSize: 10.sp,
                             color: isMe
                                 ? Colors.white.withValues(alpha: 0.75)
-                                : AppColors.textLight,
+                                : colorScheme.onSurfaceVariant,
                           ),
                         ),
                         if (isMe) ...[
@@ -134,3 +134,4 @@ class ChatBubble extends StatelessWidget {
     return '${timestamp.hour}:${timestamp.minute.toString().padLeft(2, '0')}';
   }
 }
+

@@ -7,7 +7,7 @@ import 'package:doctor_appointment/features/chat/logic/conversations_cubit.dart'
 import 'package:doctor_appointment/features/chat/logic/conversations_state.dart';
 import 'package:doctor_appointment/features/chat/ui/widgets/conversation_tile.dart';
 import 'package:doctor_appointment/features/chat/data/models/conversation_model.dart';
-import 'package:doctor_appointment/core/utils/app_colors.dart';
+import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/core/utils/routes.dart';
 import 'package:go_router/go_router.dart';
@@ -32,10 +32,11 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return BlocProvider(
       create: (context) => getIt<ConversationsCubit>()..fetchConversations(),
       child: Scaffold(
-        backgroundColor: AppColors.bg,
+        backgroundColor: colorScheme.surface,
         body: Column(
           children: [
             _buildHeader(context),
@@ -43,8 +44,8 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
               child: LiquidPullToRefresh(
                 onRefresh: () =>
                     context.read<ConversationsCubit>().fetchConversations(),
-                color: AppColors.primary,
-                backgroundColor: Colors.white,
+                color: colorScheme.primary,
+                backgroundColor: colorScheme.surface,
                 showChildOpacityTransition: false,
                 child: BlocBuilder<ConversationsCubit, ConversationsState>(
                   builder: (context, state) {
@@ -92,7 +93,7 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                     final int total = filtered.length + (showAi ? 1 : 0);
 
                     if (total == 0) {
-                      return _buildEmpty();
+                      return _buildEmpty(context);
                     }
 
                     return ListView.builder(
@@ -136,10 +137,14 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
   }
 
   Widget _buildHeader(BuildContext context) {
+    final customColors = context.customColors;
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.headerGradientStart, AppColors.headerGradientEnd],
+          colors: [
+            customColors.chatBubbleMineGradientStart ?? Colors.blue,
+            customColors.chatBubbleMineGradientEnd ?? Colors.blueAccent,
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -153,11 +158,11 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
             children: [
               Row(
                 children: [
-                  BackButton(color: Colors.white),
+                  const BackButton(color: Colors.white),
                   const Spacer(),
                   Text(
                     'Messages',
-                    style: AppTextStyles.headingLarge.copyWith(
+                    style: context.headingLarge.copyWith(
                       color: Colors.white,
                       fontSize: 20.sp,
                     ),
@@ -205,7 +210,8 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
     );
   }
 
-  Widget _buildEmpty() {
+  Widget _buildEmpty(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -213,17 +219,18 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
           Icon(
             Icons.chat_bubble_outline_rounded,
             size: 64.r,
-            color: AppColors.textLight,
+            color: colorScheme.onSurfaceVariant,
           ),
           SizedBox(height: 12.h),
           Text(
             'No conversations found',
-            style: AppTextStyles.bodyMedium.copyWith(
-              color: AppColors.textSecondary,
+            style: context.bodyMedium.copyWith(
+              color: colorScheme.onSurfaceVariant,
             ),
           ),
         ],
       ),
     );
   }
+
 }

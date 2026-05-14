@@ -3,8 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:doctor_appointment/core/utils/app_dimensions.dart';
 import 'package:doctor_appointment/core/utils/routes.dart';
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
+import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
 import '../widgets/booking_stepper.dart';
 import '../widgets/shared_app_bar.dart';
 
@@ -26,31 +26,30 @@ class _BookingPaymentViewState extends State<BookingPaymentView> {
       label: 'Online Card',
       subtitle: 'Pay securely with Visa or MasterCard via Paymob',
       icon: Icons.credit_card_rounded,
-      color: Color(0xFF2563EB),
-      bgColor: Color(0xFFEFF6FF),
+      type: _PaymentMethodType.online,
     ),
     _PaymentMethod(
       id: 5,
       label: 'Mobile Wallet',
       subtitle: 'Pay with Vodafone Cash, Orange Money or Etisalat Cash',
       icon: Icons.phone_android_rounded,
-      color: Color(0xFF059669),
-      bgColor: Color(0xFFECFDF5),
+      type: _PaymentMethodType.wallet,
     ),
     _PaymentMethod(
       id: 3,
       label: 'Cash at Clinic',
       subtitle: 'Pay in person when you arrive at the clinic',
       icon: Icons.payments_outlined,
-      color: Color(0xFFF59E0B),
-      bgColor: Color(0xFFFFFBEB),
+      type: _PaymentMethodType.cash,
     ),
   ];
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
+      backgroundColor: colorScheme.surface,
       appBar: const SharedAppBar(title: 'Book Appointment'),
       body: Column(
         children: [
@@ -59,11 +58,11 @@ class _BookingPaymentViewState extends State<BookingPaymentView> {
             child: ListView(
               padding: EdgeInsets.all(AppSpacing.lg),
               children: [
-                Text('Payment Option', style: AppTextStyles.headingLarge),
+                Text('Payment Option', style: context.headingLarge),
                 SizedBox(height: AppSpacing.sm),
                 Text(
                   'Select how you\'d like to pay for your appointment',
-                  style: AppTextStyles.bodySmall,
+                  style: context.bodySmall,
                 ),
                 SizedBox(height: AppSpacing.xl),
                 ..._methods.map(
@@ -83,11 +82,18 @@ class _BookingPaymentViewState extends State<BookingPaymentView> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.lock_outline, size: 12.sp, color: AppColors.textSecondary),
+                      Icon(
+                        Icons.lock_outline,
+                        size: 12.sp,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
                       SizedBox(width: 4.w),
                       Text(
                         'Payments secured by Paymob',
-                        style: AppTextStyles.bodySmall.copyWith(fontSize: 11.sp),
+                        style: context.bodySmall.copyWith(
+                          fontSize: 11.sp,
+                          color: colorScheme.onSurfaceVariant,
+                        ),
                       ),
                     ],
                   ),
@@ -115,22 +121,22 @@ class _BookingPaymentViewState extends State<BookingPaymentView> {
 
 // ─── Data class ───────────────────────────────────────────────────────────────
 
+enum _PaymentMethodType { online, wallet, cash }
+
 class _PaymentMethod {
   const _PaymentMethod({
     required this.id,
     required this.label,
     required this.subtitle,
     required this.icon,
-    required this.color,
-    required this.bgColor,
+    required this.type,
   });
 
   final int id;
   final String label;
   final String subtitle;
   final IconData icon;
-  final Color color;
-  final Color bgColor;
+  final _PaymentMethodType type;
 }
 
 // ─── Tile widget ──────────────────────────────────────────────────────────────
@@ -146,23 +152,39 @@ class _PaymentMethodTile extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onTap;
 
+  Color _getMethodColor(BuildContext context) {
+    final customColors = context.customColors;
+    final colorScheme = Theme.of(context).colorScheme;
+    switch (method.type) {
+      case _PaymentMethodType.online:
+        return colorScheme.primary;
+      case _PaymentMethodType.wallet:
+        return customColors.success ?? Colors.green;
+      case _PaymentMethodType.cash:
+        return customColors.warning ?? Colors.orange;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final methodColor = _getMethodColor(context);
+
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: EdgeInsets.all(AppSpacing.md),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary.withValues(alpha: 0.05) : AppColors.surface,
+          color: isSelected ? colorScheme.primaryContainer.withValues(alpha: 0.1) : colorScheme.surface,
           borderRadius: BorderRadius.circular(AppRadius.xl),
           border: Border.all(
-            color: isSelected ? AppColors.primary : AppColors.divider,
+            color: isSelected ? colorScheme.primary : colorScheme.outlineVariant,
             width: isSelected ? 2 : 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
+              color: Theme.of(context).shadowColor.withValues(alpha: 0.05),
               blurRadius: 8.r,
             ),
           ],
@@ -173,12 +195,14 @@ class _PaymentMethodTile extends StatelessWidget {
               width: 48.w,
               height: 48.h,
               decoration: BoxDecoration(
-                color: isSelected ? AppColors.primary.withValues(alpha: 0.1) : method.bgColor,
+                color: isSelected 
+                    ? colorScheme.primary.withValues(alpha: 0.1) 
+                    : methodColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(AppRadius.lg),
               ),
               child: Icon(
                 method.icon,
-                color: isSelected ? AppColors.primary : method.color,
+                color: isSelected ? colorScheme.primary : methodColor,
                 size: 24.sp,
               ),
             ),
@@ -189,15 +213,18 @@ class _PaymentMethodTile extends StatelessWidget {
                 children: [
                   Text(
                     method.label,
-                    style: AppTextStyles.bodyMedium.copyWith(
+                    style: context.bodyMedium.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: isSelected ? AppColors.primary : AppColors.textPrimary,
+                      color: isSelected ? colorScheme.primary : colorScheme.onSurface,
                     ),
                   ),
                   SizedBox(height: 2.h),
                   Text(
                     method.subtitle,
-                    style: AppTextStyles.bodySmall.copyWith(fontSize: 11.sp),
+                    style: context.bodySmall.copyWith(
+                      fontSize: 11.sp,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 ],
               ),
@@ -210,13 +237,13 @@ class _PaymentMethodTile extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: isSelected ? AppColors.primary : AppColors.divider,
+                  color: isSelected ? colorScheme.primary : colorScheme.outlineVariant,
                   width: 2,
                 ),
-                color: isSelected ? AppColors.primary : Colors.transparent,
+                color: isSelected ? colorScheme.primary : Colors.transparent,
               ),
               child: isSelected
-                  ? Icon(Icons.check, color: Colors.white, size: 12.sp)
+                  ? Icon(Icons.check, color: colorScheme.onPrimary, size: 12.sp)
                   : null,
             ),
           ],
@@ -234,13 +261,15 @@ class _ContinueBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return Container(
       padding: EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.md, AppSpacing.lg, AppSpacing.xl),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: colorScheme.surface,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: Theme.of(context).shadowColor.withValues(alpha: 0.1),
             blurRadius: 10.r,
             offset: Offset(0, -4.h),
           ),
@@ -252,7 +281,8 @@ class _ContinueBar extends StatelessWidget {
         child: ElevatedButton(
           onPressed: onContinue,
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
+            backgroundColor: colorScheme.primary,
+            foregroundColor: colorScheme.onPrimary,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(AppRadius.lg),
             ),
@@ -260,7 +290,10 @@ class _ContinueBar extends StatelessWidget {
           ),
           child: Text(
             'Continue',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 15.sp),
+            style: TextStyle(
+              fontWeight: FontWeight.w600, 
+              fontSize: 15.sp,
+            ),
           ),
         ),
       ),

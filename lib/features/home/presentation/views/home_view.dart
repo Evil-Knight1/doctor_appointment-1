@@ -7,8 +7,6 @@ import 'package:doctor_appointment/core/services/service_locator.dart';
 import 'package:doctor_appointment/features/doctors/logic/specializations_cubit.dart';
 import 'package:doctor_appointment/features/doctors/logic/doctors_cubit.dart';
 import 'package:doctor_appointment/core/utils/app_dimensions.dart';
-import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import '../widgets/home_app_bar.dart';
 import '../widgets/home_header.dart';
 import '../widgets/home_search_bar.dart';

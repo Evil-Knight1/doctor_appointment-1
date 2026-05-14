@@ -1,7 +1,7 @@
+import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 
 class StarRating extends StatelessWidget {
   const StarRating({
@@ -17,15 +17,17 @@ class StarRating extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(Icons.star_rounded, size: iconSize.sp, color: AppColors.star),
+        Icon(Icons.star_rounded,
+            size: iconSize.sp, color: context.customColors.rating),
         SizedBox(width: 2.w),
         Text(
           rating.toStringAsFixed(1),
-          style: AppTextStyles.bodySmall.copyWith(
-            color: AppColors.textPrimary,
+          style: context.bodySmall.copyWith(
+            color: colorScheme.onSurface,
             fontWeight: FontWeight.w600,
             fontSize: iconSize.sp,
           ),
@@ -33,7 +35,10 @@ class StarRating extends StatelessWidget {
         SizedBox(width: 2.w),
         Text(
           '(${_formatCount(reviewCount)} reviews)',
-          style: AppTextStyles.bodySmall.copyWith(fontSize: (iconSize - 1).sp),
+          style: context.bodySmall.copyWith(
+            fontSize: (iconSize - 1).sp,
+            color: colorScheme.onSurfaceVariant,
+          ),
         ),
       ],
     );

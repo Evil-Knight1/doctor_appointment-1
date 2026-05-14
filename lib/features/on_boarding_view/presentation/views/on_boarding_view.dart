@@ -1,4 +1,3 @@
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/core/utils/go_router.dart';
 import 'package:doctor_appointment/features/on_boarding_view/presentation/widgets/custom_button.dart';
@@ -13,7 +12,9 @@ class OnBoardingView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -26,11 +27,15 @@ class OnBoardingView extends StatelessWidget {
                   SvgPicture.asset(
                     'assets/images/docdoc_logo.svg',
                     width: 40.w,
+                    colorFilter: ColorFilter.mode(
+                      colorScheme.primary,
+                      BlendMode.srcIn,
+                    ),
                   ),
                   Text(
                     'MedLink',
                     style: AppStyles.styleBold32.copyWith(
-                      color: AppColors.black,
+                      color: colorScheme.onSurface,
                     ),
                   ),
                 ],
@@ -59,7 +64,7 @@ class OnBoardingView extends StatelessWidget {
                             Theme.of(context).scaffoldBackgroundColor,
                             Theme.of(
                               context,
-                            ).scaffoldBackgroundColor.withAlpha(0),
+                            ).scaffoldBackgroundColor.withValues(alpha: 0),
                           ],
                         ),
                       ),
@@ -70,7 +75,9 @@ class OnBoardingView extends StatelessWidget {
                     child: Text(
                       'Best Doctor\nAppointment App',
                       textAlign: TextAlign.center,
-                      style: AppStyles.styleBold32,
+                      style: AppStyles.styleBold32.copyWith(
+                        color: colorScheme.onSurface,
+                      ),
                     ),
                   ),
                 ],
@@ -82,7 +89,9 @@ class OnBoardingView extends StatelessWidget {
                 child: Text(
                   'Manage and schedule all of your medical appointments easily with Docdoc to get a new experience.',
                   textAlign: TextAlign.center,
-                  style: AppStyles.styleRegular12,
+                  style: AppStyles.styleRegular12.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ),
               SizedBox(height: 35.h),
@@ -99,8 +108,10 @@ class OnBoardingView extends StatelessWidget {
                       context.go(AppRouter.kUserSelectionView);
                     }
                   },
-                  buttonColor: AppColors.primary,
-                  textStyle: AppStyles.styleSemiBold16,
+                  buttonColor: colorScheme.primary,
+                  textStyle: AppStyles.styleSemiBold16.copyWith(
+                    color: colorScheme.onPrimary,
+                  ),
                   circleSize: 16.r,
                 ),
               ),
@@ -112,3 +123,4 @@ class OnBoardingView extends StatelessWidget {
     );
   }
 }
+

@@ -1,4 +1,3 @@
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -23,6 +22,7 @@ class ProfileMenuItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       margin: EdgeInsets.only(bottom: 12.h),
       child: Material(
@@ -33,9 +33,11 @@ class ProfileMenuItem extends StatelessWidget {
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: colorScheme.surface,
               borderRadius: BorderRadius.circular(18.r),
-              border: Border.all(color: AppColors.border.withValues(alpha: 0.6)),
+              border: Border.all(
+                color: colorScheme.outlineVariant.withValues(alpha: 0.6),
+              ),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.02),
@@ -50,14 +52,14 @@ class ProfileMenuItem extends StatelessWidget {
                   width: 46.w,
                   height: 46.h,
                   decoration: BoxDecoration(
-                    color: (iconColor ?? AppColors.primary).withValues(
+                    color: (iconColor ?? colorScheme.primary).withValues(
                       alpha: 0.08,
                     ),
                     borderRadius: BorderRadius.circular(14.r),
                   ),
                   child: Icon(
                     icon,
-                    color: iconColor ?? AppColors.primary,
+                    color: iconColor ?? colorScheme.primary,
                     size: 22.sp,
                   ),
                 ),
@@ -70,7 +72,7 @@ class ProfileMenuItem extends StatelessWidget {
                         title,
                         style: AppStyles.styleSemiBold22.copyWith(
                           fontSize: 15.sp,
-                          color: AppColors.textPrimary,
+                          color: colorScheme.onSurface,
                         ),
                       ),
                       if (subtitle != null) ...[
@@ -78,7 +80,7 @@ class ProfileMenuItem extends StatelessWidget {
                         Text(
                           subtitle!,
                           style: AppStyles.styleRegular12.copyWith(
-                            color: AppColors.textSecondary,
+                            color: colorScheme.onSurfaceVariant,
                             fontSize: 12.sp,
                           ),
                         ),
@@ -90,13 +92,13 @@ class ProfileMenuItem extends StatelessWidget {
                     Container(
                       padding: EdgeInsets.all(6.w),
                       decoration: BoxDecoration(
-                        color: Colors.grey.withValues(alpha: 0.05),
+                        color: colorScheme.onSurface.withValues(alpha: 0.05),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
                         Icons.chevron_right_rounded,
                         size: 20.sp,
-                        color: AppColors.textLight,
+                        color: colorScheme.outline,
                       ),
                     ),
               ],

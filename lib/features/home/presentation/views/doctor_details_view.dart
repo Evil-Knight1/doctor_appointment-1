@@ -1,3 +1,4 @@
+import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
 import 'package:doctor_appointment/core/utils/app_dimensions.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +10,6 @@ import 'package:map_launcher/map_launcher.dart';
 import 'package:doctor_appointment/core/services/service_locator.dart';
 import 'package:doctor_appointment/features/home/data/models/home_doctor_model.dart';
 import 'package:doctor_appointment/core/utils/routes.dart';
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/features/doctors/logic/doctor_details_cubit.dart';
 import 'package:doctor_appointment/features/doctors/logic/doctor_details_state.dart';
@@ -42,12 +42,14 @@ class _DoctorDetailsViewState extends State<DoctorDetailsView>
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return BlocProvider(
       create: (context) =>
           getIt<DoctorDetailsCubit>()
             ..loadDoctorDetails(int.parse(widget.doctor.id)),
       child: Scaffold(
-        backgroundColor: AppColors.backgroundLight,
+        backgroundColor: colorScheme.surface,
         appBar: SharedAppBar(
           title: widget.doctor.name,
           actions: [
@@ -67,20 +69,20 @@ class _DoctorDetailsViewState extends State<DoctorDetailsView>
                       width: 36.w,
                       height: 36.h,
                       decoration: BoxDecoration(
-                        color: AppColors.surface,
+                        color: colorScheme.surfaceContainerHigh,
                         borderRadius: BorderRadius.circular(10.r),
                       ),
                       child: Icon(
                         Icons.chat_bubble_outline_rounded,
                         size: 16.sp,
-                        color: AppColors.textPrimary,
+                        color: colorScheme.onSurface,
                       ),
                     ),
                   ),
                   SizedBox(width: 8.w),
                   Icon(
                     Icons.more_horiz_rounded,
-                    color: AppColors.textPrimary,
+                    color: colorScheme.onSurface,
                     size: 24.sp,
                   ),
                 ],
@@ -147,12 +149,14 @@ class _AddressTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return ListView(
       padding: EdgeInsets.all(AppSpacing.lg),
       children: [
         const LabelValue(label: 'Practice Place', value: 'Cairo, Egypt'),
         SizedBox(height: AppSpacing.xl),
-        Text('Location Map', style: AppTextStyles.headingSmall),
+        Text('Location Map', style: context.headingSmall),
         SizedBox(height: AppSpacing.md),
         GestureDetector(
           onTap: () async {
@@ -169,8 +173,8 @@ class _AddressTab extends StatelessWidget {
             borderRadius: BorderRadius.circular(AppRadius.xl),
             child: Container(
               height: 220.h,
-              color: const Color(0xFFE8F0FE),
-              child: CustomPaint(painter: _MiniMapPainter()),
+              color: colorScheme.primaryContainer.withValues(alpha: 0.3),
+              child: CustomPaint(painter: _MiniMapPainter(colorScheme: colorScheme)),
             ),
           ),
         ),
@@ -180,11 +184,14 @@ class _AddressTab extends StatelessWidget {
 }
 
 class _MiniMapPainter extends CustomPainter {
+  final ColorScheme colorScheme;
+  _MiniMapPainter({required this.colorScheme});
+
   @override
   void paint(Canvas canvas, Size size) {
-    final blockPaint = Paint()..color = const Color(0xFFDDE6FB);
+    final blockPaint = Paint()..color = colorScheme.primaryContainer.withValues(alpha: 0.5);
     final roadPaint = Paint()
-      ..color = Colors.white
+      ..color = colorScheme.surface
       ..strokeWidth = 10.w;
     for (var i = 0; i < 5; i++) {
       for (var j = 0; j < 4; j++) {
@@ -211,17 +218,17 @@ class _MiniMapPainter extends CustomPainter {
         roadPaint,
       );
     }
-    final pin = Paint()..color = AppColors.primary;
+    final pin = Paint()..color = colorScheme.primary;
     canvas.drawCircle(
       Offset(size.width / 2, size.height / 2),
       18.r,
-      Paint()..color = AppColors.primary.withValues(alpha: 0.2),
+      Paint()..color = colorScheme.primary.withValues(alpha: 0.2),
     );
     canvas.drawCircle(Offset(size.width / 2, size.height / 2), 10.r, pin);
     canvas.drawCircle(
       Offset(size.width / 2, size.height / 2),
       4.r,
-      Paint()..color = Colors.white,
+      Paint()..color = colorScheme.onPrimary,
     );
   }
 
@@ -234,6 +241,8 @@ class _ReviewsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return BlocBuilder<DoctorDetailsCubit, DoctorDetailsState>(
       builder: (context, state) {
         if (state is DoctorDetailsLoading) {
@@ -243,7 +252,7 @@ class _ReviewsTab extends StatelessWidget {
               padding: EdgeInsets.all(AppSpacing.lg),
               itemCount: 3,
               separatorBuilder: (_, _) =>
-                  Divider(height: AppSpacing.xxl, color: AppColors.divider),
+                  Divider(height: AppSpacing.xxl, color: colorScheme.outlineVariant),
               itemBuilder: (_, index) => _ReviewTile(
                 name: 'Patient Name Loading',
                 text: 'Review comment content loading placeholder text.',
@@ -256,21 +265,21 @@ class _ReviewsTab extends StatelessWidget {
           return Center(
             child: Text(
               state.message,
-              style: AppTextStyles.bodyMedium.copyWith(color: AppColors.error),
+              style: context.bodyMedium.copyWith(color: colorScheme.error),
             ),
           );
         } else if (state is DoctorDetailsLoaded) {
           final reviews = state.reviews;
           if (reviews.isEmpty) {
             return Center(
-              child: Text('No reviews yet', style: AppTextStyles.bodyMedium),
+              child: Text('No reviews yet', style: context.bodyMedium),
             );
           }
           return ListView.separated(
             padding: EdgeInsets.all(AppSpacing.lg),
             itemCount: reviews.length,
             separatorBuilder: (_, _) =>
-                Divider(height: AppSpacing.xxl, color: AppColors.divider),
+                Divider(height: AppSpacing.xxl, color: colorScheme.outlineVariant),
             itemBuilder: (_, index) => _ReviewTile(
               name: reviews[index].patientName,
               text: reviews[index].comment,
@@ -299,6 +308,9 @@ class _ReviewTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final customColors = Theme.of(context).extension<AppCustomColors>()!;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -306,11 +318,11 @@ class _ReviewTile extends StatelessWidget {
           children: [
             CircleAvatar(
               radius: 20.r,
-              backgroundColor: AppColors.primaryLight,
+              backgroundColor: colorScheme.primaryContainer,
               child: Text(
                 name[0],
                 style: TextStyle(
-                  color: AppColors.primary,
+                  color: colorScheme.onPrimaryContainer,
                   fontWeight: FontWeight.w700,
                   fontSize: 16.sp,
                 ),
@@ -321,14 +333,14 @@ class _ReviewTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(name, style: AppTextStyles.headingSmall),
+                  Text(name, style: context.headingSmall),
                   Row(
                     children: List.generate(
                       stars,
                       (_) => Icon(
                         Icons.star_rounded,
                         size: 14.sp,
-                        color: AppColors.star,
+                        color: customColors.rating,
                       ),
                     ),
                   ),
@@ -337,12 +349,12 @@ class _ReviewTile extends StatelessWidget {
             ),
             Text(
               DateFormat('MMM dd, yyyy').format(date),
-              style: AppTextStyles.bodySmall,
+              style: context.bodySmall,
             ),
           ],
         ),
         SizedBox(height: AppSpacing.md),
-        Text(text, style: AppTextStyles.bodyMedium.copyWith(height: 1.6)),
+        Text(text, style: context.bodyMedium.copyWith(height: 1.6)),
       ],
     );
   }
@@ -354,6 +366,8 @@ class _AppointmentButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
       padding: EdgeInsets.fromLTRB(
         AppSpacing.lg,
@@ -362,10 +376,10 @@ class _AppointmentButton extends StatelessWidget {
         AppSpacing.xl,
       ),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: colorScheme.surface,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
+            color: colorScheme.shadow.withValues(alpha: 0.06),
             blurRadius: 12.r,
             offset: Offset(0, -4.h),
           ),
@@ -380,8 +394,8 @@ class _AppointmentButton extends StatelessWidget {
                 onPressed: () =>
                     context.pushNamed(Routes.bookingDateView, extra: doctor),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
+                  backgroundColor: colorScheme.primary,
+                  foregroundColor: colorScheme.onPrimary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(AppRadius.lg),
                   ),
@@ -392,7 +406,7 @@ class _AppointmentButton extends StatelessWidget {
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 15.sp,
-                    color: Colors.white,
+                    color: colorScheme.onPrimary,
                   ),
                 ),
               ),
@@ -406,8 +420,8 @@ class _AppointmentButton extends StatelessWidget {
                   extra: doctor.name,
                 ),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.primary,
-                  side: BorderSide(color: AppColors.primary, width: 1.5.w),
+                  foregroundColor: colorScheme.primary,
+                  side: BorderSide(color: colorScheme.primary, width: 1.5.w),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(AppRadius.lg),
                   ),

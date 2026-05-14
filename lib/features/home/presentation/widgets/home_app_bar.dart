@@ -5,7 +5,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:doctor_appointment/core/utils/routes.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/features/home/logic/notification_cubit.dart';
 import 'package:doctor_appointment/features/home/logic/notification_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -46,6 +45,8 @@ class _UserInfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return BlocBuilder<ProfileCubit, ProfileState>(
       builder: (context, state) {
         String name = SharedPreferencesHelper.getProfileName() ?? 'User';
@@ -65,10 +66,10 @@ class _UserInfoRow extends StatelessWidget {
                 height: 45.r,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(color: AppColors.primaryLight, width: 2),
+                  border: Border.all(color: colorScheme.primaryContainer, width: 2),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.cardShadow.withValues(alpha: 0.1),
+                      color: colorScheme.shadow.withValues(alpha: 0.1),
                       blurRadius: 8,
                       offset: const Offset(0, 4),
                     ),
@@ -83,7 +84,7 @@ class _UserInfoRow extends StatelessWidget {
                           placeholder: (context, url) => Skeletonizer(
                             enabled: true,
                             child: Container(
-                              color: AppColors.primaryLight,
+                              color: colorScheme.primaryContainer,
                               width: 45.r,
                               height: 45.r,
                               decoration: const BoxDecoration(
@@ -93,9 +94,9 @@ class _UserInfoRow extends StatelessWidget {
                             ),
                           ),
                           errorWidget: (context, url, error) =>
-                              _buildDefaultAvatar(),
+                              _buildDefaultAvatar(context),
                         )
-                      : _buildDefaultAvatar(),
+                      : _buildDefaultAvatar(context),
                 ),
               ),
             ),
@@ -105,15 +106,15 @@ class _UserInfoRow extends StatelessWidget {
               children: [
                 Text(
                   'Hi, $name 👋',
-                  style: AppStyles.styleSemiBold22.copyWith(
+                  style: context.styleSemiBold22.copyWith(
                     fontSize: 18.sp,
-                    color: AppColors.textPrimary,
+                    color: colorScheme.onSurface,
                   ),
                 ),
                 Text(
                   'Find your best doctor',
-                  style: AppStyles.styleRegular12.copyWith(
-                    color: AppColors.textSecondary,
+                  style: context.styleRegular12.copyWith(
+                    color: colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],
@@ -124,10 +125,11 @@ class _UserInfoRow extends StatelessWidget {
     );
   }
 
-  Widget _buildDefaultAvatar() {
+  Widget _buildDefaultAvatar(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
-      color: AppColors.primaryLight,
-      child: Icon(Icons.person_rounded, color: AppColors.primary, size: 28.sp),
+      color: colorScheme.primaryContainer,
+      child: Icon(Icons.person_rounded, color: colorScheme.primary, size: 28.sp),
     );
   }
 }
@@ -137,6 +139,8 @@ class _NotificationButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return BlocProvider(
       create: (context) => getIt<NotificationCubit>()..fetchUnreadCount(),
       child: BlocBuilder<NotificationCubit, NotificationState>(
@@ -158,11 +162,11 @@ class _NotificationButton extends StatelessWidget {
                   width: 40.w,
                   height: 40.h,
                   decoration: BoxDecoration(
-                    color: AppColors.surface,
+                    color: colorScheme.surface,
                     borderRadius: BorderRadius.circular(12.r),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.cardShadow.withValues(alpha: 0.08),
+                        color: colorScheme.shadow.withValues(alpha: 0.08),
                         blurRadius: 8.r,
                         offset: Offset(0, 2.h),
                       ),
@@ -171,7 +175,7 @@ class _NotificationButton extends StatelessWidget {
                   child: Icon(
                     Icons.notifications_outlined,
                     size: 20.sp,
-                    color: AppColors.textPrimary,
+                    color: colorScheme.onSurface,
                   ),
                 ),
               ),
@@ -181,8 +185,8 @@ class _NotificationButton extends StatelessWidget {
                   right: -4.w,
                   child: Container(
                     padding: EdgeInsets.all(4.w),
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFEF4444),
+                    decoration: BoxDecoration(
+                      color: colorScheme.error,
                       shape: BoxShape.circle,
                     ),
                     constraints: BoxConstraints(
@@ -192,7 +196,7 @@ class _NotificationButton extends StatelessWidget {
                     child: Text(
                       unreadCount > 9 ? '9+' : '$unreadCount',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: colorScheme.onError,
                         fontSize: 8.sp,
                         fontWeight: FontWeight.bold,
                       ),
@@ -207,3 +211,4 @@ class _NotificationButton extends StatelessWidget {
     );
   }
 }
+

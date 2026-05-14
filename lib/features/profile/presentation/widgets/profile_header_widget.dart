@@ -1,5 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/features/profile/domain/entities/patient_profile.dart';
 import 'package:doctor_appointment/features/profile/logic/profile_cubit.dart';
@@ -45,7 +44,7 @@ class _ProfileHeaderWidgetState extends State<ProfileHeaderWidget> {
                 width: 40.w,
                 height: 4.h,
                 decoration: BoxDecoration(
-                  color: AppColors.border,
+                  color: Theme.of(context).colorScheme.outlineVariant,
                   borderRadius: BorderRadius.circular(2.r),
                 ),
               ),
@@ -117,6 +116,7 @@ class _ProfileHeaderWidgetState extends State<ProfileHeaderWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(vertical: 16.h),
@@ -133,8 +133,8 @@ class _ProfileHeaderWidgetState extends State<ProfileHeaderWidget> {
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      AppColors.primary.withValues(alpha: 0.15),
-                      AppColors.primary.withValues(alpha: 0.0),
+                      colorScheme.primary.withValues(alpha: 0.15),
+                      colorScheme.primary.withValues(alpha: 0.0),
                     ],
                   ),
                 ),
@@ -150,14 +150,14 @@ class _ProfileHeaderWidgetState extends State<ProfileHeaderWidget> {
                       height: 100.r,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.white,
+                        color: colorScheme.surface,
                         border: Border.all(
-                          color: AppColors.primaryLight,
+                          color: colorScheme.primaryContainer,
                           width: 4,
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.primary.withValues(alpha: 0.1),
+                            color: colorScheme.primary.withValues(alpha: 0.1),
                             blurRadius: 20,
                             offset: const Offset(0, 10),
                           ),
@@ -176,9 +176,9 @@ class _ProfileHeaderWidgetState extends State<ProfileHeaderWidget> {
                                         child: Container(
                                           width: 100.r,
                                           height: 100.r,
-                                          decoration: const BoxDecoration(
+                                          decoration: BoxDecoration(
                                             shape: BoxShape.circle,
-                                            color: Colors.white,
+                                            color: colorScheme.surface,
                                           ),
                                         ),
                                       ),
@@ -186,13 +186,13 @@ class _ProfileHeaderWidgetState extends State<ProfileHeaderWidget> {
                                       (context, url, error) => Icon(
                                         Icons.person_rounded,
                                         size: 56.sp,
-                                        color: AppColors.primary,
+                                        color: colorScheme.primary,
                                       ),
                                 )
                                 : Icon(
                                   Icons.person_rounded,
                                   size: 56.sp,
-                                  color: AppColors.primary,
+                                  color: colorScheme.primary,
                                 ),
                       ),
                     ),
@@ -204,12 +204,12 @@ class _ProfileHeaderWidgetState extends State<ProfileHeaderWidget> {
                         width: 32.w,
                         height: 32.h,
                         decoration: BoxDecoration(
-                          color: AppColors.primary,
+                          color: colorScheme.primary,
                           shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 3),
+                          border: Border.all(color: colorScheme.surface, width: 3),
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.primary.withValues(alpha: 0.4),
+                              color: colorScheme.primary.withValues(alpha: 0.4),
                               blurRadius: 8,
                               offset: const Offset(0, 3),
                             ),
@@ -217,7 +217,7 @@ class _ProfileHeaderWidgetState extends State<ProfileHeaderWidget> {
                         ),
                         child: Icon(
                           Icons.camera_alt_rounded,
-                          color: Colors.white,
+                          color: colorScheme.onPrimary,
                           size: 15.sp,
                         ),
                       ),
@@ -232,7 +232,7 @@ class _ProfileHeaderWidgetState extends State<ProfileHeaderWidget> {
             widget.profile.fullName,
             style: AppStyles.styleSemiBold22.copyWith(
               fontSize: 22.sp,
-              color: AppColors.textPrimary,
+              color: colorScheme.onSurface,
               letterSpacing: -0.5,
             ),
           ),
@@ -240,7 +240,7 @@ class _ProfileHeaderWidgetState extends State<ProfileHeaderWidget> {
           Text(
             widget.profile.email,
             style: AppStyles.styleRegular14.copyWith(
-              color: AppColors.textSecondary,
+              color: colorScheme.onSurfaceVariant,
               fontSize: 14.sp,
             ),
           ),
@@ -251,13 +251,13 @@ class _ProfileHeaderWidgetState extends State<ProfileHeaderWidget> {
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
               decoration: BoxDecoration(
-                color: AppColors.primaryLight,
+                color: colorScheme.primaryContainer,
                 borderRadius: BorderRadius.circular(20.r),
               ),
               child: Text(
                 'Change Photo',
                 style: AppStyles.styleMedium14.copyWith(
-                  color: AppColors.primary,
+                  color: colorScheme.onPrimaryContainer,
                   fontSize: 12.sp,
                 ),
               ),
@@ -286,7 +286,8 @@ class _PickerOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = isDestructive ? AppColors.accent : AppColors.textPrimary;
+    final colorScheme = Theme.of(context).colorScheme;
+    final color = isDestructive ? colorScheme.error : colorScheme.onSurface;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12.r),
@@ -299,8 +300,8 @@ class _PickerOption extends StatelessWidget {
               height: 40.h,
               decoration: BoxDecoration(
                 color: isDestructive
-                    ? AppColors.accent.withValues(alpha: 0.08)
-                    : AppColors.primaryLight,
+                    ? colorScheme.error.withValues(alpha: 0.08)
+                    : colorScheme.primaryContainer,
                 borderRadius: BorderRadius.circular(12.r),
               ),
               child: Icon(icon, color: color, size: 20.sp),

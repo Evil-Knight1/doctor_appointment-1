@@ -1,4 +1,3 @@
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/core/utils/go_router.dart';
 import 'package:doctor_appointment/features/appointment/presentation/models/appointment_draft.dart';
@@ -38,9 +37,9 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
         leading: GestureDetector(
           onTap: () => Navigator.pop(context),
@@ -53,13 +52,13 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
             child: Icon(
               Icons.arrow_back_ios_new_rounded,
               size: 16.sp,
-              color: AppColors.textPrimary,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
         ),
         title: Text(
           "Patient's details",
-          style: AppStyles.styleSemiBold22.copyWith(fontSize: 18.sp),
+          style: AppStyles.styleSemiBold22(context).copyWith(fontSize: 18.sp),
         ),
       ),
       body: Stack(
@@ -116,7 +115,7 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
       children: [
         Text(
           'Gender',
-          style: AppStyles.styleMedium14.copyWith(fontSize: 13.sp),
+          style: AppStyles.styleMedium14(context).copyWith(fontSize: 13.sp),
         ),
         SizedBox(height: 6.h),
         Container(
@@ -131,22 +130,22 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
               value: _selectedGender,
               hint: Text(
                 'Select your gender',
-                style: AppStyles.styleRegular14.copyWith(
-                  color: AppColors.textLight,
+                style: AppStyles.styleRegular14(context).copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                   fontSize: 12.sp,
                 ),
               ),
               isExpanded: true,
               icon: Icon(
                 Icons.keyboard_arrow_down_rounded,
-                color: AppColors.textSecondary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
               onChanged: (v) => setState(() => _selectedGender = v),
               items: ['Male', 'Female', 'Other']
                   .map(
                     (g) => DropdownMenuItem(
                       value: g,
-                      child: Text(g, style: AppStyles.styleMedium14),
+                      child: Text(g, style: AppStyles.styleMedium14(context)),
                     ),
                   )
                   .toList(),
@@ -165,11 +164,12 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
       right: 0,
       child: Container(
         padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 32.h),
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         child: ElevatedButton(
           onPressed: () => _submit(context),
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            foregroundColor: Theme.of(context).colorScheme.onPrimary,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(14.r),
             ),
@@ -178,7 +178,7 @@ class _PatientDetailsViewState extends State<PatientDetailsView> {
           ),
           child: Text(
             'Continue to Payment',
-            style: AppStyles.styleSemiBold16,
+            style: AppStyles.styleSemiBold16(context),
           ),
         ),
       ),

@@ -1,4 +1,3 @@
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/core/services/service_locator.dart';
 import 'package:doctor_appointment/features/doctors/domain/entities/doctor.dart';
@@ -123,14 +122,15 @@ class _SearchViewState extends State<SearchView> {
   }
 
   Widget _buildSearchBar() {
+    final colorScheme = Theme.of(context).colorScheme;
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20.w),
       child: Container(
         height: 50.h,
         decoration: BoxDecoration(
-          color: const Color(0xFFF5F6F8),
+          color: colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(14.r),
-          border: Border.all(color: AppColors.border),
+          border: Border.all(color: colorScheme.outlineVariant),
         ),
         child: TextField(
           controller: _searchController,
@@ -139,12 +139,12 @@ class _SearchViewState extends State<SearchView> {
           decoration: InputDecoration(
             hintText: 'Search by name or specialty...',
             hintStyle: AppStyles.styleRegular14.copyWith(
-              color: AppColors.textLight,
+              color: colorScheme.outline,
               fontSize: 13.sp,
             ),
             prefixIcon: Icon(
               Icons.search_rounded,
-              color: AppColors.textLight,
+              color: colorScheme.outline,
               size: 20.sp,
             ),
             suffixIcon: ValueListenableBuilder<TextEditingValue>(
@@ -159,7 +159,7 @@ class _SearchViewState extends State<SearchView> {
                   },
                   child: Icon(
                     Icons.close_rounded,
-                    color: AppColors.textLight,
+                    color: colorScheme.outline,
                     size: 18.sp,
                   ),
                 );
@@ -201,17 +201,21 @@ class _SearchViewState extends State<SearchView> {
                   padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 6.h),
                   decoration: BoxDecoration(
                     color: isSelected
-                        ? AppColors.primary
+                        ? Theme.of(context).colorScheme.primary
                         : Theme.of(context).scaffoldBackgroundColor,
                     borderRadius: BorderRadius.circular(20.r),
                     border: Border.all(
-                      color: isSelected ? AppColors.primary : AppColors.border,
+                      color: isSelected 
+                          ? Theme.of(context).colorScheme.primary 
+                          : Theme.of(context).colorScheme.outlineVariant,
                     ),
                   ),
                   child: Text(
                     name,
                     style: AppStyles.styleRegular12.copyWith(
-                      color: isSelected ? Colors.white : AppColors.textSecondary,
+                      color: isSelected 
+                          ? Theme.of(context).colorScheme.onPrimary 
+                          : Theme.of(context).colorScheme.onSurfaceVariant,
                       fontSize: 12.sp,
                       fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                     ),
@@ -239,7 +243,7 @@ class _SearchViewState extends State<SearchView> {
           child: Text(
             '${page.totalCount} results found',
             style: AppStyles.styleRegular12.copyWith(
-              color: AppColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
         );
@@ -286,13 +290,13 @@ class _SearchViewState extends State<SearchView> {
                 Icon(
                   Icons.wifi_off_rounded,
                   size: 48.sp,
-                  color: AppColors.textLight,
+                  color: Theme.of(context).colorScheme.outline,
                 ),
                 SizedBox(height: 12.h),
                 Text(
                   state.message,
                   style: AppStyles.styleRegular14.copyWith(
-                    color: AppColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -317,7 +321,7 @@ class _SearchViewState extends State<SearchView> {
                     Icon(
                       Icons.search_off_rounded,
                       size: 56.sp,
-                      color: AppColors.textLight,
+                      color: Theme.of(context).colorScheme.outline,
                     ),
                     SizedBox(height: 12.h),
                     Text(
@@ -330,7 +334,7 @@ class _SearchViewState extends State<SearchView> {
                     Text(
                       'Try a different search or specialty',
                       style: AppStyles.styleRegular14.copyWith(
-                        color: AppColors.textSecondary,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],

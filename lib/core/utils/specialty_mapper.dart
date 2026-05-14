@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 
 class SpecialtyTheme {
   final IconData icon;
@@ -14,78 +13,79 @@ class SpecialtyTheme {
 }
 
 class SpecialtyMapper {
-  static SpecialtyTheme getThemeForSpecialty(String? name) {
+  static SpecialtyTheme getThemeForSpecialty(String? name, ColorScheme colorScheme) {
     final lowerName = (name ?? '').toLowerCase();
+    final isDark = colorScheme.brightness == Brightness.dark;
 
     if (lowerName.contains('cardio')) {
-      return const SpecialtyTheme(
+      return SpecialtyTheme(
         icon: Icons.favorite_rounded,
-        color: Color(0xFFE11D48),
-        bgColor: Color(0xFFFFF1F2),
+        color: const Color(0xFFE11D48),
+        bgColor: const Color(0xFFE11D48).withValues(alpha: isDark ? 0.2 : 0.1),
       );
     }
     if (lowerName.contains('neuro')) {
-      return const SpecialtyTheme(
+      return SpecialtyTheme(
         icon: Icons.psychology_rounded,
-        color: Color(0xFF7C3AED),
-        bgColor: Color(0xFFF5F3FF),
+        color: const Color(0xFF7C3AED),
+        bgColor: const Color(0xFF7C3AED).withValues(alpha: isDark ? 0.2 : 0.1),
       );
     }
     if (lowerName.contains('dent')) {
-      return const SpecialtyTheme(
+      return SpecialtyTheme(
         icon: Icons.health_and_safety_rounded,
-        color: Color(0xFF059669),
-        bgColor: Color(0xFFECFDF5),
+        color: const Color(0xFF059669),
+        bgColor: const Color(0xFF059669).withValues(alpha: isDark ? 0.2 : 0.1),
       );
     }
     if (lowerName.contains('pedia')) {
-      return const SpecialtyTheme(
+      return SpecialtyTheme(
         icon: Icons.child_care_rounded,
-        color: Color(0xFFD97706),
-        bgColor: Color(0xFFFFFBEB),
+        color: const Color(0xFFD97706),
+        bgColor: const Color(0xFFD97706).withValues(alpha: isDark ? 0.2 : 0.1),
       );
     }
     if (lowerName.contains('derm')) {
-      return const SpecialtyTheme(
+      return SpecialtyTheme(
         icon: Icons.face_rounded,
-        color: Color(0xFFDB2777),
-        bgColor: Color(0xFFFDF2F8),
+        color: const Color(0xFFDB2777),
+        bgColor: const Color(0xFFDB2777).withValues(alpha: isDark ? 0.2 : 0.1),
       );
     }
     if (lowerName.contains('ortho')) {
-      return const SpecialtyTheme(
+      return SpecialtyTheme(
         icon: Icons.medical_services_rounded,
-        color: Color(0xFF2563EB),
-        bgColor: Color(0xFFEFF6FF),
+        color: const Color(0xFF2563EB),
+        bgColor: const Color(0xFF2563EB).withValues(alpha: isDark ? 0.2 : 0.1),
       );
     }
     if (lowerName.contains('optomet')) {
-      return const SpecialtyTheme(
+      return SpecialtyTheme(
         icon: Icons.visibility_outlined,
-        color: Color(0xFF2563EB),
-        bgColor: Color(0xFFEFF6FF),
+        color: const Color(0xFF2563EB),
+        bgColor: const Color(0xFF2563EB).withValues(alpha: isDark ? 0.2 : 0.1),
       );
     }
     if (lowerName.contains('pulmon')) {
-      return const SpecialtyTheme(
+      return SpecialtyTheme(
         icon: Icons.air_outlined,
-        color: Color(0xFF0891B2),
-        bgColor: Color(0xFFECFEFF),
+        color: const Color(0xFF0891B2),
+        bgColor: const Color(0xFF0891B2).withValues(alpha: isDark ? 0.2 : 0.1),
       );
     }
     if (lowerName.contains('ent')) {
-      return const SpecialtyTheme(
+      return SpecialtyTheme(
         icon: Icons.hearing_outlined,
-        color: Color(0xFF4F46E5),
-        bgColor: Color(0xFFEEF2FF),
+        color: const Color(0xFF4F46E5),
+        bgColor: const Color(0xFF4F46E5).withValues(alpha: isDark ? 0.2 : 0.1),
       );
     }
 
     // Default
     return SpecialtyTheme(
       icon: Icons.medical_services_outlined,
-      color: AppColors.primary,
-      bgColor: AppColors.primaryLight,
+      color: colorScheme.primary,
+      bgColor: colorScheme.primaryContainer.withValues(alpha: isDark ? 0.5 : 0.3),
     );
   }
 }

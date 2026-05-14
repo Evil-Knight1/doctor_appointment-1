@@ -9,7 +9,6 @@ import 'package:doctor_appointment/features/home/logic/notification_state.dart';
 import '../widgets/notification_tile.dart';
 import '../widgets/shared_app_bar.dart';
 import 'package:doctor_appointment/core/utils/app_dimensions.dart';
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 
 class NotificationsView extends StatelessWidget {
@@ -17,17 +16,19 @@ class NotificationsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return BlocProvider(
       create: (context) => getIt<NotificationCubit>()..fetchNotifications(),
       child: Scaffold(
-        backgroundColor: AppColors.backgroundLight,
+        backgroundColor: colorScheme.surface,
         appBar: _buildAppBar(context),
-        body: _buildBody(),
+        body: _buildBody(context),
       ),
     );
   }
 
   PreferredSizeWidget _buildAppBar(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return SharedAppBar(
       title: 'Notification',
       actions: [
@@ -43,13 +44,13 @@ class NotificationsView extends StatelessWidget {
                       vertical: 4.h,
                     ),
                     decoration: BoxDecoration(
-                      color: AppColors.primary,
+                      color: colorScheme.primary,
                       borderRadius: BorderRadius.circular(AppRadius.full),
                     ),
                     child: Text(
                       '${state.unreadCount} NEW',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: colorScheme.onPrimary,
                         fontSize: 10.sp,
                         fontWeight: FontWeight.w700,
                       ),
@@ -65,7 +66,8 @@ class NotificationsView extends StatelessWidget {
     );
   }
 
-  Widget _buildBody() {
+  Widget _buildBody(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return BlocBuilder<NotificationCubit, NotificationState>(
       builder: (context, state) {
         if (state is NotificationLoading) {
@@ -101,19 +103,21 @@ class NotificationsView extends StatelessWidget {
                   Icon(
                     Icons.notifications_none_rounded,
                     size: 80.sp,
-                    color: AppColors.textSecondary.withValues(alpha: 0.2),
+                    color: colorScheme.onSurfaceVariant.withValues(alpha: 0.2),
                   ),
                   SizedBox(height: AppSpacing.md),
                   Text(
                     'No notifications yet',
-                    style: AppTextStyles.headingSmall.copyWith(
-                      color: AppColors.textSecondary,
+                    style: context.headingSmall.copyWith(
+                      color: colorScheme.onSurfaceVariant,
                     ),
                   ),
                   SizedBox(height: AppSpacing.sm),
                   Text(
                     'We\'ll notify you when something important happens',
-                    style: AppTextStyles.bodySmall,
+                    style: context.bodySmall.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -163,16 +167,28 @@ class _SectionLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: AppTextStyles.headingSmall),
+        Text(
+          label,
+          style: context.headingSmall.copyWith(
+            color: colorScheme.onSurface,
+          ),
+        ),
         if (onMarkAll != null)
           GestureDetector(
             onTap: onMarkAll,
-            child: Text('Mark all as read', style: AppTextStyles.labelLarge),
+            child: Text(
+              'Mark all as read',
+              style: context.labelLarge.copyWith(
+                color: colorScheme.primary,
+              ),
+            ),
           ),
       ],
     );
   }
 }
+

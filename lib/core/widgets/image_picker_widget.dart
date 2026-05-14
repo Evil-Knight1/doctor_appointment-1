@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/core/utils/image_picker_helper.dart';
 import 'package:flutter/material.dart';
@@ -20,10 +19,16 @@ class ProfileImagePicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: AppStyles.styleMedium14),
+        Text(
+          label,
+          style: AppStyles.styleMedium14(context).copyWith(
+            color: colorScheme.onSurface,
+          ),
+        ),
         SizedBox(height: 12.h),
         Center(
           child: Stack(
@@ -32,7 +37,7 @@ class ProfileImagePicker extends StatelessWidget {
                 width: 100.w,
                 height: 100.w,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF1F5F9),
+                  color: colorScheme.surfaceContainerHighest,
                   shape: BoxShape.circle,
                   image: imagePath != null
                       ? DecorationImage(
@@ -41,7 +46,7 @@ class ProfileImagePicker extends StatelessWidget {
                         )
                       : null,
                   border: Border.all(
-                    color: const Color(0xFFE2E8F0),
+                    color: colorScheme.outlineVariant,
                     width: 2,
                   ),
                 ),
@@ -49,7 +54,7 @@ class ProfileImagePicker extends StatelessWidget {
                     ? Icon(
                         Icons.person_outline_rounded,
                         size: 40.sp,
-                        color: const Color(0xFF94A3B8),
+                        color: colorScheme.onSurfaceVariant,
                       )
                     : null,
               ),
@@ -60,14 +65,14 @@ class ProfileImagePicker extends StatelessWidget {
                   onTap: () => _showPicker(context),
                   child: Container(
                     padding: EdgeInsets.all(8.w),
-                    decoration: const BoxDecoration(
-                      color: AppColors.primary,
+                    decoration: BoxDecoration(
+                      color: colorScheme.primary,
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
                       Icons.camera_alt_rounded,
                       size: 16.sp,
-                      color: Colors.white,
+                      color: colorScheme.onPrimary,
                     ),
                   ),
                 ),
@@ -80,6 +85,7 @@ class ProfileImagePicker extends StatelessWidget {
   }
 
   void _showPicker(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     showModalBottomSheet(
       context: context,
       shape: RoundedRectangleBorder(
@@ -89,7 +95,7 @@ class ProfileImagePicker extends StatelessWidget {
         child: Wrap(
           children: [
             ListTile(
-              leading: const Icon(Icons.photo_library_outlined),
+              leading: Icon(Icons.photo_library_outlined, color: colorScheme.primary),
               title: const Text('Gallery'),
               onTap: () async {
                 final path = await ImagePickerHelper.pickImage(source: ImageSource.gallery);
@@ -98,7 +104,7 @@ class ProfileImagePicker extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.camera_alt_outlined),
+              leading: Icon(Icons.camera_alt_outlined, color: colorScheme.primary),
               title: const Text('Camera'),
               onTap: () async {
                 final path = await ImagePickerHelper.pickImage(source: ImageSource.camera);
@@ -108,8 +114,11 @@ class ProfileImagePicker extends StatelessWidget {
             ),
             if (imagePath != null)
               ListTile(
-                leading: const Icon(Icons.delete_outline, color: Colors.red),
-                title: const Text('Remove', style: TextStyle(color: Colors.red)),
+                leading: Icon(Icons.delete_outline, color: colorScheme.error),
+                title: Text(
+                  'Remove',
+                  style: TextStyle(color: colorScheme.error),
+                ),
                 onTap: () {
                   onImageSelected(null);
                   Navigator.pop(context);
@@ -136,10 +145,16 @@ class MultiImagePicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: AppStyles.styleMedium14),
+        Text(
+          label,
+          style: AppStyles.styleMedium14(context).copyWith(
+            color: colorScheme.onSurface,
+          ),
+        ),
         SizedBox(height: 12.h),
         SizedBox(
           height: 80.h,
@@ -157,17 +172,17 @@ class MultiImagePicker extends StatelessWidget {
                     width: 80.w,
                     margin: EdgeInsets.only(right: 12.w),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF1F5F9),
+                      color: colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(12.r),
                       border: Border.all(
-                        color: const Color(0xFFE2E8F0),
+                        color: colorScheme.outlineVariant,
                         width: 1,
                         style: BorderStyle.solid,
                       ),
                     ),
                     child: Icon(
                       Icons.add_photo_alternate_outlined,
-                      color: AppColors.primary,
+                      color: colorScheme.primary,
                       size: 24.sp,
                     ),
                   ),
@@ -197,14 +212,14 @@ class MultiImagePicker extends StatelessWidget {
                       },
                       child: Container(
                         padding: const EdgeInsets.all(4),
-                        decoration: const BoxDecoration(
-                          color: Colors.black54,
+                        decoration: BoxDecoration(
+                          color: colorScheme.errorContainer.withValues(alpha: 0.8),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
                           Icons.close,
                           size: 12.sp,
-                          color: Colors.white,
+                          color: colorScheme.onErrorContainer,
                         ),
                       ),
                     ),

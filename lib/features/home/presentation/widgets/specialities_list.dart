@@ -6,7 +6,6 @@ import 'package:doctor_appointment/core/utils/routes.dart';
 import 'package:doctor_appointment/core/utils/app_dimensions.dart';
 import 'package:doctor_appointment/features/home/data/models/home_model.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/specialty_mapper.dart';
 import 'section_header.dart';
 
@@ -71,6 +70,7 @@ class SpecialitiesList extends StatelessWidget {
                     );
                     final theme = SpecialtyMapper.getThemeForSpecialty(
                       spec.name,
+                      Theme.of(context).colorScheme,
                     );
                     final model = SpecialityModel(
                       name: spec.name,
@@ -98,17 +98,18 @@ class SpecialityCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: () =>
           context.pushNamed(Routes.recommendationView, extra: speciality.name),
       child: Container(
         width: 76.w,
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: colorScheme.surface,
           borderRadius: BorderRadius.circular(AppRadius.lg),
           boxShadow: [
             BoxShadow(
-              color: AppColors.cardShadow.withValues(alpha: 0.08),
+              color: colorScheme.shadow.withValues(alpha: 0.08),
               blurRadius: 12.r,
               offset: Offset(0, 4.h),
             ),
@@ -155,9 +156,9 @@ class _SpecialityLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       name,
-      style: AppTextStyles.bodySmall.copyWith(
+      style: context.bodySmall.copyWith(
         fontWeight: FontWeight.w500,
-        color: AppColors.textPrimary,
+        color: Theme.of(context).colorScheme.onSurface,
       ),
       maxLines: 1,
       overflow: TextOverflow.ellipsis,

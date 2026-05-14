@@ -1,4 +1,3 @@
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_images.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/features/appointment/domain/entities/appointment.dart';
@@ -36,6 +35,7 @@ class _CalendarViewState extends State<CalendarView>
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -48,9 +48,9 @@ class _CalendarViewState extends State<CalendarView>
           preferredSize: Size.fromHeight(44.h),
           child: TabBar(
             controller: _tabController,
-            labelColor: AppColors.primary,
-            unselectedLabelColor: AppColors.textSecondary,
-            indicatorColor: AppColors.primary,
+            labelColor: colorScheme.primary,
+            unselectedLabelColor: colorScheme.onSurfaceVariant,
+            indicatorColor: colorScheme.primary,
             indicatorSize: TabBarIndicatorSize.label,
             labelStyle: AppStyles.styleMedium14.copyWith(fontSize: 13.sp),
             tabs: const [
@@ -63,8 +63,8 @@ class _CalendarViewState extends State<CalendarView>
       ),
       body: LiquidPullToRefresh(
         onRefresh: () => context.read<AppointmentsCubit>().loadAppointments(),
-        color: AppColors.primary,
-        backgroundColor: Colors.white,
+        color: colorScheme.primary,
+        backgroundColor: colorScheme.surface,
         showChildOpacityTransition: false,
         child: TabBarView(
           controller: _tabController,
@@ -79,6 +79,7 @@ class _CalendarViewState extends State<CalendarView>
   }
 
   Widget _buildList(AppointmentTab tab) {
+    final colorScheme = Theme.of(context).colorScheme;
     return BlocBuilder<AppointmentsCubit, AppointmentsState>(
       builder: (context, state) {
         if (state is AppointmentsLoading) {
@@ -110,7 +111,7 @@ class _CalendarViewState extends State<CalendarView>
             child: Text(
               state.message,
               style: AppStyles.styleRegular14.copyWith(
-                color: AppColors.textSecondary,
+                color: colorScheme.onSurfaceVariant,
               ),
             ),
           );
@@ -124,7 +125,7 @@ class _CalendarViewState extends State<CalendarView>
                 child: Text(
                   'No appointments found.',
                   style: AppStyles.styleRegular14.copyWith(
-                    color: AppColors.textSecondary,
+                    color: colorScheme.onSurfaceVariant,
                   ),
                 ),
               ),

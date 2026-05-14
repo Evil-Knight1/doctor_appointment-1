@@ -6,8 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:doctor_appointment/core/utils/routes.dart';
 import 'package:doctor_appointment/core/utils/app_dimensions.dart';
 import 'package:doctor_appointment/features/home/data/models/home_doctor_model.dart';
-import 'package:doctor_appointment/core/utils/app_styles.dart';
-import 'package:doctor_appointment/core/utils/app_colors.dart';
+import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'star_rating.dart';
 
@@ -18,17 +17,19 @@ class DoctorCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
       margin: EdgeInsets.symmetric(
         horizontal: AppSpacing.lg,
         vertical: AppSpacing.xs,
       ),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(AppRadius.xl),
         boxShadow: [
           BoxShadow(
-            color: AppColors.cardShadow.withValues(alpha: 0.09),
+            color: colorScheme.shadow.withValues(alpha: 0.05),
             blurRadius: 16.r,
             offset: Offset(0, 4.h),
           ),
@@ -38,10 +39,8 @@ class DoctorCard extends StatelessWidget {
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(AppRadius.xl),
         child: InkWell(
-          onTap: () => context.pushNamed(
-            Routes.doctorDetailsView,
-            extra: doctor,
-          ),
+          onTap: () =>
+              context.pushNamed(Routes.doctorDetailsView, extra: doctor),
           borderRadius: BorderRadius.circular(AppRadius.xl),
           child: Padding(
             padding: EdgeInsets.all(AppSpacing.lg),
@@ -67,13 +66,16 @@ class _DoctorAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final customColors = context.customColors;
+
     return Stack(
       children: [
         Container(
           width: 64.w,
           height: 64.h,
           decoration: BoxDecoration(
-            color: AppColors.primaryLight,
+            color: colorScheme.primaryContainer,
             borderRadius: BorderRadius.circular(AppRadius.lg),
           ),
           clipBehavior: Clip.antiAlias,
@@ -96,13 +98,10 @@ class _DoctorAvatar extends StatelessWidget {
                   errorWidget: (context, url, error) => Icon(
                     Icons.person_rounded,
                     size: 36.sp,
-                    color: AppColors.primary,
+                    color: colorScheme.primary,
                   ),
                 )
-              : Image.asset(
-                  doctor.imageAsset,
-                  fit: BoxFit.cover,
-                ),
+              : Image.asset(doctor.imageAsset, fit: BoxFit.cover),
         ),
         if (doctor.isAvailable)
           Positioned(
@@ -112,9 +111,9 @@ class _DoctorAvatar extends StatelessWidget {
               width: 12.w,
               height: 12.h,
               decoration: BoxDecoration(
-                color: AppColors.secondary,
+                color: customColors.doctorOnline ?? Colors.green,
                 shape: BoxShape.circle,
-                border: Border.all(color: AppColors.surface, width: 2.w),
+                border: Border.all(color: colorScheme.surface, width: 2.w),
               ),
             ),
           ),
@@ -130,19 +129,23 @@ class _DoctorInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           doctor.name,
-          style: AppTextStyles.headingMedium,
+          style: context.headingMedium.copyWith(color: colorScheme.onSurface),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
         SizedBox(height: 2.h),
         Text(
           '${doctor.speciality} | ${doctor.hospital}',
-          style: AppTextStyles.bodySmall,
+          style: context.bodySmall.copyWith(
+            color: colorScheme.onSurfaceVariant,
+          ),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
@@ -158,17 +161,19 @@ class _BookmarkButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
       width: 36.w,
       height: 36.h,
       decoration: BoxDecoration(
-        color: AppColors.surfaceVariant,
+        color: colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(AppRadius.md),
       ),
       child: Icon(
         Icons.bookmark_outline_rounded,
         size: 18.sp,
-        color: AppColors.textSecondary,
+        color: colorScheme.onSurfaceVariant,
       ),
     );
   }

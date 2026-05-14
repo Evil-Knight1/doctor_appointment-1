@@ -1,4 +1,3 @@
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/features/home/data/models/home_doctor_model.dart';
 import 'package:flutter/material.dart';
@@ -20,19 +19,19 @@ class DoctorInfoWidget extends StatelessWidget {
             children: [
               Text(
                 doctor.name,
-                style: AppStyles.styleSemiBold22.copyWith(fontSize: 18.sp),
+                style: context.styleSemiBold22.copyWith(fontSize: 18.sp),
               ),
               SizedBox(height: 4.h),
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
                 decoration: BoxDecoration(
-                  color: AppColors.primaryLight,
+                  color: Theme.of(context).colorScheme.primaryContainer,
                   borderRadius: BorderRadius.circular(20.r),
                 ),
                 child: Text(
                   doctor.specialty,
-                  style: AppStyles.styleRegular12.copyWith(
-                    color: AppColors.primary,
+                  style: context.styleRegular12.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
               ),
@@ -40,8 +39,8 @@ class DoctorInfoWidget extends StatelessWidget {
           ),
           Text(
             doctor.fee,
-            style: AppStyles.styleSemiBold22.copyWith(
-              color: AppColors.primary,
+            style: context.styleSemiBold22.copyWith(
+              color: Theme.of(context).colorScheme.primary,
               fontSize: 18.sp,
             ),
           ),

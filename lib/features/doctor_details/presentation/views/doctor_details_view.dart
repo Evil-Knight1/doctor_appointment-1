@@ -1,4 +1,3 @@
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/core/utils/routes.dart';
 import 'package:doctor_appointment/features/home/data/models/home_doctor_model.dart';
@@ -17,6 +16,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:doctor_appointment/core/widgets/full_screen_image_viewer.dart';
 import 'package:doctor_appointment/core/utils/image_url_helper.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
 
 class DoctorDetailsView extends StatefulWidget {
   final HomeDoctorModel doctor;
@@ -45,7 +45,7 @@ class _DoctorDetailsViewState extends State<DoctorDetailsView>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: Stack(
         children: [
           CustomScrollView(
@@ -86,22 +86,22 @@ class _DoctorDetailsViewState extends State<DoctorDetailsView>
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 20.w),
       decoration: BoxDecoration(
-        color: AppColors.surfaceVariant,
+        color: Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(12.r),
       ),
       child: TabBar(
         controller: _tabController,
         indicator: BoxDecoration(
-          color: AppColors.primary,
+          color: Theme.of(context).colorScheme.primary,
           borderRadius: BorderRadius.circular(12.r),
         ),
         indicatorSize: TabBarIndicatorSize.tab,
-        labelStyle: AppStyles.styleSemiBold16.copyWith(fontSize: 13.sp),
-        unselectedLabelStyle: AppStyles.styleRegular14.copyWith(
+        labelStyle: context.styleSemiBold16.copyWith(fontSize: 13.sp),
+        unselectedLabelStyle: context.styleRegular14.copyWith(
           fontSize: 13.sp,
         ),
-        labelColor: Colors.white,
-        unselectedLabelColor: AppColors.textSecondary,
+        labelColor: Theme.of(context).colorScheme.onPrimary,
+        unselectedLabelColor: Theme.of(context).colorScheme.onSurfaceVariant,
         dividerColor: Colors.transparent,
         tabs: const [
           Tab(text: 'About'),
@@ -118,7 +118,7 @@ class _DoctorDetailsViewState extends State<DoctorDetailsView>
         Container(
           width: double.infinity,
           height: 300.h,
-          color: AppColors.primaryLight,
+          color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.4),
           child: widget.doctor.doctor.profilePictureUrl != null
               ? GestureDetector(
                   onTap: () {
@@ -141,14 +141,14 @@ class _DoctorDetailsViewState extends State<DoctorDetailsView>
                       child: Container(
                         width: double.infinity,
                         height: 300.h,
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.surface,
                       ),
                     ),
                     errorWidget: (_, _, _) => Icon(Icons.person,
-                        size: 80.sp, color: AppColors.primary),
+                        size: 80.sp, color: Theme.of(context).colorScheme.primary),
                   ),
                 )
-              : Icon(Icons.person, size: 80.sp, color: AppColors.primary),
+              : Icon(Icons.person, size: 80.sp, color: Theme.of(context).colorScheme.primary),
         ),
         Positioned(
           top: 48.h,
@@ -186,7 +186,7 @@ class _DoctorDetailsViewState extends State<DoctorDetailsView>
                     icon: isFav
                         ? Icons.favorite_rounded
                         : Icons.favorite_border,
-                    color: isFav ? AppColors.accent : AppColors.textPrimary,
+                    color: isFav ? context.customColors.error : Theme.of(context).colorScheme.onSurface,
                     onTap: () async =>
                         await SharedPreferencesHelper.toggleFavoriteDoctor(
                           widget.doctor,
@@ -204,7 +204,10 @@ class _DoctorDetailsViewState extends State<DoctorDetailsView>
           child: Center(
             child: Text(
               widget.doctor.name,
-              style: AppStyles.styleMedium14.copyWith(fontSize: 15.sp),
+              style: context.styleMedium14.copyWith(
+                fontSize: 15.sp,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
             ),
           ),
         ),
@@ -223,16 +226,20 @@ class _DoctorDetailsViewState extends State<DoctorDetailsView>
         width: 36.w,
         height: 36.h,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(10.r),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
+              color: Theme.of(context).shadowColor.withValues(alpha: 0.05),
               blurRadius: 10.r,
             ),
           ],
         ),
-        child: Icon(icon, size: 18.sp, color: color ?? AppColors.textPrimary),
+        child: Icon(
+          icon,
+          size: 18.sp,
+          color: color ?? Theme.of(context).colorScheme.onSurface,
+        ),
       ),
     );
   }
@@ -244,7 +251,7 @@ class _DoctorDetailsViewState extends State<DoctorDetailsView>
       right: 0,
       child: Container(
         padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 32.h),
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         child: Row(
           children: [
             Expanded(
@@ -258,8 +265,8 @@ class _DoctorDetailsViewState extends State<DoctorDetailsView>
                   extra: widget.doctor.name,
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryLight,
-                  foregroundColor: AppColors.primary,
+                  backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                  foregroundColor: Theme.of(context).colorScheme.primary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14.r),
                   ),
@@ -268,7 +275,9 @@ class _DoctorDetailsViewState extends State<DoctorDetailsView>
                 ),
                 child: Text(
                   'Chat',
-                  style: AppStyles.styleSemiBold16.copyWith(color: AppColors.primary),
+                  style: context.styleSemiBold16.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
                 ),
               ),
             ),
@@ -281,8 +290,8 @@ class _DoctorDetailsViewState extends State<DoctorDetailsView>
                   extra: widget.doctor.doctor, // Passing the entity
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14.r),
                   ),
@@ -291,7 +300,9 @@ class _DoctorDetailsViewState extends State<DoctorDetailsView>
                 ),
                 child: Text(
                   'Book Appointment',
-                  style: AppStyles.styleSemiBold16.copyWith(color: Colors.white),
+                  style: context.styleSemiBold16.copyWith(
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
                 ),
               ),
             ),
@@ -314,14 +325,14 @@ class _AboutTab extends StatelessWidget {
       children: [
         Text(
           'About',
-          style: AppStyles.styleSemiBold22.copyWith(fontSize: 16.sp),
+          style: context.styleSemiBold22.copyWith(fontSize: 16.sp),
         ),
         SizedBox(height: 8.h),
         Text(
           doctor.doctor.bio ??
               'Dr. ${doctor.name} is a top specialist. They have received several awards for their outstanding contribution in the medical field and are available for private consultation.',
-          style: AppStyles.styleRegular14.copyWith(
-            color: AppColors.textSecondary,
+          style: context.styleRegular14.copyWith(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
             height: 1.6,
           ),
         ),
@@ -345,13 +356,13 @@ class _AddressTab extends StatelessWidget {
       children: [
         Text(
           'Clinic Address',
-          style: AppStyles.styleSemiBold22.copyWith(fontSize: 16.sp),
+          style: context.styleSemiBold22.copyWith(fontSize: 16.sp),
         ),
         SizedBox(height: 8.h),
         Text(
           doctor.doctor.clinicAddress ?? 'No address provided',
-          style: AppStyles.styleRegular14.copyWith(
-            color: AppColors.textSecondary,
+          style: context.styleRegular14.copyWith(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
         if (doctor.doctor.clinicImagesUrls != null &&
@@ -359,7 +370,7 @@ class _AddressTab extends StatelessWidget {
           SizedBox(height: 20.h),
           Text(
             'Clinic Images',
-            style: AppStyles.styleSemiBold22.copyWith(fontSize: 16.sp),
+            style: context.styleSemiBold22.copyWith(fontSize: 16.sp),
           ),
           SizedBox(height: 12.h),
           SizedBox(
@@ -394,14 +405,17 @@ class _AddressTab extends StatelessWidget {
                         child: Container(
                           width: 140.w,
                           height: 100.h,
-                          color: Colors.white,
+                          color: Theme.of(context).colorScheme.surface,
                         ),
                       ),
                       errorWidget: (context, url, error) => Container(
                         width: 140.w,
                         height: 100.h,
-                        color: AppColors.surfaceVariant,
-                        child: Icon(Icons.image_not_supported_rounded, color: AppColors.textSecondary),
+                        color: Theme.of(context).colorScheme.surfaceContainer,
+                        child: Icon(
+                          Icons.image_not_supported_rounded,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
                       ),
                     ),
                   ),
@@ -413,7 +427,7 @@ class _AddressTab extends StatelessWidget {
         SizedBox(height: 30.h),
         Text(
           'Clinic Location',
-          style: AppStyles.styleSemiBold22.copyWith(fontSize: 16.sp),
+          style: context.styleSemiBold22.copyWith(fontSize: 16.sp),
         ),
         SizedBox(height: 12.h),
         GestureDetector(
@@ -439,16 +453,20 @@ class _AddressTab extends StatelessWidget {
               child: Container(
                 padding: EdgeInsets.all(12.w),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.surface,
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.1),
+                      color: Theme.of(context).shadowColor.withValues(alpha: 0.1),
                       blurRadius: 10.r,
                     ),
                   ],
                 ),
-                child: Icon(Icons.location_on_rounded, color: AppColors.primary, size: 28.sp),
+                child: Icon(
+                  Icons.location_on_rounded,
+                  color: Theme.of(context).colorScheme.primary,
+                  size: 28.sp,
+                ),
               ),
             ),
           ),
@@ -472,7 +490,10 @@ class _ReviewsTab extends StatelessWidget {
             child: ListView.separated(
               padding: EdgeInsets.all(20.w),
               itemCount: 5,
-              separatorBuilder: (context, index) => Divider(height: 30.h, color: AppColors.border),
+              separatorBuilder: (context, index) => Divider(
+                height: 30.h,
+                color: Theme.of(context).colorScheme.outlineVariant,
+              ),
               itemBuilder: (context, index) => const _ReviewTile(
                 name: 'Patient Name',
                 text: 'This is a placeholder review text that will be skeletonized during loading.',
@@ -494,14 +515,20 @@ class _ReviewsTab extends StatelessWidget {
                 children: [
                   Text(
                     '${reviews.length} Reviews',
-                    style: AppStyles.styleSemiBold22.copyWith(fontSize: 16.sp),
+                    style: context.styleSemiBold22.copyWith(fontSize: 16.sp),
                   ),
                   TextButton.icon(
                     onPressed: () => _showAddReviewDialog(context, doctorId),
-                    icon: Icon(Icons.add, size: 20.sp, color: AppColors.primary),
+                    icon: Icon(
+                      Icons.add,
+                      size: 20.sp,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                     label: Text(
                       'Add Review',
-                      style: AppStyles.styleMedium14.copyWith(color: AppColors.primary),
+                      style: context.styleMedium14.copyWith(
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                     ),
                   ),
                 ],
@@ -511,7 +538,7 @@ class _ReviewsTab extends StatelessWidget {
                 Center(
                   child: Padding(
                     padding: EdgeInsets.symmetric(vertical: 40.h),
-                    child: Text('No reviews yet', style: AppStyles.styleMedium14),
+                    child: Text('No reviews yet', style: context.styleMedium14),
                   ),
                 )
               else
@@ -523,7 +550,10 @@ class _ReviewsTab extends StatelessWidget {
                         text: review.comment,
                         stars: review.stars,
                       ),
-                      Divider(height: 30.h, color: AppColors.border),
+                      Divider(
+                        height: 30.h,
+                        color: Theme.of(context).colorScheme.outlineVariant,
+                      ),
                     ],
                   ),
                 ),
@@ -556,7 +586,7 @@ class _ReviewsTab extends StatelessWidget {
                     onPressed: () => setState(() => selectedStars = index + 1),
                     icon: Icon(
                       index < selectedStars ? Icons.star_rounded : Icons.star_outline_rounded,
-                      color: AppColors.star,
+                      color: context.customColors.rating,
                       size: 32.sp,
                     ),
                   ),
@@ -614,11 +644,11 @@ class _ReviewTile extends StatelessWidget {
           children: [
             CircleAvatar(
               radius: 18.r,
-              backgroundColor: AppColors.primaryLight,
+              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
               child: Text(
                 name.isNotEmpty ? name[0].toUpperCase() : 'U',
                 style: TextStyle(
-                  color: AppColors.primary,
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
                   fontWeight: FontWeight.w700,
                   fontSize: 14.sp,
                 ),
@@ -631,7 +661,7 @@ class _ReviewTile extends StatelessWidget {
                 children: [
                   Text(
                     name.isNotEmpty ? name : 'Anonymous',
-                    style: AppStyles.styleSemiBold16.copyWith(fontSize: 14.sp),
+                    style: context.styleSemiBold16.copyWith(fontSize: 14.sp),
                   ),
                   Row(
                     children: List.generate(
@@ -639,21 +669,23 @@ class _ReviewTile extends StatelessWidget {
                       (index) => Icon(
                         Icons.star_rounded,
                         size: 14.sp,
-                        color: index < stars ? AppColors.star : AppColors.divider,
+                        color: index < stars
+                            ? context.customColors.rating
+                            : Theme.of(context).colorScheme.outlineVariant,
                       ),
                     ),
                   ),
                 ],
               ),
             ),
-            Text('Today', style: AppStyles.styleRegular12),
+            Text('Today', style: context.styleRegular12),
           ],
         ),
         SizedBox(height: 8.h),
         Text(
           text,
-          style: AppStyles.styleRegular14.copyWith(
-            color: AppColors.textSecondary,
+          style: context.styleRegular14.copyWith(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
             height: 1.5,
           ),
         ),

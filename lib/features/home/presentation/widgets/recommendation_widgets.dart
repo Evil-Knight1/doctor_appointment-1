@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:doctor_appointment/core/utils/app_dimensions.dart';
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
+import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
 
 class RecommendationSearchRow extends StatelessWidget {
   const RecommendationSearchRow({
@@ -15,6 +15,8 @@ class RecommendationSearchRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: AppSpacing.lg),
       child: Row(
@@ -23,11 +25,11 @@ class RecommendationSearchRow extends StatelessWidget {
             child: Container(
               height: 46.h,
               decoration: BoxDecoration(
-                color: AppColors.surface,
+                color: colorScheme.surface,
                 borderRadius: BorderRadius.circular(AppRadius.lg),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.cardShadow.withValues(alpha: 0.07),
+                    color: colorScheme.shadow.withValues(alpha: 0.07),
                     blurRadius: 10.r,
                   ),
                 ],
@@ -36,11 +38,11 @@ class RecommendationSearchRow extends StatelessWidget {
                 onChanged: onChanged,
                 decoration: InputDecoration(
                   hintText: 'Search...',
-                  hintStyle: AppTextStyles.bodyMedium,
+                  hintStyle: context.bodyMedium.copyWith(color: colorScheme.onSurfaceVariant),
                   prefixIcon: Icon(
                     Icons.search_rounded,
                     size: 18.sp,
-                    color: AppColors.textHint,
+                    color: colorScheme.onSurfaceVariant,
                   ),
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.symmetric(vertical: 12.h),
@@ -55,12 +57,12 @@ class RecommendationSearchRow extends StatelessWidget {
               width: 46.w,
               height: 46.h,
               decoration: BoxDecoration(
-                color: AppColors.primary,
+                color: colorScheme.primary,
                 borderRadius: BorderRadius.circular(AppRadius.lg),
               ),
               child: Icon(
                 Icons.tune_rounded,
-                color: Colors.white,
+                color: colorScheme.onPrimary,
                 size: 20.sp,
               ),
             ),
@@ -95,6 +97,8 @@ class _SortBottomSheetState extends State<SortBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
       padding: EdgeInsets.fromLTRB(
         AppSpacing.xxl,
@@ -103,7 +107,7 @@ class _SortBottomSheetState extends State<SortBottomSheet> {
         AppSpacing.xxxl,
       ),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: colorScheme.surface,
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(AppRadius.xxl),
         ),
@@ -117,7 +121,7 @@ class _SortBottomSheetState extends State<SortBottomSheet> {
               width: 45.w,
               height: 5.h,
               decoration: BoxDecoration(
-                color: AppColors.divider.withValues(alpha: 0.5),
+                color: colorScheme.outlineVariant.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(AppRadius.full),
               ),
             ),
@@ -126,7 +130,7 @@ class _SortBottomSheetState extends State<SortBottomSheet> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Sort & Filter', style: AppTextStyles.displayMedium),
+              Text('Sort & Filter', style: context.displayMedium.copyWith(color: colorScheme.onSurface)),
               GestureDetector(
                 onTap: () => setState(() {
                   _selectedSort = 'Rating';
@@ -135,8 +139,8 @@ class _SortBottomSheetState extends State<SortBottomSheet> {
                 }),
                 child: Text(
                   'Reset',
-                  style: AppTextStyles.labelMedium.copyWith(
-                    color: AppColors.primary,
+                  style: context.labelMedium.copyWith(
+                    color: colorScheme.primary,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -191,8 +195,8 @@ class _SortBottomSheetState extends State<SortBottomSheet> {
                       Icons.star_rounded,
                       size: 32.sp,
                       color: i < _selectedRating
-                          ? AppColors.star
-                          : AppColors.divider,
+                          ? (context.customColors.rating ?? Colors.amber)
+                          : colorScheme.outlineVariant,
                     ),
                   ),
                 ),
@@ -206,7 +210,7 @@ class _SortBottomSheetState extends State<SortBottomSheet> {
             child: ElevatedButton(
               onPressed: () => Navigator.pop(context),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
+                backgroundColor: colorScheme.primary,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(AppRadius.lg),
                 ),
@@ -215,7 +219,7 @@ class _SortBottomSheetState extends State<SortBottomSheet> {
               child: Text(
                 'Apply Filters',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: colorScheme.onPrimary,
                   fontWeight: FontWeight.w700,
                   fontSize: 16.sp,
                 ),
@@ -235,10 +239,11 @@ class _FilterSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: AppTextStyles.headingMedium),
+        Text(title, style: context.headingMedium.copyWith(color: colorScheme.onSurface)),
         SizedBox(height: AppSpacing.md),
         child,
       ],
@@ -259,6 +264,8 @@ class ChipOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -267,13 +274,13 @@ class ChipOption extends StatelessWidget {
           vertical: AppSpacing.sm,
         ),
         decoration: BoxDecoration(
-          color: selected ? AppColors.primary : AppColors.surfaceVariant,
+          color: selected ? colorScheme.primary : colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(AppRadius.full),
         ),
         child: Text(
           label,
-          style: AppTextStyles.bodySmall.copyWith(
-            color: selected ? Colors.white : AppColors.textSecondary,
+          style: context.bodySmall.copyWith(
+            color: selected ? colorScheme.onPrimary : colorScheme.onSurfaceVariant,
             fontWeight: FontWeight.w600,
             fontSize: 12.sp,
           ),
@@ -282,3 +289,4 @@ class ChipOption extends StatelessWidget {
     );
   }
 }
+

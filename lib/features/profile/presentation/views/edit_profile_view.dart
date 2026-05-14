@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:doctor_appointment/core/utils/app_colors.dart';
+import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/core/services/service_locator.dart';
 import 'package:doctor_appointment/features/auth/presentation/widgets/registration_date_picker.dart';
@@ -75,16 +75,16 @@ class _EditProfileViewState extends State<EditProfileView> {
         appBar: AppBar(
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(
+            icon: Icon(
               Icons.arrow_back_ios_new_rounded,
-              color: AppColors.textPrimary,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
             onPressed: () => context.pop(),
           ),
           title: Text(
             'Edit Profile',
             style: AppStyles.styleSemiBold18.copyWith(
-              color: AppColors.textPrimary,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
         ),
@@ -94,7 +94,7 @@ class _EditProfileViewState extends State<EditProfileView> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(state.message),
-                  backgroundColor: AppColors.accent,
+                  backgroundColor: context.customColors.error,
                   behavior: SnackBarBehavior.floating,
                 ),
               );
@@ -120,7 +120,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                             height: 100.r,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: AppColors.primary.withValues(alpha: 0.1),
+                              color: Theme.of(context).colorScheme.primaryContainer,
                               border: Border.all(color: Colors.white, width: 3),
                               boxShadow: [
                                 BoxShadow(
@@ -143,25 +143,25 @@ class _EditProfileViewState extends State<EditProfileView> {
                                             httpHeaders: ImageUrlHelper.getImageHeaders(),
                                             fit: BoxFit.cover,
                                             placeholder: (context, url) =>
-                                                const Center(
+                                                Center(
                                                   child:
                                                       CircularProgressIndicator(
                                                         strokeWidth: 2,
                                                         color:
-                                                            AppColors.primary,
+                                                            Theme.of(context).colorScheme.primary,
                                                       ),
                                                 ),
                                             errorWidget:
                                                 (context, url, error) => Icon(
                                                   Icons.person_rounded,
                                                   size: 50.sp,
-                                                  color: AppColors.primary,
+                                                  color: Theme.of(context).colorScheme.primary,
                                                 ),
                                           )
                                         : Icon(
                                             Icons.person_rounded,
                                             size: 50.sp,
-                                            color: AppColors.primary,
+                                            color: Theme.of(context).colorScheme.primary,
                                           )),
                             ),
                           ),
@@ -173,10 +173,10 @@ class _EditProfileViewState extends State<EditProfileView> {
                               child: Container(
                                 padding: EdgeInsets.all(8.w),
                                 decoration: BoxDecoration(
-                                  color: AppColors.primary,
+                                  color: Theme.of(context).colorScheme.primary,
                                   shape: BoxShape.circle,
                                   border: Border.all(
-                                    color: Colors.white,
+                                    color: Theme.of(context).colorScheme.surface,
                                     width: 2,
                                   ),
                                 ),
@@ -250,7 +250,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                       child: ElevatedButton(
                         onPressed: isLoading ? null : _submit,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
+                          backgroundColor: Theme.of(context).colorScheme.primary,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14.r),
                           ),
@@ -268,7 +268,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                             : Text(
                                 'Save Changes',
                                 style: AppStyles.styleSemiBold16.copyWith(
-                                  color: Colors.white,
+                                  color: Theme.of(context).colorScheme.onPrimary,
                                 ),
                               ),
                       ),

@@ -1,4 +1,3 @@
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/core/utils/go_router.dart';
 import 'package:doctor_appointment/features/doctor_flow/logic/doctor_profile_cubit.dart';
@@ -27,15 +26,19 @@ class _DoctorProfileViewState extends State<DoctorProfileView> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        backgroundColor: colorScheme.surface,
         elevation: 0,
         automaticallyImplyLeading: false,
         title: Text(
           'Doctor Profile',
-          style: AppStyles.styleSemiBold22.copyWith(fontSize: 18.sp),
+          style: AppStyles.styleSemiBold22.copyWith(
+            fontSize: 18.sp,
+            color: colorScheme.onSurface,
+          ),
         ),
       ),
       body: BlocListener<DoctorProfileCubit, DoctorProfileState>(
@@ -44,7 +47,7 @@ class _DoctorProfileViewState extends State<DoctorProfileView> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
-                backgroundColor: AppColors.accent,
+                backgroundColor: colorScheme.error,
               ),
             );
           }
@@ -63,28 +66,35 @@ class _DoctorProfileViewState extends State<DoctorProfileView> {
                     SizedBox(height: 20.h),
                     CircleAvatar(
                       radius: 40.r,
-                      backgroundColor: AppColors.primaryLight,
+                      backgroundColor: colorScheme.primaryContainer,
                       child: Icon(
                         Icons.person,
                         size: 40.sp,
-                        color: AppColors.primary,
+                        color: colorScheme.primary,
                       ),
                     ),
                     SizedBox(height: 16.h),
                     Text(
                       doctor?.fullName ?? 'Doctor Full Name',
-                      style: AppStyles.styleSemiBold22,
+                      style: AppStyles.styleSemiBold22.copyWith(
+                        color: colorScheme.onSurface,
+                      ),
                     ),
                     Text(
                       doctor?.specialization.name ?? 'Specialization',
                       style: AppStyles.styleRegular14.copyWith(
-                        color: AppColors.textSecondary,
+                        color: colorScheme.onSurfaceVariant,
                       ),
                     ),
                     SizedBox(height: 32.h),
                     Align(
                       alignment: Alignment.centerLeft,
-                      child: Text('Management', style: AppStyles.styleSemiBold16),
+                      child: Text(
+                        'Management',
+                        style: AppStyles.styleSemiBold16.copyWith(
+                          color: colorScheme.onSurface,
+                        ),
+                      ),
                     ),
                     SizedBox(height: 12.h),
                     ProfileMenuItem(
@@ -100,7 +110,7 @@ class _DoctorProfileViewState extends State<DoctorProfileView> {
                               .read<DoctorProfileCubit>()
                               .updateAcceptingPatients(v);
                         },
-                        activeThumbColor: AppColors.primary,
+                        activeThumbColor: colorScheme.primary,
                       ),
                     ),
                     SizedBox(height: 12.h),
@@ -124,10 +134,10 @@ class _DoctorProfileViewState extends State<DoctorProfileView> {
                         width: double.infinity,
                         padding: EdgeInsets.symmetric(vertical: 14.h),
                         decoration: BoxDecoration(
-                          color: AppColors.accent.withValues(alpha: 0.08),
+                          color: colorScheme.error.withValues(alpha: 0.08),
                           borderRadius: BorderRadius.circular(14.r),
                           border: Border.all(
-                            color: AppColors.accent.withValues(alpha: 0.3),
+                            color: colorScheme.error.withValues(alpha: 0.3),
                           ),
                         ),
                         child: Row(
@@ -135,14 +145,14 @@ class _DoctorProfileViewState extends State<DoctorProfileView> {
                           children: [
                             Icon(
                               Icons.logout_rounded,
-                              color: AppColors.accent,
+                              color: colorScheme.error,
                               size: 20.sp,
                             ),
                             SizedBox(width: 8.w),
                             Text(
                               'Log Out',
                               style: AppStyles.styleMedium14.copyWith(
-                                color: AppColors.accent,
+                                color: colorScheme.error,
                                 fontSize: 15.sp,
                               ),
                             ),
@@ -162,20 +172,26 @@ class _DoctorProfileViewState extends State<DoctorProfileView> {
   }
 
   void _showLogoutDialog(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
+        backgroundColor: colorScheme.surface,
+        surfaceTintColor: colorScheme.surface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16.r),
         ),
         title: Text(
           'Log Out',
-          style: AppStyles.styleSemiBold22.copyWith(fontSize: 16.sp),
+          style: AppStyles.styleSemiBold22.copyWith(
+            fontSize: 16.sp,
+            color: colorScheme.onSurface,
+          ),
         ),
         content: Text(
           'Are you sure you want to log out?',
           style: AppStyles.styleRegular14.copyWith(
-            color: AppColors.textSecondary,
+            color: colorScheme.onSurfaceVariant,
           ),
         ),
         actions: [
@@ -184,7 +200,7 @@ class _DoctorProfileViewState extends State<DoctorProfileView> {
             child: Text(
               'Cancel',
               style: AppStyles.styleMedium14.copyWith(
-                color: AppColors.textSecondary,
+                color: colorScheme.onSurfaceVariant,
               ),
             ),
           ),
@@ -197,7 +213,7 @@ class _DoctorProfileViewState extends State<DoctorProfileView> {
             },
             child: Text(
               'Log Out',
-              style: AppStyles.styleMedium14.copyWith(color: AppColors.accent),
+              style: AppStyles.styleMedium14.copyWith(color: colorScheme.error),
             ),
           ),
         ],
@@ -205,3 +221,4 @@ class _DoctorProfileViewState extends State<DoctorProfileView> {
     );
   }
 }
+

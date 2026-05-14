@@ -1,4 +1,4 @@
-import 'package:doctor_appointment/core/utils/app_colors.dart';
+import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -22,6 +22,7 @@ class AvailableSlotsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Row(
       children: slots.map((slot) {
         final isSelected = selectedSlot == slot;
@@ -31,10 +32,10 @@ class AvailableSlotsWidget extends StatelessWidget {
             margin: EdgeInsets.only(right: 10.w),
             padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
             decoration: BoxDecoration(
-              color: isSelected ? AppColors.primary : Theme.of(context).scaffoldBackgroundColor,
+              color: isSelected ? colorScheme.primary : colorScheme.surface,
               borderRadius: BorderRadius.circular(20.r),
               border: Border.all(
-                color: isSelected ? AppColors.primary : AppColors.border,
+                color: isSelected ? colorScheme.primary : colorScheme.outlineVariant,
               ),
             ),
             child: Row(
@@ -42,13 +43,13 @@ class AvailableSlotsWidget extends StatelessWidget {
                 Icon(
                   icons[slot],
                   size: 14.sp,
-                  color: isSelected ? Colors.white : AppColors.star,
+                  color: isSelected ? colorScheme.onPrimary : context.customColors.rating,
                 ),
                 SizedBox(width: 4.w),
                 Text(
                   slot,
                   style: AppStyles.styleMedium12.copyWith(
-                    color: isSelected ? Colors.white : AppColors.textPrimary,
+                    color: isSelected ? colorScheme.onPrimary : colorScheme.onSurface,
                   ),
                 ),
               ],
@@ -59,3 +60,4 @@ class AvailableSlotsWidget extends StatelessWidget {
     );
   }
 }
+

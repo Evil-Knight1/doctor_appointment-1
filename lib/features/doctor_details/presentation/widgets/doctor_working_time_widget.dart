@@ -1,4 +1,3 @@
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -21,7 +20,7 @@ class DoctorWorkingTimeWidget extends StatelessWidget {
         children: [
           Text(
             'Working Time',
-            style: AppStyles.styleSemiBold22.copyWith(fontSize: 16.sp),
+            style: context.styleSemiBold22.copyWith(fontSize: 16.sp),
           ),
           SizedBox(height: 12.h),
           ..._workingDays.map(
@@ -32,11 +31,11 @@ class DoctorWorkingTimeWidget extends StatelessWidget {
                 children: [
                   Text(
                     w['day']!,
-                    style: AppStyles.styleMedium14.copyWith(
-                      color: AppColors.textSecondary,
+                    style: context.styleMedium14.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
-                  Text(w['time']!, style: AppStyles.styleMedium14),
+                  Text(w['time']!, style: context.styleMedium14),
                 ],
               ),
             ),

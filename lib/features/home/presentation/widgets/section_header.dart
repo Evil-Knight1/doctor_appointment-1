@@ -23,11 +23,11 @@ class SectionHeader extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(title, style: AppTextStyles.sectionTitle),
+          Text(title, style: context.sectionTitle),
           if (showSeeAll)
             GestureDetector(
               onTap: onSeeAllTap,
-              child: Text(l10n.seeAll, style: AppTextStyles.labelLarge),
+              child: Text(l10n.seeAll, style: context.labelLarge),
             ),
         ],
       ),

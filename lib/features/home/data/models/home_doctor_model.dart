@@ -1,8 +1,6 @@
 import 'package:doctor_appointment/features/doctors/data/models/doctor_api_model.dart';
 import 'package:doctor_appointment/features/doctors/domain/entities/doctor.dart';
-import 'package:doctor_appointment/core/utils/specialty_mapper.dart';
 import 'package:doctor_appointment/core/utils/image_url_helper.dart';
-import 'package:flutter/material.dart';
 
 class HomeDoctorModel {
   final Doctor doctor;
@@ -50,11 +48,4 @@ class HomeDoctorModel {
       : 'assets/images/doctor1.png';
   bool get isAvailable => doctor.isAvailable;
 
-  // New themed getters
-  IconData get specialtyIcon =>
-      SpecialtyMapper.getThemeForSpecialty(specialty).icon;
-  Color get specialtyColor =>
-      SpecialtyMapper.getThemeForSpecialty(specialty).color;
-  Color get specialtyBgColor =>
-      SpecialtyMapper.getThemeForSpecialty(specialty).bgColor;
 }

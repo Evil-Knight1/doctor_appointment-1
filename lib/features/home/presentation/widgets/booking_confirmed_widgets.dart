@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:doctor_appointment/core/utils/app_dimensions.dart';
 import 'package:doctor_appointment/features/doctors/domain/entities/doctor.dart';
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
+import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
 
 class ConfirmedBadge extends StatelessWidget {
   const ConfirmedBadge({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return Column(
       children: [
         Container(
@@ -17,16 +19,16 @@ class ConfirmedBadge extends StatelessWidget {
           height: 80.h,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: AppColors.secondary.withValues(alpha: 0.15),
+            color: colorScheme.secondary.withValues(alpha: 0.15),
           ),
           child: Icon(
             Icons.check_circle_rounded,
-            color: AppColors.secondary,
+            color: colorScheme.secondary,
             size: 60.sp,
           ),
         ),
         SizedBox(height: AppSpacing.lg),
-        Text('Booking Confirmed', style: AppTextStyles.displayMedium),
+        Text('Booking Confirmed', style: context.displayMedium),
       ],
     );
   }
@@ -39,14 +41,16 @@ class ConfirmedInfoSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
       padding: EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(AppRadius.xl),
         boxShadow: [
           BoxShadow(
-            color: AppColors.cardShadow.withValues(alpha: 0.08),
+            color: Theme.of(context).shadowColor.withValues(alpha: 0.08),
             blurRadius: 14.r,
           ),
         ],
@@ -54,7 +58,7 @@ class ConfirmedInfoSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: AppTextStyles.headingMedium),
+          Text(title, style: context.headingMedium),
           SizedBox(height: AppSpacing.md),
           ...children,
         ],
@@ -78,6 +82,8 @@ class BookingInfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -85,18 +91,24 @@ class BookingInfoRow extends StatelessWidget {
           width: 36.w,
           height: 36.h,
           decoration: BoxDecoration(
-            color: AppColors.primaryLight,
+            color: colorScheme.primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(AppRadius.sm),
           ),
-          child: Icon(icon, size: 18.sp, color: AppColors.primary),
+          child: Icon(icon, size: 18.sp, color: colorScheme.primary),
         ),
         SizedBox(width: AppSpacing.md),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label, style: AppTextStyles.bodySmall),
-              Text(value, style: AppTextStyles.headingSmall),
+              Text(
+                label, 
+                style: context.bodySmall.copyWith(color: colorScheme.onSurfaceVariant),
+              ),
+              Text(
+                value, 
+                style: context.headingSmall.copyWith(color: colorScheme.onSurface),
+              ),
             ],
           ),
         ),
@@ -112,18 +124,21 @@ class DoctorInfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final customColors = context.customColors;
+
     return Row(
       children: [
         Container(
           width: 52.w,
           height: 52.h,
           decoration: BoxDecoration(
-            color: AppColors.primaryLight,
+            color: colorScheme.primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(AppRadius.md),
           ),
           child: Icon(
             Icons.person_rounded,
-            color: AppColors.primary,
+            color: colorScheme.primary,
             size: 30.sp,
           ),
         ),
@@ -131,18 +146,25 @@ class DoctorInfoRow extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(doctor.fullName, style: AppTextStyles.headingSmall),
+            Text(
+              doctor.fullName, 
+              style: context.headingSmall.copyWith(color: colorScheme.onSurface),
+            ),
             Text(
               '${doctor.specialization.name} | ${doctor.hospital ?? 'Clinic'}',
-              style: AppTextStyles.bodySmall,
+              style: context.bodySmall.copyWith(color: colorScheme.onSurfaceVariant),
             ),
             Row(
               children: [
-                Icon(Icons.star_rounded, size: 12.sp, color: AppColors.star),
+                Icon(
+                  Icons.star_rounded, 
+                  size: 12.sp, 
+                  color: customColors.rating ?? Colors.amber,
+                ),
                 SizedBox(width: 2.w),
                 Text(
                   '${doctor.averageRating?.toStringAsFixed(1) ?? '0.0'} (${doctor.totalReviews} reviews)',
-                  style: AppTextStyles.bodySmall,
+                  style: context.bodySmall.copyWith(color: colorScheme.onSurfaceVariant),
                 ),
               ],
             ),
@@ -164,6 +186,8 @@ class BookingConfirmedActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
       padding: EdgeInsets.fromLTRB(
         AppSpacing.lg,
@@ -179,7 +203,8 @@ class BookingConfirmedActions extends StatelessWidget {
             child: ElevatedButton(
               onPressed: onDone,
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
+                backgroundColor: colorScheme.primary,
+                foregroundColor: colorScheme.onPrimary,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(AppRadius.lg),
                 ),
@@ -188,7 +213,6 @@ class BookingConfirmedActions extends StatelessWidget {
               child: Text(
                 'Done',
                 style: TextStyle(
-                  color: Colors.white,
                   fontWeight: FontWeight.w600,
                   fontSize: 15.sp,
                 ),
@@ -200,7 +224,10 @@ class BookingConfirmedActions extends StatelessWidget {
             onTap: onReview,
             child: Text(
               'Leave a Review',
-              style: AppTextStyles.labelLarge.copyWith(fontSize: 14.sp),
+              style: context.labelLarge.copyWith(
+                fontSize: 14.sp,
+                color: colorScheme.primary,
+              ),
             ),
           ),
         ],

@@ -5,7 +5,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:doctor_appointment/core/utils/app_dimensions.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/image_url_helper.dart';
 
 import 'package:doctor_appointment/l10n/app_localizations.dart';
@@ -49,10 +48,10 @@ class _GreetingText extends StatelessWidget {
           children: [
             Text(
               '${l10n.hi}, $userName! 👋',
-              style: AppTextStyles.displayMedium,
+              style: context.displayMedium,
             ),
             SizedBox(height: 2.h),
-            Text(l10n.howAreYou, style: AppTextStyles.bodyMedium),
+            Text(l10n.howAreYou, style: context.bodyMedium),
           ],
         ),
         _AvatarButton(userImageUrl: userImageUrl),
@@ -103,14 +102,14 @@ class _AvatarButton extends StatelessWidget {
                     ),
                   ),
                 ),
-                errorWidget: (context, url, error) => _buildPlaceholder(),
+                errorWidget: (context, url, error) => _buildPlaceholder(context),
               )
-            : _buildPlaceholder(),
+            : _buildPlaceholder(context),
       ),
     );
   }
 
-  Widget _buildPlaceholder() {
+  Widget _buildPlaceholder(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -229,7 +228,7 @@ class _BannerText extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(l10n.bookNearestDoctor, style: AppTextStyles.greetingTitle),
+        Text(l10n.bookNearestDoctor, style: context.greetingTitle),
         SizedBox(height: AppSpacing.md),
         const _FindNearbyButton(),
       ],

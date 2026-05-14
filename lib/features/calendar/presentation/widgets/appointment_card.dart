@@ -1,9 +1,8 @@
-import 'package:doctor_appointment/core/utils/app_colors.dart';
-import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:doctor_appointment/core/utils/go_router.dart';
+import 'package:doctor_appointment/core/utils/app_styles.dart';
 
 class AppointmentCard extends StatelessWidget {
   final String name;
@@ -41,32 +40,33 @@ class AppointmentCard extends StatelessWidget {
       },
       child: Container(
         padding: EdgeInsets.all(14.w),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: AppColors.border),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          _buildDoctorRow(),
-          SizedBox(height: 12.h),
-          Divider(color: AppColors.border, height: 1),
-          SizedBox(height: 12.h),
-          _buildActions(),
-        ],
-      ),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(16.r),
+          border: Border.all(color: Theme.of(context).dividerColor),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).shadowColor,
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            _buildDoctorRow(context),
+            SizedBox(height: 12.h),
+            Divider(color: Theme.of(context).dividerColor, height: 1),
+            SizedBox(height: 12.h),
+            _buildActions(context),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildDoctorRow() {
+  Widget _buildDoctorRow(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Row(
       children: [
         ClipRRect(
@@ -80,10 +80,10 @@ class AppointmentCard extends StatelessWidget {
               width: 55.w,
               height: 55.w,
               decoration: BoxDecoration(
-                color: AppColors.primaryLight,
+                color: colorScheme.primaryContainer,
                 borderRadius: BorderRadius.circular(12.r),
               ),
-              child: Icon(Icons.person, color: AppColors.primary, size: 28.sp),
+              child: Icon(Icons.person, color: colorScheme.primary, size: 28.sp),
             ),
           ),
         ),
@@ -94,13 +94,16 @@ class AppointmentCard extends StatelessWidget {
             children: [
               Text(
                 name,
-                style: AppStyles.styleMedium14.copyWith(fontSize: 14.sp),
+                style: AppStyles.styleMedium14.copyWith(
+                  fontSize: 14.sp,
+                  color: colorScheme.onSurface,
+                ),
               ),
               SizedBox(height: 2.h),
               Text(
                 specialty,
                 style: AppStyles.styleRegular12.copyWith(
-                  color: AppColors.textSecondary,
+                  color: colorScheme.onSurfaceVariant,
                 ),
               ),
               SizedBox(height: 6.h),
@@ -109,13 +112,13 @@ class AppointmentCard extends StatelessWidget {
                   Icon(
                     Icons.calendar_today_outlined,
                     size: 12.sp,
-                    color: AppColors.textSecondary,
+                    color: colorScheme.onSurfaceVariant,
                   ),
                   SizedBox(width: 4.w),
                   Text(
                     date,
                     style: AppStyles.styleRegular12.copyWith(
-                      color: AppColors.textSecondary,
+                      color: colorScheme.onSurfaceVariant,
                       fontSize: 11.sp,
                     ),
                   ),
@@ -123,13 +126,13 @@ class AppointmentCard extends StatelessWidget {
                   Icon(
                     Icons.access_time_rounded,
                     size: 12.sp,
-                    color: AppColors.textSecondary,
+                    color: colorScheme.onSurfaceVariant,
                   ),
                   SizedBox(width: 4.w),
                   Text(
                     time,
                     style: AppStyles.styleRegular12.copyWith(
-                      color: AppColors.textSecondary,
+                      color: colorScheme.onSurfaceVariant,
                       fontSize: 11.sp,
                     ),
                   ),
@@ -142,14 +145,15 @@ class AppointmentCard extends StatelessWidget {
     );
   }
 
-  Widget _buildActions() {
+  Widget _buildActions(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Row(
       children: [
         Expanded(
           child: OutlinedButton(
             onPressed: () {},
             style: OutlinedButton.styleFrom(
-              side: BorderSide(color: AppColors.primary),
+              side: BorderSide(color: colorScheme.primary),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.r),
               ),
@@ -158,7 +162,7 @@ class AppointmentCard extends StatelessWidget {
             child: Text(
               'Re-book',
               style: AppStyles.styleMedium14.copyWith(
-                color: AppColors.primary,
+                color: colorScheme.primary,
                 fontSize: 12.sp,
               ),
             ),
@@ -170,8 +174,9 @@ class AppointmentCard extends StatelessWidget {
             onPressed: () {},
             style: ElevatedButton.styleFrom(
               backgroundColor: isCompleted || isCancelled
-                  ? AppColors.accent
-                  : AppColors.primary,
+                  ? colorScheme.error
+                  : colorScheme.primary,
+              foregroundColor: colorScheme.onPrimary,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.r),
               ),
@@ -181,7 +186,7 @@ class AppointmentCard extends StatelessWidget {
             child: Text(
               isCompleted || isCancelled ? 'Leave Review' : 'Cancel',
               style: AppStyles.styleMedium14.copyWith(
-                color: Colors.white,
+                color: colorScheme.onPrimary,
                 fontSize: 12.sp,
               ),
             ),

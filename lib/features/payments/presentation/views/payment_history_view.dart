@@ -1,4 +1,4 @@
-import 'package:doctor_appointment/core/utils/app_colors.dart';
+import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/core/utils/go_router.dart';
 import 'package:flutter/material.dart';
@@ -10,19 +10,27 @@ class PaymentHistoryView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: colorScheme.surface,
         elevation: 0,
         titleSpacing: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.textPrimary, size: 20.sp),
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: colorScheme.onSurface,
+            size: 20.sp,
+          ),
           onPressed: () => context.pop(),
         ),
         title: Text(
           'Payment History',
-          style: AppStyles.styleSemiBold22.copyWith(fontSize: 18.sp),
+          style: AppStyles.styleSemiBold22.copyWith(
+            fontSize: 18.sp,
+            color: colorScheme.onSurface,
+          ),
         ),
       ),
       body: ListView.separated(
@@ -34,14 +42,17 @@ class PaymentHistoryView extends StatelessWidget {
             onTap: () {
               context.push(AppRouter.kTransactionDetailsView);
             },
-            child: _buildTransactionCard(index),
+            child: _buildTransactionCard(context, index),
           );
         },
       ),
     );
   }
 
-  Widget _buildTransactionCard(int index) {
+  Widget _buildTransactionCard(BuildContext context, int index) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final customColors = context.customColors;
+    
     final amounts = ['\$15.00', '\$20.00', '\$18.00', '\$15.00', '\$25.00'];
     final labels = ['Dentist Consultation', 'ENT Specialist', 'Ophthalmologist check', 'Follow-up', 'Therapy Session'];
     final statuses = ['Completed', 'Completed', 'Refunded', 'Completed', 'Completed'];
@@ -49,9 +60,9 @@ class PaymentHistoryView extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -61,28 +72,44 @@ class PaymentHistoryView extends StatelessWidget {
               Container(
                 padding: EdgeInsets.all(12.w),
                 decoration: BoxDecoration(
-                  color: AppColors.primaryLight,
+                  color: colorScheme.primaryContainer,
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.receipt_rounded, color: AppColors.primary, size: 24.sp),
+                child: Icon(
+                  Icons.receipt_rounded,
+                  color: colorScheme.primary,
+                  size: 24.sp,
+                ),
               ),
               SizedBox(width: 14.w),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(labels[index % labels.length], style: AppStyles.styleMedium14),
+                  Text(
+                    labels[index % labels.length],
+                    style: AppStyles.styleMedium14.copyWith(
+                      color: colorScheme.onSurface,
+                    ),
+                  ),
                   SizedBox(height: 4.h),
                   Text(
                     statuses[index % statuses.length],
                     style: AppStyles.styleRegular12.copyWith(
-                      color: statuses[index % statuses.length] == 'Refunded' ? Colors.red : Colors.green,
+                      color: statuses[index % statuses.length] == 'Refunded'
+                          ? customColors.error
+                          : customColors.success,
                     ),
                   ),
                 ],
               ),
             ],
           ),
-          Text(amounts[index % amounts.length], style: AppStyles.styleSemiBold16),
+          Text(
+            amounts[index % amounts.length],
+            style: AppStyles.styleSemiBold16.copyWith(
+              color: colorScheme.onSurface,
+            ),
+          ),
         ],
       ),
     );

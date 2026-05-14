@@ -1,4 +1,3 @@
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -39,7 +38,7 @@ class PatientFormField extends StatelessWidget {
             decoration: InputDecoration(
               hintText: hint,
               hintStyle: AppStyles.styleRegular14.copyWith(
-                color: AppColors.textLight,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
                 fontSize: 12.sp,
               ),
               border: InputBorder.none,

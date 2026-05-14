@@ -1,4 +1,3 @@
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/features/appointment/data/models/slot_model.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +18,7 @@ class AvailableTimeWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     // Only show slots that are available and not yet booked
     final availableSlots =
         slots.where((s) => s.isAvailable && !s.isBooked).toList();
@@ -32,13 +32,13 @@ class AvailableTimeWidget extends StatelessWidget {
               Icon(
                 Icons.event_busy_rounded,
                 size: 48.sp,
-                color: AppColors.border,
+                color: colorScheme.outlineVariant,
               ),
               SizedBox(height: 12.h),
               Text(
                 'No available slots for this date.',
                 style: AppStyles.styleMedium14.copyWith(
-                  color: AppColors.textSecondary,
+                  color: colorScheme.onSurfaceVariant,
                 ),
               ),
             ],
@@ -94,17 +94,18 @@ class AvailableTimeWidget extends StatelessWidget {
     IconData icon,
     List<SlotModel> sectionSlots,
   ) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            Icon(icon, size: 16.sp, color: AppColors.textSecondary),
+            Icon(icon, size: 16.sp, color: colorScheme.onSurfaceVariant),
             SizedBox(width: 6.w),
             Text(
               title,
               style: AppStyles.styleMedium14.copyWith(
-                color: AppColors.textSecondary,
+                color: colorScheme.onSurfaceVariant,
                 fontSize: 13.sp,
               ),
             ),
@@ -123,6 +124,7 @@ class AvailableTimeWidget extends StatelessWidget {
   }
 
   Widget _buildTimeChip(BuildContext context, SlotModel slot) {
+    final colorScheme = Theme.of(context).colorScheme;
     final isSelected = selectedSlot?.id == slot.id;
     final timeString = DateFormat('hh:mm a').format(slot.startTime);
 
@@ -132,16 +134,16 @@ class AvailableTimeWidget extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary : Colors.white,
+          color: isSelected ? colorScheme.primary : colorScheme.surface,
           borderRadius: BorderRadius.circular(14.r),
           border: Border.all(
-            color: isSelected ? AppColors.primary : AppColors.border,
+            color: isSelected ? colorScheme.primary : colorScheme.outlineVariant,
             width: 1.5,
           ),
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.3),
+                    color: colorScheme.primary.withValues(alpha: 0.3),
                     blurRadius: 8,
                     offset: const Offset(0, 4),
                   ),
@@ -152,10 +154,11 @@ class AvailableTimeWidget extends StatelessWidget {
           timeString,
           style: AppStyles.styleMedium14.copyWith(
             fontSize: 13.sp,
-            color: isSelected ? Colors.white : AppColors.textPrimary,
+            color: isSelected ? colorScheme.onPrimary : colorScheme.onSurface,
           ),
         ),
       ),
     );
   }
 }
+

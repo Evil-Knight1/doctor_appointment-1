@@ -1,4 +1,3 @@
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -22,6 +21,7 @@ class ConsultationTypeWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Row(
       children: types.map((type) {
         final isSelected = selected == type;
@@ -31,10 +31,10 @@ class ConsultationTypeWidget extends StatelessWidget {
             margin: EdgeInsets.only(right: 10.w),
             padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
             decoration: BoxDecoration(
-              color: isSelected ? AppColors.primary : Theme.of(context).scaffoldBackgroundColor,
+              color: isSelected ? colorScheme.primary : colorScheme.surface,
               borderRadius: BorderRadius.circular(20.r),
               border: Border.all(
-                color: isSelected ? AppColors.primary : AppColors.border,
+                color: isSelected ? colorScheme.primary : colorScheme.outlineVariant,
               ),
             ),
             child: Row(
@@ -42,13 +42,13 @@ class ConsultationTypeWidget extends StatelessWidget {
                 Icon(
                   icons[type],
                   size: 14.sp,
-                  color: isSelected ? Colors.white : AppColors.textSecondary,
+                  color: isSelected ? colorScheme.onPrimary : colorScheme.onSurfaceVariant,
                 ),
                 SizedBox(width: 4.w),
                 Text(
                   type,
                   style: AppStyles.styleRegular12.copyWith(
-                    color: isSelected ? Colors.white : AppColors.textPrimary,
+                    color: isSelected ? colorScheme.onPrimary : colorScheme.onSurface,
                   ),
                 ),
               ],
@@ -59,3 +59,4 @@ class ConsultationTypeWidget extends StatelessWidget {
     );
   }
 }
+

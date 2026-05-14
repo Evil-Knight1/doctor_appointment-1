@@ -1,4 +1,3 @@
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/features/home/data/models/home_doctor_model.dart';
 import 'package:doctor_appointment/features/appointment/presentation/models/appointment_draft.dart';
@@ -69,29 +68,33 @@ class _NewAppointmentViewState extends State<NewAppointmentView> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: colorScheme.surface,
         elevation: 0,
         leading: GestureDetector(
           onTap: () => context.pop(),
           child: Container(
             margin: EdgeInsets.all(8.w),
             decoration: BoxDecoration(
-              color: Theme.of(context).scaffoldBackgroundColor,
+              color: colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(10.r),
             ),
             child: Icon(
               Icons.arrow_back_ios_new_rounded,
               size: 16.sp,
-              color: AppColors.textPrimary,
+              color: colorScheme.onSurface,
             ),
           ),
         ),
         title: Text(
           'New Appointment',
-          style: AppStyles.styleSemiBold22.copyWith(fontSize: 18.sp),
+          style: AppStyles.styleSemiBold22.copyWith(
+            fontSize: 18.sp,
+            color: colorScheme.onSurface,
+          ),
         ),
       ),
       body: BlocProvider(
@@ -135,7 +138,7 @@ class _NewAppointmentViewState extends State<NewAppointmentView> {
                       },
                     ),
                     SizedBox(height: 24.h),
-                    _sectionTitle('Consultation Type'),
+                    _sectionTitle('Consultation Type', colorScheme),
                     SizedBox(height: 12.h),
                     ConsultationTypeWidget(
                       selected: _selectedConsultation,
@@ -143,7 +146,7 @@ class _NewAppointmentViewState extends State<NewAppointmentView> {
                           setState(() => _selectedConsultation = t),
                     ),
                     SizedBox(height: 24.h),
-                    _sectionTitle('Available Slots'),
+                    _sectionTitle('Available Slots', colorScheme),
                     SizedBox(height: 12.h),
                     BlocBuilder<DoctorSlotsCubit, DoctorSlotsState>(
                       builder: (context, state) {
@@ -156,7 +159,7 @@ class _NewAppointmentViewState extends State<NewAppointmentView> {
                             child: Text(
                               state.message,
                               style: AppStyles.styleMedium14.copyWith(
-                                color: Colors.redAccent,
+                                color: colorScheme.error,
                               ),
                             ),
                           );
@@ -171,7 +174,7 @@ class _NewAppointmentViewState extends State<NewAppointmentView> {
                       },
                     ),
                     SizedBox(height: 24.h),
-                    _sectionTitle('Consultation Fees'),
+                    _sectionTitle('Consultation Fees', colorScheme),
                     SizedBox(height: 12.h),
                     ConsultationFeesWidget(
                       fee: widget.doctor.doctor.consultationFee ?? 0.0,
@@ -188,17 +191,21 @@ class _NewAppointmentViewState extends State<NewAppointmentView> {
     );
   }
 
-  Widget _sectionTitle(String title) =>
-      Text(title, style: AppStyles.styleSemiBold22.copyWith(fontSize: 15.sp));
+  Widget _sectionTitle(String title, ColorScheme colorScheme) =>
+      Text(title, style: AppStyles.styleSemiBold22.copyWith(
+        fontSize: 15.sp,
+        color: colorScheme.onSurface,
+      ));
 
   Widget _buildBottomButton(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Positioned(
       bottom: 0,
       left: 0,
       right: 0,
       child: Container(
         padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 32.h),
-        color: Colors.white,
+        color: colorScheme.surface,
         child: ElevatedButton(
           onPressed: _selectedSlot == null
               ? null
@@ -212,8 +219,8 @@ class _NewAppointmentViewState extends State<NewAppointmentView> {
                   context.push(AppRouter.kPatientDetails, extra: draft);
                 },
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            disabledBackgroundColor: AppColors.border,
+            backgroundColor: colorScheme.primary,
+            disabledBackgroundColor: colorScheme.outlineVariant,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(14.r),
             ),
@@ -224,8 +231,8 @@ class _NewAppointmentViewState extends State<NewAppointmentView> {
             'Book Appointment',
             style: AppStyles.styleSemiBold16.copyWith(
               color: _selectedSlot == null
-                  ? AppColors.textSecondary
-                  : Colors.white,
+                  ? colorScheme.onSurfaceVariant
+                  : colorScheme.onPrimary,
             ),
           ),
         ),

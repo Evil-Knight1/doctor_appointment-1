@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/core/utils/go_router.dart';
 import 'package:doctor_appointment/core/services/shared_preferences_helper.dart';
@@ -35,6 +34,7 @@ class _ProfileViewState extends State<ProfileView> {
         ? l10n.arabic
         : l10n.english;
 
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -46,8 +46,8 @@ class _ProfileViewState extends State<ProfileView> {
       ),
       body: LiquidPullToRefresh(
         onRefresh: () => context.read<ProfileCubit>().loadProfile(),
-        color: AppColors.primary,
-        backgroundColor: Colors.white,
+        color: colorScheme.primary,
+        backgroundColor: colorScheme.surface,
         showChildOpacityTransition: false,
         child: Center(
           child: ConstrainedBox(
@@ -91,7 +91,7 @@ class _ProfileViewState extends State<ProfileView> {
                           child: Text(
                             state.message,
                             style: AppStyles.styleRegular14.copyWith(
-                              color: AppColors.textSecondary,
+                              color: colorScheme.onSurfaceVariant,
                             ),
                           ),
                         );
@@ -170,7 +170,7 @@ class _ProfileViewState extends State<ProfileView> {
                     trailing: Switch(
                       value: _notificationsEnabled,
                       onChanged: (v) => setState(() => _notificationsEnabled = v),
-                      activeThumbColor: AppColors.primary,
+                      activeThumbColor: colorScheme.primary,
                     ),
                   ),
                   SizedBox(height: 10.h),
@@ -187,7 +187,7 @@ class _ProfileViewState extends State<ProfileView> {
                           onChanged: (v) {
                             context.read<ThemeCubit>().toggleTheme(v);
                           },
-                          activeThumbColor: AppColors.primary,
+                          activeThumbColor: colorScheme.primary,
                         ),
                       );
                     },
@@ -213,10 +213,10 @@ class _ProfileViewState extends State<ProfileView> {
                       width: double.infinity,
                       padding: EdgeInsets.symmetric(vertical: 14.h),
                       decoration: BoxDecoration(
-                        color: AppColors.accent.withValues(alpha: 0.08),
+                        color: colorScheme.error.withValues(alpha: 0.08),
                         borderRadius: BorderRadius.circular(14.r),
                         border: Border.all(
-                          color: AppColors.accent.withValues(alpha: 0.3),
+                          color: colorScheme.error.withValues(alpha: 0.3),
                         ),
                       ),
                       child: Row(
@@ -224,14 +224,14 @@ class _ProfileViewState extends State<ProfileView> {
                         children: [
                           Icon(
                             Icons.logout_rounded,
-                            color: AppColors.accent,
+                            color: colorScheme.error,
                             size: 20.sp,
                           ),
                           SizedBox(width: 8.w),
                           Text(
                             l10n.logout,
                             style: AppStyles.styleMedium14.copyWith(
-                              color: AppColors.accent,
+                              color: colorScheme.error,
                               fontSize: 15.sp,
                             ),
                           ),
@@ -268,7 +268,7 @@ class _ProfileViewState extends State<ProfileView> {
       backgroundColor: Colors.transparent,
       builder: (_) => Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
         ),
         padding: EdgeInsets.all(24.w),
@@ -281,7 +281,7 @@ class _ProfileViewState extends State<ProfileView> {
                 width: 40.w,
                 height: 4.h,
                 decoration: BoxDecoration(
-                  color: AppColors.border,
+                  color: Theme.of(context).colorScheme.outlineVariant,
                   borderRadius: BorderRadius.circular(2.r),
                 ),
               ),
@@ -330,7 +330,7 @@ class _ProfileViewState extends State<ProfileView> {
         content: Text(
           l10n.logoutConfirm,
           style: AppStyles.styleRegular14.copyWith(
-            color: AppColors.textSecondary,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
         actions: [
@@ -339,7 +339,7 @@ class _ProfileViewState extends State<ProfileView> {
             child: Text(
               l10n.cancel,
               style: AppStyles.styleMedium14.copyWith(
-                color: AppColors.textSecondary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
           ),
@@ -352,7 +352,9 @@ class _ProfileViewState extends State<ProfileView> {
             },
             child: Text(
               l10n.logout,
-              style: AppStyles.styleMedium14.copyWith(color: AppColors.accent),
+              style: AppStyles.styleMedium14.copyWith(
+                color: Theme.of(context).colorScheme.error,
+              ),
             ),
           ),
         ],
@@ -383,7 +385,11 @@ class _LanguageOption extends StatelessWidget {
           children: [
             Text(label, style: AppStyles.styleMedium14),
             if (isSelected)
-              Icon(Icons.check_rounded, color: AppColors.primary, size: 18.sp),
+              Icon(
+                Icons.check_rounded,
+                color: Theme.of(context).colorScheme.primary,
+                size: 18.sp,
+              ),
           ],
         ),
       ),

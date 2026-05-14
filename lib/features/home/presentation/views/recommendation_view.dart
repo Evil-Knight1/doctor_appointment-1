@@ -6,7 +6,6 @@ import 'package:skeletonizer/skeletonizer.dart';
 import 'package:doctor_appointment/features/doctors/domain/entities/doctor.dart';
 import 'package:doctor_appointment/core/utils/app_dimensions.dart';
 import 'package:doctor_appointment/core/utils/routes.dart';
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import '../widgets/doctor_list_tile.dart';
 import '../widgets/recommendation_widgets.dart';
 import '../widgets/shared_app_bar.dart';
@@ -48,8 +47,9 @@ class _RecommendationViewState extends State<RecommendationView> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
+      backgroundColor: colorScheme.surface,
       appBar: SharedAppBar(
         title: 'Recommendations',
         actions: [
@@ -59,7 +59,7 @@ class _RecommendationViewState extends State<RecommendationView> {
               onPressed: () {},
               icon: Icon(
                 Icons.more_vert_rounded,
-                color: AppColors.textPrimary,
+                color: colorScheme.onSurface,
                 size: 20.sp,
               ),
             ),
@@ -113,11 +113,21 @@ class _RecommendationViewState extends State<RecommendationView> {
                     ),
                   );
                 } else if (state is DoctorsFailure) {
-                  return Center(child: Text('Error: ${state.message}'));
+                  return Center(
+                    child: Text(
+                      'Error: ${state.message}',
+                      style: TextStyle(color: colorScheme.error),
+                    ),
+                  );
                 } else if (state is DoctorsSuccess) {
                   final doctors = state.page.items;
                   if (doctors.isEmpty) {
-                    return const Center(child: Text('No doctors found.'));
+                    return Center(
+                      child: Text(
+                        'No doctors found.',
+                        style: TextStyle(color: colorScheme.onSurfaceVariant),
+                      ),
+                    );
                   }
                   return ListView.separated(
                     padding: EdgeInsets.symmetric(
@@ -149,3 +159,4 @@ class _RecommendationViewState extends State<RecommendationView> {
     );
   }
 }
+

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:doctor_appointment/core/utils/app_dimensions.dart';
 import 'package:doctor_appointment/features/home/data/models/home_model.dart';
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 
 class SpecialityGridCard extends StatelessWidget {
@@ -12,15 +11,16 @@ class SpecialityGridCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: colorScheme.surface,
           borderRadius: BorderRadius.circular(AppRadius.xl),
           boxShadow: [
             BoxShadow(
-              color: AppColors.cardShadow.withValues(alpha: 0.09),
+              color: colorScheme.shadow.withValues(alpha: 0.08),
               blurRadius: 12.r,
               offset: Offset(0, 4.h),
             ),
@@ -41,9 +41,9 @@ class SpecialityGridCard extends StatelessWidget {
             SizedBox(height: AppSpacing.sm),
             Text(
               speciality.name,
-              style: AppTextStyles.bodySmall.copyWith(
+              style: context.bodySmall.copyWith(
                 fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
+                color: colorScheme.onSurface,
                 fontSize: 12.sp,
               ),
               textAlign: TextAlign.center,

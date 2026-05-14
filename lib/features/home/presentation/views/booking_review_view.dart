@@ -4,8 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:doctor_appointment/core/utils/app_dimensions.dart';
 import 'package:doctor_appointment/features/doctors/domain/entities/doctor.dart';
 import 'package:doctor_appointment/core/utils/routes.dart';
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
+import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
 import '../widgets/shared_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:doctor_appointment/features/doctors/logic/doctor_details_cubit.dart';
@@ -25,8 +25,11 @@ class _BookingReviewViewState extends State<BookingReviewView> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final customColors = context.customColors;
+
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
+      backgroundColor: colorScheme.surface,
       appBar: const SharedAppBar(title: 'Write a Review'),
       body: BlocConsumer<DoctorDetailsCubit, DoctorDetailsState>(
         listener: (context, state) {
@@ -34,14 +37,9 @@ class _BookingReviewViewState extends State<BookingReviewView> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
-                backgroundColor: AppColors.error,
+                backgroundColor: colorScheme.error,
               ),
             );
-          } else if (state is DoctorDetailsLoaded) {
-            // If we are in the review view, it means we probably just submitted one
-            // because the go_router provides the cubit and loads details.
-            // But we need a more specific way to know if it was a success.
-            // Actually, DoctorDetailsCubit.addReview calls loadDoctorDetails.
           }
         },
         builder: (context, state) {
@@ -56,23 +54,26 @@ class _BookingReviewViewState extends State<BookingReviewView> {
                   width: 100.w,
                   height: 100.h,
                   decoration: BoxDecoration(
-                    color: AppColors.primaryLight,
+                    color: colorScheme.primary.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
                     Icons.person_rounded,
-                    color: AppColors.primary,
+                    color: colorScheme.primary,
                     size: 50.sp,
                   ),
                 ),
                 SizedBox(height: AppSpacing.lg),
                 Text(
                   'How was your experience with',
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    color: AppColors.textSecondary,
+                  style: context.bodyMedium.copyWith(
+                    color: colorScheme.onSurfaceVariant,
                   ),
                 ),
-                Text(widget.doctor.fullName, style: AppTextStyles.headingLarge),
+                Text(
+                  widget.doctor.fullName, 
+                  style: context.headingLarge.copyWith(color: colorScheme.onSurface),
+                ),
                 SizedBox(height: AppSpacing.xxl),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -85,7 +86,9 @@ class _BookingReviewViewState extends State<BookingReviewView> {
                         child: Icon(
                           Icons.star_rounded,
                           size: 40.sp,
-                          color: isSelected ? AppColors.star : AppColors.divider,
+                          color: isSelected 
+                              ? (customColors.rating ?? Colors.amber) 
+                              : colorScheme.outlineVariant,
                         ),
                       ),
                     );
@@ -94,11 +97,12 @@ class _BookingReviewViewState extends State<BookingReviewView> {
                 SizedBox(height: AppSpacing.xxl),
                 Container(
                   decoration: BoxDecoration(
-                    color: AppColors.surface,
+                    color: colorScheme.surface,
                     borderRadius: BorderRadius.circular(AppRadius.xl),
+                    border: Border.all(color: colorScheme.outlineVariant),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.05),
+                        color: Theme.of(context).shadowColor.withValues(alpha: 0.05),
                         blurRadius: 10.r,
                       ),
                     ],
@@ -106,11 +110,14 @@ class _BookingReviewViewState extends State<BookingReviewView> {
                   child: TextField(
                     controller: _reviewController,
                     maxLines: 5,
+                    style: TextStyle(color: colorScheme.onSurface),
                     decoration: InputDecoration(
                       hintText: 'Write your review here...',
-                      hintStyle: AppTextStyles.bodySmall,
+                      hintStyle: context.bodySmall.copyWith(color: colorScheme.onSurfaceVariant),
                       contentPadding: EdgeInsets.all(AppSpacing.lg),
                       border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
                     ),
                   ),
                 ),
@@ -137,8 +144,9 @@ class _BookingReviewViewState extends State<BookingReviewView> {
                             }
                           },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      disabledBackgroundColor: AppColors.divider,
+                      backgroundColor: colorScheme.primary,
+                      foregroundColor: colorScheme.onPrimary,
+                      disabledBackgroundColor: colorScheme.outlineVariant,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(AppRadius.lg),
                       ),
@@ -148,15 +156,14 @@ class _BookingReviewViewState extends State<BookingReviewView> {
                         ? SizedBox(
                             width: 20.w,
                             height: 20.h,
-                            child: const CircularProgressIndicator(
-                              color: Colors.white,
+                            child: CircularProgressIndicator(
+                              color: colorScheme.onPrimary,
                               strokeWidth: 2,
                             ),
                           )
                         : Text(
                             'Submit Review',
                             style: TextStyle(
-                              color: Colors.white,
                               fontWeight: FontWeight.w600,
                               fontSize: 15.sp,
                             ),

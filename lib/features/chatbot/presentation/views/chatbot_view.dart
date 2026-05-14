@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:doctor_appointment/core/utils/app_colors.dart';
+import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/features/chatbot/logic/chat_cubit.dart';
 
@@ -49,13 +49,13 @@ class _ChatbotViewState extends State<ChatbotView> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 1,
         titleSpacing: 0,
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios_new_rounded,
-            color: AppColors.textPrimary,
+            color: Theme.of(context).colorScheme.onSurface,
             size: 20.sp,
           ),
           onPressed: () => context.pop(),
@@ -63,10 +63,10 @@ class _ChatbotViewState extends State<ChatbotView> {
         title: Row(
           children: [
             CircleAvatar(
-              backgroundColor: AppColors.primaryLight,
+              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
               child: Icon(
                 Icons.smart_toy_rounded,
-                color: AppColors.primary,
+                color: Theme.of(context).colorScheme.primary,
                 size: 20.sp,
               ),
             ),
@@ -89,14 +89,14 @@ class _ChatbotViewState extends State<ChatbotView> {
                       return Text(
                         'Typing...',
                         style: AppStyles.styleRegular12.copyWith(
-                          color: AppColors.primary,
+                          color: Theme.of(context).colorScheme.primary,
                         ),
                       );
                     }
                     return Text(
                       'Online',
                       style: AppStyles.styleRegular12.copyWith(
-                        color: AppColors.primary,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
                     );
                   },
@@ -112,7 +112,7 @@ class _ChatbotViewState extends State<ChatbotView> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.errorMessage!),
-                backgroundColor: Colors.red,
+                backgroundColor: Theme.of(context).colorScheme.error,
                 duration: const Duration(seconds: 4),
               ),
             );
@@ -141,45 +141,46 @@ class _ChatbotViewState extends State<ChatbotView> {
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                _buildUserMessage(message.userMessage),
-                                SizedBox(height: 16.h),
-                                _buildBotMessage(message.aiMessage),
-                              ],
-                            );
-                          } else {
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                if (state.pendingUserMessage != null) ...[
-                                  _buildUserMessage(state.pendingUserMessage!),
+                                  _buildUserMessage(context, message.userMessage),
                                   SizedBox(height: 16.h),
+                                  _buildBotMessage(context, message.aiMessage),
                                 ],
-                                Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Container(
-                                    padding: EdgeInsets.all(12.w),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(16.r),
-                                      border: Border.all(
-                                        color: AppColors.border,
+                              );
+                            } else {
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  if (state.pendingUserMessage != null) ...[
+                                    _buildUserMessage(context, state.pendingUserMessage!),
+                                    SizedBox(height: 16.h),
+                                  ],
+                                  Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Container(
+                                      padding: EdgeInsets.all(12.w),
+                                      decoration: BoxDecoration(
+                                        color: Theme.of(context).colorScheme.surface,
+                                        borderRadius: BorderRadius.circular(16.r),
+                                        border: Border.all(
+                                          color: Theme.of(context).dividerColor,
+                                        ),
                                       ),
-                                    ),
-                                    child: Text(
-                                      "...",
-                                      style: AppStyles.styleRegular14.copyWith(
-                                        color: AppColors.textSecondary,
+                                      child: Text(
+                                        "...",
+                                        style: AppStyles.styleRegular14.copyWith(
+                                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ],
-                            );
+                                ],
+                              );
                           }
                         },
                       ),
               ),
               _buildMessageInput(
+                context,
                 state.status == ChatStatus.sending ||
                     state.status == ChatStatus.loading,
               ),
@@ -190,37 +191,43 @@ class _ChatbotViewState extends State<ChatbotView> {
     );
   }
 
-  Widget _buildBotMessage(String text) {
+  Widget _buildBotMessage(BuildContext context, String text) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     return Align(
       alignment: Alignment.centerLeft,
       child: Container(
         margin: EdgeInsets.only(right: 50.w),
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.customColors.chatBubbleOthers ?? colorScheme.surface,
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(16.r),
             topRight: Radius.circular(16.r),
             bottomRight: Radius.circular(16.r),
           ),
-          border: Border.all(color: AppColors.border),
+          border: Border.all(color: theme.dividerColor),
         ),
         child: Text(
           text,
-          style: AppStyles.styleRegular14.copyWith(height: 1.5),
+          style: AppStyles.styleRegular14.copyWith(
+            height: 1.5,
+            color: colorScheme.onSurface,
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildUserMessage(String text) {
+  Widget _buildUserMessage(BuildContext context, String text) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Align(
       alignment: Alignment.centerRight,
       child: Container(
         margin: EdgeInsets.only(left: 50.w),
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
         decoration: BoxDecoration(
-          color: AppColors.primary,
+          color: context.customColors.chatBubbleMine ?? colorScheme.primary,
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(16.r),
             topRight: Radius.circular(16.r),
@@ -230,7 +237,7 @@ class _ChatbotViewState extends State<ChatbotView> {
         child: Text(
           text,
           style: AppStyles.styleRegular14.copyWith(
-            color: Colors.white,
+            color: colorScheme.onPrimary,
             height: 1.5,
           ),
         ),
@@ -238,12 +245,14 @@ class _ChatbotViewState extends State<ChatbotView> {
     );
   }
 
-  Widget _buildMessageInput(bool isSending) {
+  Widget _buildMessageInput(BuildContext context, bool isSending) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
       decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(top: BorderSide(color: AppColors.border)),
+        color: colorScheme.surface,
+        border: Border(top: BorderSide(color: theme.dividerColor)),
       ),
       child: Row(
         children: [
@@ -251,7 +260,7 @@ class _ChatbotViewState extends State<ChatbotView> {
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 16.w),
               decoration: BoxDecoration(
-                color: Theme.of(context).scaffoldBackgroundColor,
+                color: theme.scaffoldBackgroundColor,
                 borderRadius: BorderRadius.circular(24.r),
               ),
               child: TextField(
@@ -263,7 +272,7 @@ class _ChatbotViewState extends State<ChatbotView> {
                       ? 'Wait for AI...'
                       : 'Type your message...',
                   hintStyle: AppStyles.styleRegular14.copyWith(
-                    color: AppColors.textLight,
+                    color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
                   ),
                   border: InputBorder.none,
                 ),
@@ -277,18 +286,18 @@ class _ChatbotViewState extends State<ChatbotView> {
               width: 48.w,
               height: 48.h,
               decoration: BoxDecoration(
-                color: isSending ? AppColors.border : AppColors.primary,
+                color: isSending ? theme.dividerColor : colorScheme.primary,
                 shape: BoxShape.circle,
               ),
               child: isSending
                   ? Padding(
                       padding: EdgeInsets.all(12.w),
                       child: CircularProgressIndicator(
-                        color: Colors.white,
+                        color: colorScheme.onPrimary,
                         strokeWidth: 2.w,
                       ),
                     )
-                  : Icon(Icons.send_rounded, color: Colors.white, size: 20.sp),
+                  : Icon(Icons.send_rounded, color: colorScheme.onPrimary, size: 20.sp),
             ),
           ),
         ],

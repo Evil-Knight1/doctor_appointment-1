@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:doctor_appointment/core/utils/app_dimensions.dart';
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 
 class BookingStepper extends StatelessWidget {
@@ -12,6 +11,8 @@ class BookingStepper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: AppSpacing.lg,
@@ -25,7 +26,7 @@ class BookingStepper extends StatelessWidget {
             return Expanded(
               child: Container(
                 height: 2.h,
-                color: isCompleted ? AppColors.primary : AppColors.divider,
+                color: isCompleted ? colorScheme.primary : colorScheme.outlineVariant,
               ),
             );
           }
@@ -59,6 +60,7 @@ class _StepBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final isActive = state == _StepState.active;
     final isCompleted = state == _StepState.completed;
 
@@ -71,18 +73,18 @@ class _StepBubble extends StatelessWidget {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: isActive || isCompleted
-                ? AppColors.primary
-                : AppColors.surfaceVariant,
+                ? colorScheme.primary
+                : colorScheme.surfaceContainerHighest,
           ),
           child: Center(
             child: isCompleted
-                ? Icon(Icons.check_rounded, size: 16.sp, color: Colors.white)
+                ? Icon(Icons.check_rounded, size: 16.sp, color: colorScheme.onPrimary)
                 : Text(
                     '$index',
                     style: TextStyle(
                       fontSize: 13.sp,
                       fontWeight: FontWeight.w700,
-                      color: isActive ? Colors.white : AppColors.textSecondary,
+                      color: isActive ? colorScheme.onPrimary : colorScheme.onSurfaceVariant,
                     ),
                   ),
           ),
@@ -90,11 +92,11 @@ class _StepBubble extends StatelessWidget {
         SizedBox(height: 4.h),
         Text(
           label,
-          style: AppTextStyles.bodySmall.copyWith(
+          style: context.bodySmall.copyWith(
             fontSize: 10.sp,
             color: isActive || isCompleted
-                ? AppColors.primary
-                : AppColors.textSecondary,
+                ? colorScheme.primary
+                : colorScheme.onSurfaceVariant,
             fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
           ),
         ),

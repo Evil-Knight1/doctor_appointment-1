@@ -1,4 +1,3 @@
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/core/services/shared_preferences_helper.dart';
 import 'package:doctor_appointment/features/favorite/presentation/widgets/favorite_doctor_card.dart';
@@ -10,23 +9,27 @@ class FavoriteView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return ValueListenableBuilder<int>(
       valueListenable: SharedPreferencesHelper.favoritesVersion,
       builder: (context, _, _) {
         final favorites = SharedPreferencesHelper.getFavoriteDoctors();
         return Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: colorScheme.surface,
           appBar: AppBar(
-            backgroundColor: Colors.white,
+            backgroundColor: colorScheme.surface,
             elevation: 0,
             automaticallyImplyLeading: false,
             title: Text(
               'Favorites',
-              style: AppStyles.styleSemiBold22.copyWith(fontSize: 18.sp),
+              style: AppStyles.styleSemiBold22.copyWith(
+                fontSize: 18.sp,
+                color: colorScheme.onSurface,
+              ),
             ),
           ),
           body: favorites.isEmpty
-              ? _buildEmptyState()
+              ? _buildEmptyState(context)
               : ListView.separated(
                   padding: EdgeInsets.symmetric(
                     horizontal: 20.w,
@@ -47,7 +50,8 @@ class FavoriteView extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -55,19 +59,22 @@ class FavoriteView extends StatelessWidget {
           Icon(
             Icons.favorite_border_rounded,
             size: 70.sp,
-            color: AppColors.border,
+            color: colorScheme.outlineVariant,
           ),
           SizedBox(height: 16.h),
           Text(
             'No favorites yet',
-            style: AppStyles.styleSemiBold22.copyWith(fontSize: 18.sp),
+            style: AppStyles.styleSemiBold22.copyWith(
+              fontSize: 18.sp,
+              color: colorScheme.onSurface,
+            ),
           ),
           SizedBox(height: 8.h),
           Text(
             'Doctors you favorite will\nappear here',
             textAlign: TextAlign.center,
             style: AppStyles.styleRegular14.copyWith(
-              color: AppColors.textSecondary,
+              color: colorScheme.onSurfaceVariant,
             ),
           ),
         ],

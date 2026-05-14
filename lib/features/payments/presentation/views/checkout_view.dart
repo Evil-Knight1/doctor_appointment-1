@@ -1,5 +1,4 @@
 import 'package:url_launcher/url_launcher.dart';
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/core/utils/go_router.dart';
 import 'package:doctor_appointment/features/appointment/presentation/models/appointment_draft.dart';
@@ -56,15 +55,15 @@ class _CheckoutViewState extends State<CheckoutView> {
     return BlocProvider.value(
       value: _paymentCubit,
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         appBar: AppBar(
-          backgroundColor: Colors.white,
+          backgroundColor: Theme.of(context).colorScheme.surface,
           elevation: 0,
           titleSpacing: 0,
           leading: IconButton(
             icon: Icon(
               Icons.arrow_back_ios_new_rounded,
-              color: AppColors.textPrimary,
+              color: Theme.of(context).colorScheme.onSurface,
               size: 20.sp,
             ),
             onPressed: () => context.pop(),
@@ -101,13 +100,13 @@ class _CheckoutViewState extends State<CheckoutView> {
                   Text(
                     'Total Fees:',
                     style: AppStyles.styleMedium14.copyWith(
-                      color: AppColors.textSecondary,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
                   Text(
                     '\$${amount.toStringAsFixed(2)}',
                     style: AppStyles.styleSemiBold24.copyWith(
-                      color: AppColors.primary,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                 ],
@@ -158,8 +157,8 @@ class _CheckoutViewState extends State<CheckoutView> {
                     circleSize: 12.r,
                     textStyle: AppStyles.styleSemiBold16,
                     buttonColor: isLoading
-                        ? AppColors.border
-                        : AppColors.primary,
+                        ? Theme.of(context).colorScheme.outlineVariant
+                        : Theme.of(context).colorScheme.primary,
                   );
                 },
               ),
@@ -177,17 +176,23 @@ class _CheckoutViewState extends State<CheckoutView> {
       child: Container(
         padding: EdgeInsets.all(16.w),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primaryLight : Colors.white,
+          color: isSelected
+              ? Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.1)
+              : Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(12.r),
           border: Border.all(
-            color: isSelected ? AppColors.primary : AppColors.border,
+            color: isSelected
+                ? Theme.of(context).colorScheme.primary
+                : Theme.of(context).colorScheme.outlineVariant,
           ),
         ),
         child: Row(
           children: [
             Icon(
               icon,
-              color: isSelected ? AppColors.primary : AppColors.textSecondary,
+              color: isSelected
+                  ? Theme.of(context).colorScheme.primary
+                  : Theme.of(context).colorScheme.onSurfaceVariant,
               size: 28.sp,
             ),
             SizedBox(width: 16.w),
@@ -195,18 +200,24 @@ class _CheckoutViewState extends State<CheckoutView> {
               child: Text(
                 label,
                 style: AppStyles.styleMedium14.copyWith(
-                  color: isSelected ? AppColors.primary : AppColors.textPrimary,
+                  color: isSelected
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).colorScheme.onSurface,
                 ),
               ),
             ),
             if (isSelected)
               Icon(
                 Icons.check_circle_rounded,
-                color: AppColors.primary,
+                color: Theme.of(context).colorScheme.primary,
                 size: 20.sp,
               )
             else
-              Icon(Icons.circle_outlined, color: AppColors.border, size: 20.sp),
+              Icon(
+                Icons.circle_outlined,
+                color: Theme.of(context).colorScheme.outlineVariant,
+                size: 20.sp,
+              ),
           ],
         ),
       ),

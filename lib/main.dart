@@ -12,7 +12,6 @@ import 'package:doctor_appointment/firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:doctor_appointment/core/logic/theme_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -79,9 +78,7 @@ class DoctorAppointment extends StatelessWidget {
                       statusBarIconBrightness: themeMode == ThemeMode.dark
                           ? Brightness.light
                           : Brightness.dark,
-                      systemNavigationBarColor: themeMode == ThemeMode.dark
-                          ? AppColors.darkBg
-                          : AppColors.bg,
+                      systemNavigationBarColor: Theme.of(context).colorScheme.surface,
                       systemNavigationBarIconBrightness:
                           themeMode == ThemeMode.dark
                           ? Brightness.light
@@ -105,7 +102,7 @@ class DoctorAppointment extends StatelessWidget {
                             builder: (context) {
                               return MaxWidthBox(
                                 maxWidth: 1200,
-                                backgroundColor: const Color(0xFFF5F5F5),
+                                backgroundColor: Theme.of(context).colorScheme.surface,
                                 child: ResponsiveScaledBox(
                                   width: ResponsiveValue<double>(
                                     context,

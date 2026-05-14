@@ -1,4 +1,3 @@
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/core/utils/go_router.dart';
 import 'package:doctor_appointment/features/chatbot/logic/chat_history_cubit.dart';
@@ -13,6 +12,7 @@ class ChatHistoryView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -20,7 +20,7 @@ class ChatHistoryView extends StatelessWidget {
         leading: Navigator.canPop(context)
             ? IconButton(
                 icon: Icon(Icons.arrow_back_ios_new_rounded,
-                    color: AppColors.textPrimary, size: 20.sp),
+                    color: colorScheme.onSurface, size: 20.sp),
                 onPressed: () => context.pop(),
               )
             : null,
@@ -33,10 +33,10 @@ class ChatHistoryView extends StatelessWidget {
         padding: EdgeInsets.only(bottom: 80.h),
         child: FloatingActionButton.extended(
           onPressed: () => context.push(AppRouter.kChatbotView),
-          backgroundColor: AppColors.primary,
-          icon: const Icon(Icons.add_rounded, color: Colors.white),
+          backgroundColor: colorScheme.primary,
+          icon: Icon(Icons.add_rounded, color: colorScheme.onPrimary),
           label: Text('New Chat',
-              style: AppStyles.styleMedium14.copyWith(color: Colors.white)),
+              style: AppStyles.styleMedium14.copyWith(color: colorScheme.onPrimary)),
         ),
       ),
       body: BlocBuilder<ChatHistoryCubit, ChatHistoryState>(
@@ -48,7 +48,7 @@ class ChatHistoryView extends StatelessWidget {
             return Center(
               child: Text(
                 state.message,
-                style: AppStyles.styleMedium14.copyWith(color: Colors.red),
+                style: AppStyles.styleMedium14.copyWith(color: colorScheme.error),
               ),
             );
           }
@@ -91,6 +91,8 @@ class ChatHistoryView extends StatelessWidget {
     // We only have the session ID from the backend currently.
     // In a real app we might have a title, but we will show the truncated session ID.
     final displayTitle = 'Chat Session ${sessionId.substring(0, 8)}...';
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     
     return GestureDetector(
       onTap: () {
@@ -99,12 +101,12 @@ class ChatHistoryView extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.all(16.w),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: theme.cardColor,
           borderRadius: BorderRadius.circular(16.r),
-          border: Border.all(color: AppColors.border),
+          border: Border.all(color: theme.dividerColor),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.02),
+              color: theme.shadowColor.withValues(alpha: 0.02),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -116,10 +118,10 @@ class ChatHistoryView extends StatelessWidget {
               height: 48.h,
               width: 48.w,
               decoration: BoxDecoration(
-                color: AppColors.primaryLight,
+                color: colorScheme.primaryContainer,
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.smart_toy_rounded, color: AppColors.primary, size: 24.sp),
+              child: Icon(Icons.smart_toy_rounded, color: colorScheme.primary, size: 24.sp),
             ),
             SizedBox(width: 16.w),
             Expanded(
@@ -132,7 +134,9 @@ class ChatHistoryView extends StatelessWidget {
                       Expanded(
                         child: Text(
                           displayTitle,
-                          style: AppStyles.styleSemiBold16,
+                          style: AppStyles.styleSemiBold16.copyWith(
+                            color: colorScheme.onSurface,
+                          ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -142,7 +146,9 @@ class ChatHistoryView extends StatelessWidget {
                   SizedBox(height: 4.h),
                   Text(
                     'Tap to continue conversation',
-                    style: AppStyles.styleMedium14.copyWith(color: AppColors.textSecondary),
+                    style: AppStyles.styleMedium14.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),

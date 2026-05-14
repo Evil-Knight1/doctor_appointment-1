@@ -1,4 +1,3 @@
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -21,7 +20,7 @@ class SplashDesktop extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Expanded(
-                  child: Row(
+                  child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       SvgPicture.asset(
@@ -31,15 +30,18 @@ class SplashDesktop extends StatelessWidget {
                       ),
                       Text(
                         'MedLink',
-                        style: AppStyles.styleBold32.copyWith(
-                          color: AppColors.black,
+                        style: context.styleBold32.copyWith(
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 40),
-                const SpinKitFadingCircle(color: AppColors.primary, size: 60),
+                SpinKitFadingCircle(
+                  color: Theme.of(context).colorScheme.primary,
+                  size: 60,
+                ),
               ],
             );
           },

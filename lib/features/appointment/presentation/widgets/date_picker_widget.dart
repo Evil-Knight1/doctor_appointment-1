@@ -1,4 +1,3 @@
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -22,6 +21,7 @@ class DatePickerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -33,7 +33,7 @@ class DatePickerWidget extends StatelessWidget {
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
                 decoration: BoxDecoration(
-                  color: AppColors.primaryLight,
+                  color: colorScheme.primaryContainer,
                   borderRadius: BorderRadius.circular(10.r),
                 ),
                 child: Row(
@@ -43,13 +43,13 @@ class DatePickerWidget extends StatelessWidget {
                       DateFormat('MMMM, yyyy').format(selectedDate),
                       style: AppStyles.styleSemiBold16.copyWith(
                         fontSize: 14.sp,
-                        color: AppColors.primary,
+                        color: colorScheme.onPrimaryContainer,
                       ),
                     ),
                     SizedBox(width: 4.w),
                     Icon(
                       Icons.keyboard_arrow_down_rounded,
-                      color: AppColors.primary,
+                      color: colorScheme.onPrimaryContainer,
                       size: 18.sp,
                     ),
                   ],
@@ -59,7 +59,7 @@ class DatePickerWidget extends StatelessWidget {
             Text(
               'Today',
               style: AppStyles.styleMedium14.copyWith(
-                color: AppColors.primary,
+                color: colorScheme.primary,
                 fontSize: 13.sp,
               ),
             ),
@@ -101,11 +101,7 @@ class DatePickerWidget extends StatelessWidget {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: AppColors.primary,
-              onPrimary: Colors.white,
-              onSurface: AppColors.textPrimary,
-            ),
+            colorScheme: Theme.of(context).colorScheme,
           ),
           child: child!,
         );
@@ -132,6 +128,7 @@ class _DateItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -139,23 +136,23 @@ class _DateItem extends StatelessWidget {
         width: 54.w,
         decoration: BoxDecoration(
           color: isSelected
-              ? AppColors.primary
+              ? colorScheme.primary
               : hasSlots
-              ? Colors.white
-              : AppColors.bg,
+              ? colorScheme.surface
+              : colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(16.r),
           border: Border.all(
             color: isSelected
-                ? AppColors.primary
+                ? colorScheme.primary
                 : hasSlots
-                ? AppColors.border
-                : AppColors.border.withValues(alpha: 0.4),
+                ? colorScheme.outlineVariant
+                : colorScheme.outlineVariant.withValues(alpha: 0.4),
             width: 1.5,
           ),
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.3),
+                    color: colorScheme.primary.withValues(alpha: 0.3),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -170,10 +167,10 @@ class _DateItem extends StatelessWidget {
               style: AppStyles.styleMedium14.copyWith(
                 fontSize: 12.sp,
                 color: isSelected
-                    ? Colors.white70
+                    ? colorScheme.onPrimary.withValues(alpha: 0.7)
                     : hasSlots
-                    ? AppColors.textSecondary
-                    : AppColors.textSecondary.withValues(alpha: 0.4),
+                    ? colorScheme.onSurfaceVariant
+                    : colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
               ),
             ),
             SizedBox(height: 4.h),
@@ -182,10 +179,10 @@ class _DateItem extends StatelessWidget {
               style: AppStyles.styleSemiBold18.copyWith(
                 fontSize: 18.sp,
                 color: isSelected
-                    ? Colors.white
+                    ? colorScheme.onPrimary
                     : hasSlots
-                    ? AppColors.textPrimary
-                    : AppColors.textPrimary.withValues(alpha: 0.35),
+                    ? colorScheme.onSurface
+                    : colorScheme.onSurface.withValues(alpha: 0.35),
               ),
             ),
             SizedBox(height: 4.h),
@@ -195,9 +192,9 @@ class _DateItem extends StatelessWidget {
               height: 4.h,
               decoration: BoxDecoration(
                 color: isSelected
-                    ? Colors.white
+                    ? colorScheme.onPrimary
                     : hasSlots
-                    ? AppColors.primary
+                    ? colorScheme.primary
                     : Colors.transparent,
                 shape: BoxShape.circle,
               ),
@@ -208,3 +205,4 @@ class _DateItem extends StatelessWidget {
     );
   }
 }
+

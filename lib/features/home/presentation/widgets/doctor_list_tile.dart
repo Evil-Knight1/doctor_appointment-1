@@ -1,9 +1,9 @@
+import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
 import 'package:doctor_appointment/core/utils/image_url_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:doctor_appointment/core/utils/app_dimensions.dart';
 import 'package:doctor_appointment/features/home/data/models/home_doctor_model.dart';
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -15,16 +15,17 @@ class DoctorListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: EdgeInsets.all(AppSpacing.md),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: colorScheme.surface,
           borderRadius: BorderRadius.circular(AppRadius.xl),
           boxShadow: [
             BoxShadow(
-              color: AppColors.cardShadow.withValues(alpha: 0.09),
+              color: colorScheme.shadow.withValues(alpha: 0.08),
               blurRadius: 14.r,
               offset: Offset(0, 4.h),
             ),
@@ -36,7 +37,7 @@ class DoctorListTile extends StatelessWidget {
               width: 60.w,
               height: 60.h,
               decoration: BoxDecoration(
-                color: AppColors.primaryLight,
+                color: colorScheme.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(AppRadius.lg),
               ),
               clipBehavior: Clip.antiAlias,
@@ -50,12 +51,12 @@ class DoctorListTile extends StatelessWidget {
                         child: Container(
                           width: 60.w,
                           height: 60.h,
-                          color: Colors.white,
+                          color: colorScheme.surfaceContainerHighest,
                         ),
                       ),
                       errorWidget: (context, url, error) => Icon(
                         Icons.person_rounded,
-                        color: AppColors.primary,
+                        color: colorScheme.primary,
                         size: 34.sp,
                       ),
                     )
@@ -69,11 +70,11 @@ class DoctorListTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(doctor.name, style: AppTextStyles.headingMedium),
+                  Text(doctor.name, style: context.headingMedium),
                   SizedBox(height: 2.h),
                   Text(
                     '${doctor.speciality} | ${doctor.hospital}',
-                    style: AppTextStyles.bodySmall,
+                    style: context.bodySmall,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -83,12 +84,14 @@ class DoctorListTile extends StatelessWidget {
                       Icon(
                         Icons.star_rounded,
                         size: 13.sp,
-                        color: AppColors.star,
+                        color: context.customColors.rating,
                       ),
                       SizedBox(width: 3.w),
                       Text(
                         '${doctor.rating} (${doctor.reviewCount} reviews)',
-                        style: AppTextStyles.bodySmall,
+                        style: context.bodySmall.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
                       ),
                     ],
                   ),
@@ -98,7 +101,7 @@ class DoctorListTile extends StatelessWidget {
             Icon(
               Icons.arrow_forward_ios_rounded,
               size: 14.sp,
-              color: AppColors.textSecondary,
+              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
             ),
           ],
         ),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:doctor_appointment/core/utils/app_dimensions.dart';
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 
 class PaymentOptionGroup extends StatelessWidget {
@@ -21,6 +20,7 @@ class PaymentOptionGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -36,11 +36,11 @@ class PaymentOptionGroup extends StatelessWidget {
               bottom: AppSpacing.md,
             ),
             decoration: BoxDecoration(
-              color: AppColors.surface,
+              color: colorScheme.surface,
               borderRadius: BorderRadius.circular(AppRadius.lg),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.cardShadow.withValues(alpha: 0.07),
+                  color: colorScheme.shadow.withValues(alpha: 0.07),
                   blurRadius: 10.r,
                 ),
               ],
@@ -77,6 +77,7 @@ class RadioRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: onTap,
       child: Padding(
@@ -89,7 +90,7 @@ class RadioRow extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: selected ? AppColors.primary : AppColors.textHint,
+                  color: selected ? colorScheme.primary : colorScheme.onSurfaceVariant,
                   width: 2.w,
                 ),
               ),
@@ -98,16 +99,16 @@ class RadioRow extends StatelessWidget {
                       child: Container(
                         width: 10.w,
                         height: 10.h,
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: AppColors.primary,
+                          color: colorScheme.primary,
                         ),
                       ),
                     )
                   : null,
             ),
             SizedBox(width: AppSpacing.md),
-            Text(label, style: AppTextStyles.headingSmall),
+            Text(label, style: context.headingSmall),
           ],
         ),
       ),
@@ -132,6 +133,7 @@ class CardTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -140,7 +142,7 @@ class CardTile extends StatelessWidget {
           vertical: AppSpacing.md,
         ),
         decoration: BoxDecoration(
-          color: selected ? AppColors.primaryLight : Colors.transparent,
+          color: selected ? colorScheme.primaryContainer.withValues(alpha: 0.1) : Colors.transparent,
           borderRadius: BorderRadius.circular(AppRadius.lg),
         ),
         child: Row(
@@ -150,15 +152,15 @@ class CardTile extends StatelessWidget {
             Expanded(
               child: Text(
                 name,
-                style: AppTextStyles.bodyMedium.copyWith(
-                  color: AppColors.textPrimary,
+                style: context.bodyMedium.copyWith(
+                  color: colorScheme.onSurface,
                 ),
               ),
             ),
             if (selected)
               Icon(
                 Icons.check_circle_rounded,
-                color: AppColors.primary,
+                color: colorScheme.primary,
                 size: 18.sp,
               ),
           ],
@@ -183,20 +185,21 @@ class OtherMethodTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         margin: EdgeInsets.only(bottom: AppSpacing.sm),
         padding: EdgeInsets.all(AppSpacing.md),
         decoration: BoxDecoration(
-          color: selected ? AppColors.primaryLight : AppColors.surface,
+          color: selected ? colorScheme.primaryContainer.withValues(alpha: 0.1) : colorScheme.surface,
           borderRadius: BorderRadius.circular(AppRadius.lg),
           border: selected
-              ? Border.all(color: AppColors.primary.withValues(alpha: 0.3), width: 1.w)
+              ? Border.all(color: colorScheme.primary.withValues(alpha: 0.3), width: 1.w)
               : null,
           boxShadow: [
             BoxShadow(
-              color: AppColors.cardShadow.withValues(alpha: 0.07),
+              color: colorScheme.shadow.withValues(alpha: 0.07),
               blurRadius: 8.r,
             ),
           ],
@@ -209,7 +212,7 @@ class OtherMethodTile extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: selected ? AppColors.primary : AppColors.textHint,
+                  color: selected ? colorScheme.primary : colorScheme.onSurfaceVariant,
                   width: 2.w,
                 ),
               ),
@@ -218,9 +221,9 @@ class OtherMethodTile extends StatelessWidget {
                       child: Container(
                         width: 10.w,
                         height: 10.h,
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: AppColors.primary,
+                          color: colorScheme.primary,
                         ),
                       ),
                     )
@@ -230,10 +233,10 @@ class OtherMethodTile extends StatelessWidget {
             Icon(
               icon,
               size: 22.sp,
-              color: selected ? AppColors.primary : AppColors.textSecondary,
+              color: selected ? colorScheme.primary : colorScheme.onSurfaceVariant,
             ),
             SizedBox(width: AppSpacing.sm),
-            Text(label, style: AppTextStyles.headingSmall),
+            Text(label, style: context.headingSmall),
           ],
         ),
       ),
@@ -248,6 +251,7 @@ class ContinueBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       padding: EdgeInsets.fromLTRB(
         AppSpacing.lg,
@@ -261,7 +265,7 @@ class ContinueBar extends StatelessWidget {
         child: ElevatedButton(
           onPressed: onContinue,
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
+            backgroundColor: colorScheme.primary,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(AppRadius.lg),
             ),
@@ -270,7 +274,7 @@ class ContinueBar extends StatelessWidget {
           child: Text(
             label,
             style: TextStyle(
-              color: Colors.white,
+              color: colorScheme.onPrimary,
               fontWeight: FontWeight.w600,
               fontSize: 15.sp,
             ),
@@ -280,3 +284,4 @@ class ContinueBar extends StatelessWidget {
     );
   }
 }
+

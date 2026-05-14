@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:doctor_appointment/core/utils/app_dimensions.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 
 import 'package:doctor_appointment/l10n/app_localizations.dart';
 
@@ -46,7 +45,7 @@ class _SearchInput extends StatelessWidget {
       child: TextField(
         decoration: InputDecoration(
           hintText: l10n.searchHint,
-          hintStyle: AppTextStyles.bodyMedium,
+          hintStyle: context.bodyMedium,
           prefixIcon: Icon(
             Icons.search_rounded,
             size: 20.sp,

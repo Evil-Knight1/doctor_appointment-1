@@ -1,4 +1,3 @@
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -15,6 +14,7 @@ class ConsultationFeesWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Row(
       children: List.generate(_fees.length, (i) {
         return Expanded(
@@ -22,15 +22,15 @@ class ConsultationFeesWidget extends StatelessWidget {
             margin: EdgeInsets.only(right: i < 2 ? 10.w : 0),
             padding: EdgeInsets.all(12.w),
             decoration: BoxDecoration(
-              color: Theme.of(context).scaffoldBackgroundColor,
+              color: colorScheme.surface,
               borderRadius: BorderRadius.circular(12.r),
-              border: Border.all(color: AppColors.border),
+              border: Border.all(color: colorScheme.outlineVariant),
             ),
             child: Column(
               children: [
                 Icon(
                   _fees[i]['icon'] as IconData,
-                  color: AppColors.primary,
+                  color: colorScheme.primary,
                   size: 20.sp,
                 ),
                 SizedBox(height: 4.h),
@@ -38,13 +38,13 @@ class ConsultationFeesWidget extends StatelessWidget {
                   _fees[i]['amount'] as String,
                   style: AppStyles.styleSemiBold22.copyWith(
                     fontSize: 14.sp,
-                    color: AppColors.primary,
+                    color: colorScheme.primary,
                   ),
                 ),
                 Text(
                   _fees[i]['label'] as String,
                   style: AppStyles.styleRegular12.copyWith(
-                    color: AppColors.textSecondary,
+                    color: colorScheme.onSurfaceVariant,
                     fontSize: 10.sp,
                   ),
                   textAlign: TextAlign.center,
@@ -57,3 +57,4 @@ class ConsultationFeesWidget extends StatelessWidget {
     );
   }
 }
+

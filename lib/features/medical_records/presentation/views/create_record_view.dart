@@ -1,4 +1,3 @@
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/features/auth/presentation/widgets/custom_text_field.dart';
 import 'package:doctor_appointment/features/on_boarding_view/presentation/widgets/custom_button.dart';
@@ -11,20 +10,27 @@ class CreateRecordView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
-        backgroundColor: theme.scaffoldBackgroundColor,
+        backgroundColor: colorScheme.surface,
         elevation: 0,
         titleSpacing: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.textPrimary, size: 20.sp),
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: colorScheme.onSurface,
+            size: 20.sp,
+          ),
           onPressed: () => context.pop(),
         ),
         title: Text(
           'Add Medical Record',
-          style: AppStyles.styleSemiBold22.copyWith(fontSize: 18.sp),
+          style: AppStyles.styleSemiBold22.copyWith(
+            fontSize: 18.sp,
+            color: colorScheme.onSurface,
+          ),
         ),
       ),
       body: SingleChildScrollView(
@@ -32,25 +38,45 @@ class CreateRecordView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Record Title', style: AppStyles.styleMedium14),
+            Text(
+              'Record Title',
+              style: AppStyles.styleMedium14.copyWith(
+                color: colorScheme.onSurface,
+              ),
+            ),
             SizedBox(height: 8.h),
             const CustomTextFormField(
               hintText: 'e.g. Blood Test Results',
               textInputType: TextInputType.text,
             ),
             SizedBox(height: 20.h),
-            Text('Doctor/Facility Name', style: AppStyles.styleMedium14),
+            Text(
+              'Doctor/Facility Name',
+              style: AppStyles.styleMedium14.copyWith(
+                color: colorScheme.onSurface,
+              ),
+            ),
             SizedBox(height: 8.h),
             const CustomTextFormField(
               hintText: 'e.g. Dr. Sarah',
               textInputType: TextInputType.text,
             ),
             SizedBox(height: 20.h),
-            Text('Upload Document', style: AppStyles.styleMedium14),
+            Text(
+              'Upload Document',
+              style: AppStyles.styleMedium14.copyWith(
+                color: colorScheme.onSurface,
+              ),
+            ),
             SizedBox(height: 8.h),
             _buildUploadBox(context),
             SizedBox(height: 20.h),
-            Text('Additional Notes', style: AppStyles.styleMedium14),
+            Text(
+              'Additional Notes',
+              style: AppStyles.styleMedium14.copyWith(
+                color: colorScheme.onSurface,
+              ),
+            ),
             SizedBox(height: 8.h),
             const CustomTextFormField(
               hintText: 'Any extra details...',
@@ -68,8 +94,10 @@ class CreateRecordView extends StatelessWidget {
               width: double.infinity,
               height: 50.h,
               circleSize: 12.r,
-              textStyle: AppStyles.styleSemiBold16,
-              buttonColor: AppColors.primary,
+              textStyle: AppStyles.styleSemiBold16.copyWith(
+                color: colorScheme.onPrimary,
+              ),
+              buttonColor: colorScheme.primary,
             ),
           ],
         ),
@@ -78,24 +106,35 @@ class CreateRecordView extends StatelessWidget {
   }
 
   Widget _buildUploadBox(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(vertical: 32.h),
       decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: AppColors.border, style: BorderStyle.solid),
+        border: Border.all(
+          color: colorScheme.outlineVariant,
+          style: BorderStyle.solid,
+        ),
       ),
       child: Column(
         children: [
-          Icon(Icons.cloud_upload_rounded, color: AppColors.primary, size: 40.sp),
+          Icon(
+            Icons.cloud_upload_rounded,
+            color: colorScheme.primary,
+            size: 40.sp,
+          ),
           SizedBox(height: 12.h),
           Text(
             'Tap to upload PDF, JPG, or PNG',
-            style: AppStyles.styleMedium14.copyWith(color: AppColors.textSecondary),
+            style: AppStyles.styleMedium14.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
           ),
         ],
       ),
     );
   }
 }
+

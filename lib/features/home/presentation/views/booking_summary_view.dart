@@ -7,11 +7,11 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:doctor_appointment/core/utils/app_dimensions.dart';
 import 'package:doctor_appointment/features/doctors/domain/entities/doctor.dart';
 import 'package:doctor_appointment/core/utils/routes.dart';
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:doctor_appointment/core/utils/image_url_helper.dart';
 import 'package:doctor_appointment/features/payments/logic/payment_cubit.dart';
 import 'package:doctor_appointment/features/payments/logic/payment_state.dart';
+import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
 import '../widgets/booking_stepper.dart';
 import '../widgets/shared_app_bar.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -22,6 +22,7 @@ class BookingSummaryView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final Doctor doctor = args['doctor'];
     final String time = args['time'] ?? '';
     final int paymentMethodId = args['paymentMethod'] as int? ?? 3;
@@ -57,7 +58,7 @@ class BookingSummaryView extends StatelessWidget {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
-                backgroundColor: Colors.red.shade700,
+                backgroundColor: colorScheme.error,
               ),
             );
           }
@@ -67,7 +68,7 @@ class BookingSummaryView extends StatelessWidget {
         final isLoading = state is PaymentProcessing;
 
         return Scaffold(
-          backgroundColor: AppColors.backgroundLight,
+          backgroundColor: colorScheme.surface,
           appBar: const SharedAppBar(title: 'Review Summary'),
           body: Column(
             children: [
@@ -84,7 +85,7 @@ class BookingSummaryView extends StatelessWidget {
                             width: 60.w,
                             height: 60.h,
                             decoration: BoxDecoration(
-                              color: AppColors.primaryLight,
+                              color: colorScheme.primaryContainer,
                               borderRadius: BorderRadius.circular(AppRadius.lg),
                             ),
                             clipBehavior: Clip.antiAlias,
@@ -98,31 +99,35 @@ class BookingSummaryView extends StatelessWidget {
                                       child: Container(
                                         width: 60.w,
                                         height: 60.h,
-                                        color: Colors.white,
+                                        color: colorScheme.surfaceContainerHighest,
                                       ),
                                     ),
                                     errorWidget: (context, url, error) => Icon(
                                       Icons.person_rounded,
-                                      color: AppColors.primary,
+                                      color: colorScheme.primary,
                                       size: 30.sp,
                                     ),
                                   )
                                 : Icon(
                                     Icons.person_rounded,
-                                    color: AppColors.primary,
+                                    color: colorScheme.primary,
                                     size: 30.sp,
                                   ),
                           ),
                           SizedBox(width: AppSpacing.md),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(doctor.fullName, style: AppTextStyles.headingSmall),
-                              Text(
-                                '${doctor.specialization.name} | ${doctor.hospital ?? 'Clinic'}',
-                                style: AppTextStyles.bodySmall,
-                              ),
-                            ],
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(doctor.fullName, style: context.headingSmall),
+                                Text(
+                                  '${doctor.specialization.name} | ${doctor.hospital ?? 'Clinic'}',
+                                  style: context.bodySmall.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
@@ -138,7 +143,7 @@ class BookingSummaryView extends StatelessWidget {
                             value: time,
                           ),
                           if (reason.isNotEmpty) ...[
-                            Divider(height: 24.h),
+                            Divider(height: 24.h, color: colorScheme.outlineVariant),
                             _DetailRow(
                               icon: Icons.description_outlined,
                               label: 'Reason',
@@ -160,7 +165,7 @@ class BookingSummaryView extends StatelessWidget {
                           child: Text(
                             'Change',
                             style: TextStyle(
-                              color: AppColors.primary,
+                              color: colorScheme.primary,
                               fontSize: 12.sp,
                               fontWeight: FontWeight.w600,
                             ),
@@ -174,7 +179,7 @@ class BookingSummaryView extends StatelessWidget {
                       child: Column(
                         children: [
                           _CostRow(label: 'Consultation', value: '${amount.toStringAsFixed(2)} EGP'),
-                          Divider(height: 24.h),
+                          Divider(height: 24.h, color: colorScheme.outlineVariant),
                           _CostRow(label: 'Total', value: '${amount.toStringAsFixed(2)} EGP', isTotal: true),
                         ],
                       ),
@@ -239,15 +244,18 @@ class _InfoBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final customColors = context.customColors;
+
     return Container(
       padding: EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: isPaymob
-            ? AppColors.primary.withValues(alpha: 0.06)
-            : const Color(0xFFFFFBEB),
+            ? colorScheme.primary.withValues(alpha: 0.1)
+            : customColors.warning?.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(AppRadius.lg),
         border: Border.all(
-          color: isPaymob ? AppColors.primary.withValues(alpha: 0.25) : const Color(0xFFF59E0B),
+          color: isPaymob ? colorScheme.primary.withValues(alpha: 0.3) : customColors.warning!.withValues(alpha: 0.5),
         ),
       ),
       child: Row(
@@ -256,13 +264,16 @@ class _InfoBanner extends StatelessWidget {
           Icon(
             isPaymob ? Icons.lock_outline : Icons.info_outline,
             size: 16.sp,
-            color: isPaymob ? AppColors.primary : const Color(0xFFF59E0B),
+            color: isPaymob ? colorScheme.primary : customColors.warning,
           ),
           SizedBox(width: 8.w),
           Expanded(
             child: Text(
               message,
-              style: AppTextStyles.bodySmall.copyWith(fontSize: 11.5.sp),
+              style: context.bodySmall.copyWith(
+                fontSize: 11.5.sp,
+                color: colorScheme.onSurface,
+              ),
             ),
           ),
         ],
@@ -280,10 +291,12 @@ class _SectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
       padding: EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: colorScheme.surfaceContainerLow,
         borderRadius: BorderRadius.circular(AppRadius.xl),
         boxShadow: [
           BoxShadow(
@@ -295,7 +308,7 @@ class _SectionCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: AppTextStyles.headingSmall),
+          Text(title, style: context.headingSmall),
           SizedBox(height: AppSpacing.md),
           child,
         ],
@@ -320,18 +333,29 @@ class _DetailRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Row(
       children: [
-        Icon(icon, size: 18.sp, color: AppColors.primary),
+        Icon(icon, size: 18.sp, color: colorScheme.primary),
         SizedBox(width: 12.w),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label, style: AppTextStyles.bodySmall.copyWith(fontSize: 10.sp)),
+              Text(
+                label,
+                style: context.bodySmall.copyWith(
+                  fontSize: 10.sp,
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
               Text(
                 value,
-                style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.w600),
+                style: context.bodyMedium.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: colorScheme.onSurface,
+                ),
               ),
             ],
           ),
@@ -352,15 +376,25 @@ class _CostRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: isTotal ? AppTextStyles.headingSmall : AppTextStyles.bodyMedium),
+        Text(
+          label,
+          style: (isTotal ? context.headingSmall : context.bodyMedium).copyWith(
+            color: isTotal ? colorScheme.onSurface : colorScheme.onSurfaceVariant,
+          ),
+        ),
         Text(
           value,
           style: isTotal
-              ? AppTextStyles.headingSmall.copyWith(color: AppColors.primary)
-              : AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.w600),
+              ? context.headingSmall.copyWith(color: colorScheme.primary)
+              : context.bodyMedium.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: colorScheme.onSurface,
+                ),
         ),
       ],
     );
@@ -381,12 +415,14 @@ class _BottomAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
       padding: EdgeInsets.fromLTRB(
         AppSpacing.lg, AppSpacing.md, AppSpacing.lg, AppSpacing.xl,
       ),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: colorScheme.surface,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
@@ -401,8 +437,8 @@ class _BottomAction extends StatelessWidget {
         child: ElevatedButton(
           onPressed: isLoading ? null : onConfirm,
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.6),
+            backgroundColor: colorScheme.primary,
+            disabledBackgroundColor: colorScheme.primary.withValues(alpha: 0.6),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(AppRadius.lg),
             ),
@@ -412,15 +448,15 @@ class _BottomAction extends StatelessWidget {
               ? SizedBox(
                   width: 22.w,
                   height: 22.h,
-                  child: const CircularProgressIndicator(
+                  child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    color: Colors.white,
+                    color: colorScheme.onPrimary,
                   ),
                 )
               : Text(
                   isCash ? 'Book Appointment' : 'Confirm & Pay',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: colorScheme.onPrimary,
                     fontWeight: FontWeight.w600,
                     fontSize: 15.sp,
                   ),

@@ -1,4 +1,3 @@
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -22,32 +21,35 @@ class DoctorStatsWidget extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _statItem(reviewCount.toString(), 'Reviews', Icons.reviews_outlined),
-          _divider(),
-          _statItem('$yearsOfExperience Yrs', 'Experience', Icons.workspace_premium_outlined),
-          _divider(),
-          _statItem(rating.toStringAsFixed(1), 'Ratings', Icons.star_outline_rounded),
+          _statItem(context, reviewCount.toString(), 'Reviews', Icons.reviews_outlined),
+          _divider(context),
+          _statItem(context, '$yearsOfExperience Yrs', 'Experience', Icons.workspace_premium_outlined),
+          _divider(context),
+          _statItem(context, rating.toStringAsFixed(1), 'Ratings', Icons.star_outline_rounded),
         ],
       ),
     );
   }
 
-  Widget _statItem(String value, String label, IconData icon) {
+  Widget _statItem(BuildContext context, String value, String label, IconData icon) {
     return Column(
       children: [
-        Icon(icon, color: AppColors.primary, size: 22.sp),
+        Icon(icon, color: Theme.of(context).colorScheme.primary, size: 22.sp),
         SizedBox(height: 4.h),
-        Text(value, style: AppStyles.styleSemiBold22.copyWith(fontSize: 14.sp)),
+        Text(value, style: context.styleSemiBold22.copyWith(fontSize: 14.sp)),
         Text(
           label,
-          style: AppStyles.styleRegular12.copyWith(
-            color: AppColors.textSecondary,
+          style: context.styleRegular12.copyWith(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
       ],
     );
   }
 
-  Widget _divider() =>
-      Container(width: 1, height: 50.h, color: AppColors.border);
+  Widget _divider(BuildContext context) => Container(
+        width: 1,
+        height: 50.h,
+        color: Theme.of(context).colorScheme.outlineVariant,
+      );
 }

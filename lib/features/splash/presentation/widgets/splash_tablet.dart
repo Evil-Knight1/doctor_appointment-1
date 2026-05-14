@@ -1,4 +1,3 @@
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -15,7 +14,7 @@ class SplashTablet extends StatelessWidget {
       children: [
         SizedBox(
           width: 300.w,
-          child: Row(
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SizedBox(
@@ -27,13 +26,18 @@ class SplashTablet extends StatelessWidget {
               ),
               Text(
                 'MedLink',
-                style: AppStyles.styleBold32.copyWith(color: AppColors.black),
+                style: context.styleBold32.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
               ),
             ],
           ),
         ),
         SizedBox(height: 40.h),
-        const SpinKitFadingCircle(color: AppColors.primary, size: 55),
+        SpinKitFadingCircle(
+          color: Theme.of(context).colorScheme.primary,
+          size: 55,
+        ),
       ],
     );
   }

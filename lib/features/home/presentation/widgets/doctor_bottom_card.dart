@@ -1,10 +1,10 @@
+import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:doctor_appointment/core/utils/image_url_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:doctor_appointment/core/utils/app_dimensions.dart';
 import 'package:doctor_appointment/features/home/data/models/home_doctor_model.dart';
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
@@ -19,17 +19,18 @@ class DoctorBottomCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         margin: EdgeInsets.all(AppSpacing.lg),
         padding: EdgeInsets.all(AppSpacing.lg),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: colorScheme.surface,
           borderRadius: BorderRadius.circular(AppRadius.xl),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.12),
+              color: colorScheme.shadow.withValues(alpha: 0.12),
               blurRadius: 20.r,
               offset: Offset(0, -4.h),
             ),
@@ -41,7 +42,7 @@ class DoctorBottomCard extends StatelessWidget {
               width: 56.w,
               height: 56.h,
               decoration: BoxDecoration(
-                color: AppColors.primaryLight,
+                color: colorScheme.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(AppRadius.lg),
               ),
               clipBehavior: Clip.antiAlias,
@@ -56,14 +57,14 @@ class DoctorBottomCard extends StatelessWidget {
                           width: 56.w,
                           height: 56.h,
                           decoration: BoxDecoration(
-                            color: Colors.black,
+                            color: colorScheme.surfaceContainerHighest,
                             borderRadius: BorderRadius.circular(AppRadius.lg),
                           ),
                         ),
                       ),
                       errorWidget: (context, url, error) => Icon(
                         Icons.person_rounded,
-                        color: AppColors.primary,
+                        color: colorScheme.primary,
                         size: 32.sp,
                       ),
                     )
@@ -74,10 +75,13 @@ class DoctorBottomCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(doctor.name, style: AppTextStyles.headingMedium),
+                  Text(doctor.name,
+                      style: context.headingMedium
+                          .copyWith(color: colorScheme.onSurface)),
                   Text(
                     '${doctor.speciality} | ${doctor.hospital}',
-                    style: AppTextStyles.bodySmall,
+                    style: context.bodySmall
+                        .copyWith(color: colorScheme.onSurfaceVariant),
                   ),
                   SizedBox(height: 4.h),
                   Row(
@@ -85,12 +89,13 @@ class DoctorBottomCard extends StatelessWidget {
                       Icon(
                         Icons.star_rounded,
                         size: 13.sp,
-                        color: AppColors.star,
+                        color: context.customColors.rating,
                       ),
                       SizedBox(width: 2.w),
                       Text(
                         '${doctor.rating} (${doctor.reviewCount} reviews)',
-                        style: AppTextStyles.bodySmall,
+                        style: context.bodySmall
+                            .copyWith(color: colorScheme.onSurfaceVariant),
                       ),
                     ],
                   ),
@@ -100,7 +105,7 @@ class DoctorBottomCard extends StatelessWidget {
             Icon(
               Icons.arrow_forward_ios_rounded,
               size: 14.sp,
-              color: AppColors.textSecondary,
+              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
             ),
           ],
         ),

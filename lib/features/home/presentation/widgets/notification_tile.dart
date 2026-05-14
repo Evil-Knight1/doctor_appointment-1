@@ -1,4 +1,4 @@
-import 'package:doctor_appointment/core/utils/app_colors.dart';
+import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -13,7 +13,8 @@ class NotificationTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = _getThemeForType(notification.type);
+    final colorScheme = Theme.of(context).colorScheme;
+    final theme = _getThemeForType(context, notification.type);
     final timeAgo = _formatTimestamp(notification.createdAt);
 
     return GestureDetector(
@@ -23,18 +24,18 @@ class NotificationTile extends StatelessWidget {
         padding: EdgeInsets.all(AppSpacing.md),
         decoration: BoxDecoration(
           color: notification.isRead
-              ? AppColors.surface
-              : AppColors.primaryLight,
+              ? colorScheme.surface
+              : colorScheme.primary.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(AppRadius.lg),
           border: notification.isRead
               ? null
               : Border.all(
-                  color: AppColors.primary.withValues(alpha: 0.15),
+                  color: colorScheme.primary.withValues(alpha: 0.15),
                   width: 1.w,
                 ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.cardShadow.withValues(alpha: 0.07),
+              color: colorScheme.shadow.withValues(alpha: 0.07),
               blurRadius: 10.r,
               offset: Offset(0, 3.h),
             ),
@@ -63,19 +64,25 @@ class NotificationTile extends StatelessWidget {
                       Expanded(
                         child: Text(
                           notification.title,
-                          style: AppTextStyles.headingSmall,
+                          style: context.headingSmall
+                              .copyWith(color: colorScheme.onSurface),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       SizedBox(width: 8.w),
-                      Text(timeAgo, style: AppTextStyles.bodySmall),
+                      Text(
+                        timeAgo,
+                        style: context.bodySmall
+                            .copyWith(color: colorScheme.onSurfaceVariant),
+                      ),
                     ],
                   ),
                   SizedBox(height: 4.h),
                   Text(
                     notification.message,
-                    style: AppTextStyles.bodySmall,
+                    style: context.bodySmall
+                        .copyWith(color: colorScheme.onSurfaceVariant),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -88,8 +95,8 @@ class NotificationTile extends StatelessWidget {
                 width: 8.w,
                 height: 8.h,
                 margin: EdgeInsets.only(top: 4.h),
-                decoration: const BoxDecoration(
-                  color: AppColors.primary,
+                decoration: BoxDecoration(
+                  color: colorScheme.primary,
                   shape: BoxShape.circle,
                 ),
               ),
@@ -113,40 +120,42 @@ class NotificationTile extends StatelessWidget {
     }
   }
 
-  _NotificationTheme _getThemeForType(int type) {
-    // Standard mapping for notification types
+  _NotificationTheme _getThemeForType(BuildContext context, int type) {
+    final customColors = context.customColors;
+    final colorScheme = Theme.of(context).colorScheme;
+
     switch (type) {
       case 235: // Success / Appointment
       case 1:
-        return const _NotificationTheme(
+        return _NotificationTheme(
           icon: Icons.check_circle_rounded,
-          color: Color(0xFF10B981), // Success Green
-          bg: Color(0xFFECFDF5),
+          color: customColors.success!,
+          bg: customColors.success!.withValues(alpha: 0.1),
         );
       case 2170: // Info / Update
       case 2:
-        return const _NotificationTheme(
+        return _NotificationTheme(
           icon: Icons.info_rounded,
-          color: Color(0xFF3B82F6), // Info Blue
-          bg: Color(0xFFEFF6FF),
+          color: colorScheme.primary,
+          bg: colorScheme.primary.withValues(alpha: 0.1),
         );
       case 3: // Warning / Reminder
-        return const _NotificationTheme(
+        return _NotificationTheme(
           icon: Icons.warning_rounded,
-          color: Color(0xFFF59E0B), // Warning Orange
-          bg: Color(0xFFFFFBEB),
+          color: customColors.warning!,
+          bg: customColors.warning!.withValues(alpha: 0.1),
         );
       case 4: // Error / Alert
-        return const _NotificationTheme(
+        return _NotificationTheme(
           icon: Icons.error_rounded,
-          color: Color(0xFFEF4444), // Error Red
-          bg: Color(0xFFFEF2F2),
+          color: customColors.error!,
+          bg: customColors.error!.withValues(alpha: 0.1),
         );
       default:
-        return const _NotificationTheme(
+        return _NotificationTheme(
           icon: Icons.notifications_rounded,
-          color: AppColors.primary,
-          bg: AppColors.primaryLight,
+          color: colorScheme.primary,
+          bg: colorScheme.primary.withValues(alpha: 0.1),
         );
     }
   }

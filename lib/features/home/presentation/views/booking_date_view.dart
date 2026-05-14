@@ -5,7 +5,6 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:doctor_appointment/core/utils/app_dimensions.dart';
 import 'package:doctor_appointment/features/doctors/domain/entities/doctor.dart';
 import 'package:doctor_appointment/core/utils/routes.dart';
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 import '../widgets/booking_stepper.dart';
 import '../widgets/shared_app_bar.dart';
@@ -30,8 +29,10 @@ class _BookingDateViewState extends State<BookingDateView> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
+      backgroundColor: colorScheme.surface,
       appBar: const SharedAppBar(title: 'Book Appointment'),
       body: Column(
         children: [
@@ -40,14 +41,14 @@ class _BookingDateViewState extends State<BookingDateView> {
             child: ListView(
               padding: EdgeInsets.all(AppSpacing.lg),
               children: [
-                Text('Select Date', style: AppTextStyles.headingMedium),
+                Text('Select Date', style: context.headingMedium),
                 SizedBox(height: AppSpacing.md),
                 _CalendarPicker(
                   selectedDate: _selectedDate,
                   onDateSelected: (d) => setState(() => _selectedDate = d),
                 ),
                 SizedBox(height: AppSpacing.xl),
-                Text('Select Time', style: AppTextStyles.headingMedium),
+                Text('Select Time', style: context.headingMedium),
                 SizedBox(height: AppSpacing.md),
                 ..._categorizedTimeSlots.entries.map((entry) {
                   final category = entry.key;
@@ -59,7 +60,7 @@ class _BookingDateViewState extends State<BookingDateView> {
                       children: [
                         Text(
                           category,
-                          style: AppTextStyles.labelLarge.copyWith(color: AppColors.textSecondary),
+                           style: context.labelLarge.copyWith(color: colorScheme.onSurfaceVariant),
                         ),
                         SizedBox(height: AppSpacing.sm),
                         Wrap(
@@ -73,17 +74,17 @@ class _BookingDateViewState extends State<BookingDateView> {
                                 width: (1.sw - AppSpacing.lg * 2 - AppSpacing.md * 2) / 3,
                                 padding: EdgeInsets.symmetric(vertical: 12.h),
                                 decoration: BoxDecoration(
-                                  color: isSelected ? AppColors.primary : AppColors.surface,
+                                  color: isSelected ? colorScheme.primary : colorScheme.surfaceContainerLow,
                                   borderRadius: BorderRadius.circular(AppRadius.lg),
                                   border: Border.all(
-                                    color: isSelected ? AppColors.primary : AppColors.divider,
+                                    color: isSelected ? colorScheme.primary : colorScheme.outlineVariant,
                                   ),
                                 ),
                                 child: Center(
                                   child: Text(
                                     time,
-                                    style: AppTextStyles.bodySmall.copyWith(
-                                      color: isSelected ? Colors.white : AppColors.textPrimary,
+                                    style: context.bodySmall.copyWith(
+                                      color: isSelected ? colorScheme.onPrimary : colorScheme.onSurface,
                                       fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
                                     ),
                                   ),
@@ -128,9 +129,11 @@ class _CalendarPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: colorScheme.surfaceContainerLow,
         borderRadius: BorderRadius.circular(AppRadius.xl),
         boxShadow: [
           BoxShadow(
@@ -153,28 +156,28 @@ class _CalendarPicker extends StatelessWidget {
         headerStyle: HeaderStyle(
           formatButtonVisible: false,
           titleCentered: true,
-          titleTextStyle: AppTextStyles.headingSmall,
-          leftChevronIcon: Icon(Icons.chevron_left, color: AppColors.primary),
-          rightChevronIcon: Icon(Icons.chevron_right, color: AppColors.primary),
+          titleTextStyle: context.headingSmall,
+          leftChevronIcon: Icon(Icons.chevron_left, color: colorScheme.primary),
+          rightChevronIcon: Icon(Icons.chevron_right, color: colorScheme.primary),
         ),
         calendarStyle: CalendarStyle(
           todayDecoration: BoxDecoration(
-            color: AppColors.primaryLight,
+            color: colorScheme.primaryContainer,
             shape: BoxShape.circle,
           ),
-          todayTextStyle: TextStyle(color: AppColors.primary),
+          todayTextStyle: TextStyle(color: colorScheme.onPrimaryContainer),
           selectedDecoration: BoxDecoration(
-            color: AppColors.primary,
+            color: colorScheme.primary,
             shape: BoxShape.circle,
           ),
-          selectedTextStyle: const TextStyle(color: Colors.white),
+          selectedTextStyle: TextStyle(color: colorScheme.onPrimary),
           outsideDaysVisible: false,
-          defaultTextStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.textPrimary),
-          weekendTextStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.error),
+          defaultTextStyle: context.bodyMedium.copyWith(color: colorScheme.onSurface),
+          weekendTextStyle: context.bodyMedium.copyWith(color: colorScheme.error),
         ),
         daysOfWeekStyle: DaysOfWeekStyle(
-          weekdayStyle: AppTextStyles.labelMedium,
-          weekendStyle: AppTextStyles.labelMedium.copyWith(color: AppColors.error),
+          weekdayStyle: context.labelMedium,
+          weekendStyle: context.labelMedium.copyWith(color: colorScheme.error),
         ),
       ),
     );
@@ -187,10 +190,12 @@ class _BottomAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
       padding: EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.md, AppSpacing.lg, AppSpacing.xl),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: colorScheme.surface,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
@@ -205,14 +210,14 @@ class _BottomAction extends StatelessWidget {
         child: ElevatedButton(
           onPressed: onNext,
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            disabledBackgroundColor: AppColors.divider,
+            backgroundColor: colorScheme.primary,
+            disabledBackgroundColor: colorScheme.outlineVariant,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.lg)),
             elevation: 0,
           ),
           child: Text(
             'Next',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 15.sp),
+            style: TextStyle(color: colorScheme.onPrimary, fontWeight: FontWeight.w600, fontSize: 15.sp),
           ),
         ),
       ),

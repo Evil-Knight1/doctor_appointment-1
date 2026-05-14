@@ -6,7 +6,6 @@ import 'package:doctor_appointment/core/services/service_locator.dart';
 import 'package:doctor_appointment/features/chat/logic/user_chat_cubit.dart';
 import 'package:doctor_appointment/features/chat/logic/chat_state.dart';
 import 'package:doctor_appointment/features/chat/ui/widgets/chat_bubble.dart';
-import 'package:doctor_appointment/core/utils/app_colors.dart';
 import 'package:doctor_appointment/core/utils/app_styles.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -56,12 +55,13 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return BlocProvider(
       create: (context) => getIt<UserChatCubit>()
         ..connect()
         ..fetchChatHistory(widget.otherUserId),
       child: Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+        backgroundColor: colorScheme.surfaceContainerHighest,
         appBar: _buildAppBar(context),
         body: Column(
           children: [
@@ -72,7 +72,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(state.errorMessage!),
-                        backgroundColor: AppColors.accent,
+                        backgroundColor: colorScheme.error,
                         behavior: SnackBarBehavior.floating,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12.r)),
@@ -87,14 +87,14 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                       state.messages.isEmpty) {
                     return Center(
                       child: CircularProgressIndicator(
-                          color: Theme.of(context).colorScheme.primary, strokeWidth: 2.5),
+                          color: colorScheme.primary, strokeWidth: 2.5),
                     );
                   }
 
                   final messages = state.messages;
 
                   if (messages.isEmpty) {
-                    return _buildEmptyState();
+                    return _buildEmptyState(context);
                   }
 
                   return ListView.builder(
@@ -130,6 +130,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   }
 
   PreferredSizeWidget _buildAppBar(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final customColors = context.customColors;
     return AppBar(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -138,7 +139,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       shadowColor: Colors.transparent,
       leading: IconButton(
         icon: Icon(Icons.arrow_back_ios_new_rounded,
-            color: Theme.of(context).colorScheme.onSurface, size: 18),
+            color: colorScheme.onSurface, size: 18),
         onPressed: () => Navigator.pop(context),
       ),
       title: Row(
@@ -174,9 +175,9 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
               children: [
                 Text(
                   widget.otherUserName,
-                  style: AppTextStyles.headingMedium.copyWith(
+                  style: context.headingMedium.copyWith(
                     fontSize: 15.sp,
-                    color: Theme.of(context).colorScheme.onSurface,
+                    color: colorScheme.onSurface,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -197,11 +198,11 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                       SizedBox(width: 4.w),
                       Text(
                         state.isConnected ? 'Online' : 'Connecting…',
-                        style: AppTextStyles.bodySmall.copyWith(
+                        style: context.bodySmall.copyWith(
                           fontSize: 11.sp,
                           color: state.isConnected
-                              ? customColors.doctorOnline
-                              : customColors.warning,
+                              ? (customColors.doctorOnline ?? Colors.green)
+                              : (customColors.warning ?? Colors.orange),
                         ),
                       ),
                     ],
@@ -214,22 +215,23 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       ),
       bottom: PreferredSize(
         preferredSize: Size.fromHeight(1.h),
-        child: Container(color: AppColors.border, height: 1.h),
+        child: Container(color: colorScheme.outlineVariant, height: 1.h),
       ),
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.waving_hand_rounded, size: 56.r, color: AppColors.textLight),
+          Icon(Icons.waving_hand_rounded, size: 56.r, color: colorScheme.onSurfaceVariant),
           SizedBox(height: 12.h),
           Text(
             'Say hello to ${widget.otherUserName}!',
-            style: AppTextStyles.bodyMedium
-                .copyWith(color: AppColors.textSecondary),
+            style: context.bodyMedium
+                .copyWith(color: colorScheme.onSurfaceVariant),
           ),
         ],
       ),
@@ -237,6 +239,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   }
 
   Widget _buildDateDivider(BuildContext context, DateTime date) {
+    final colorScheme = Theme.of(context).colorScheme;
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final msgDay = DateTime(date.year, date.month, date.day);
@@ -256,39 +259,40 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       padding: EdgeInsets.symmetric(vertical: 12.h),
       child: Row(
         children: [
-          Expanded(child: Divider(color: Theme.of(context).dividerColor, thickness: 1)),
+          Expanded(child: Divider(color: colorScheme.outlineVariant, thickness: 1)),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 12.w),
             child: Container(
               padding:
                   EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceContainer,
+                color: colorScheme.surfaceContainer,
                 borderRadius: BorderRadius.circular(20.r),
               ),
               child: Text(
                 label,
                 style: TextStyle(
-                    color: Theme.of(context).hintColor,
+                    color: colorScheme.onSurfaceVariant,
                     fontSize: 11.sp,
                     fontWeight: FontWeight.w500),
               ),
             ),
           ),
-          Expanded(child: Divider(color: Theme.of(context).dividerColor, thickness: 1)),
+          Expanded(child: Divider(color: colorScheme.outlineVariant, thickness: 1)),
         ],
       ),
     );
   }
 
   Widget _buildMessageInput(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final customColors = context.customColors;
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
+            color: colorScheme.shadow.withValues(alpha: 0.06),
             blurRadius: 12,
             offset: const Offset(0, -4),
           ),
@@ -304,9 +308,9 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceContainer,
+                    color: colorScheme.surfaceContainer,
                     borderRadius: BorderRadius.circular(24.r),
-                    border: Border.all(color: Theme.of(context).dividerColor, width: 1),
+                    border: Border.all(color: colorScheme.outlineVariant, width: 1),
                   ),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.end,
@@ -320,14 +324,14 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                             minLines: 1,
                             decoration: InputDecoration(
                               hintText: 'Type a message…',
-                              hintStyle: AppTextStyles.bodyMedium.copyWith(
-                                  color: Theme.of(context).hintColor),
+                              hintStyle: context.bodyMedium.copyWith(
+                                  color: colorScheme.onSurfaceVariant),
                               border: InputBorder.none,
                               contentPadding: EdgeInsets.symmetric(
                                   horizontal: 12.w, vertical: 12.h),
                             ),
-                            style: AppTextStyles.bodyMedium
-                                .copyWith(color: Theme.of(context).colorScheme.onSurface),
+                            style: context.bodyMedium
+                                .copyWith(color: colorScheme.onSurface),
                           ),
                         ),
                       ),
@@ -361,7 +365,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                           boxShadow: state.isConnected
                               ? [
                                   BoxShadow(
-                                    color: Theme.of(context).colorScheme.primary
+                                    color: colorScheme.primary
                                         .withValues(alpha: 0.35),
                                     blurRadius: 10,
                                     offset: const Offset(0, 4),
@@ -382,6 +386,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       ),
     );
   }
+
 
   void _sendMessage(BuildContext context) {
     final text = _messageController.text.trim();
