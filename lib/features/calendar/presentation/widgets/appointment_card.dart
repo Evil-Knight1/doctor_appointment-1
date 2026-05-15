@@ -1,4 +1,4 @@
-import 'package:doctor_appointment/core/utils/app_images.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:doctor_appointment/features/appointment/domain/entities/appointment.dart';
 import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
 import 'package:doctor_appointment/features/appointment/logic/appointments_cubit.dart';
@@ -69,6 +69,16 @@ class AppointmentCard extends StatelessWidget {
 
   Widget _buildDoctorInfo(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final pictureUrl = appointment.doctorProfilePicture;
+    final initials = appointment.doctorName.isNotEmpty
+        ? appointment.doctorName
+            .split(' ')
+            .where((w) => w.isNotEmpty)
+            .take(2)
+            .map((w) => w[0].toUpperCase())
+            .join()
+        : 'Dr';
+
     return Row(
       children: [
         Container(
@@ -84,18 +94,17 @@ class AppointmentCard extends StatelessWidget {
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(14.r),
-            child: Image.asset(
-              _getImageAsset(),
-              width: 50.w,
-              height: 50.w,
-              fit: BoxFit.cover,
-              errorBuilder: (_, _, _) => Container(
-                width: 50.w,
-                height: 50.w,
-                color: colorScheme.primaryContainer.withValues(alpha: 0.3),
-                child: Icon(Icons.person, color: colorScheme.primary, size: 24.sp),
-              ),
-            ),
+            child: pictureUrl != null && pictureUrl.isNotEmpty
+                ? CachedNetworkImage(
+                    imageUrl: pictureUrl,
+                    width: 50.w,
+                    height: 50.w,
+                    fit: BoxFit.cover,
+                    errorWidget: (_, _, _) => _buildInitialsAvatar(
+                      initials, colorScheme,
+                    ),
+                  )
+                : _buildInitialsAvatar(initials, colorScheme),
           ),
         ),
         SizedBox(width: 14.w),
@@ -103,7 +112,9 @@ class AppointmentCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              appointment.doctorName,
+              appointment.doctorName.isNotEmpty
+                  ? appointment.doctorName
+                  : 'Unknown Doctor',
               style: context.styleSemiBold16.copyWith(
                 fontSize: 15.sp,
                 color: colorScheme.onSurface,
@@ -111,7 +122,7 @@ class AppointmentCard extends StatelessWidget {
             ),
             SizedBox(height: 2.h),
             Text(
-              'Doctor', // Default specialty since it's not in the entity yet
+              appointment.specializationName ?? 'Doctor',
               style: context.styleRegular12.copyWith(
                 color: colorScheme.onSurfaceVariant,
               ),
@@ -119,6 +130,24 @@ class AppointmentCard extends StatelessWidget {
           ],
         ),
       ],
+    );
+  }
+
+  Widget _buildInitialsAvatar(String initials, ColorScheme colorScheme) {
+    return Container(
+      width: 50.w,
+      height: 50.w,
+      color: colorScheme.primaryContainer.withValues(alpha: 0.5),
+      child: Center(
+        child: Text(
+          initials,
+          style: TextStyle(
+            color: colorScheme.primary,
+            fontWeight: FontWeight.bold,
+            fontSize: 16.sp,
+          ),
+        ),
+      ),
     );
   }
 
@@ -308,14 +337,6 @@ class AppointmentCard extends StatelessWidget {
         ],
       ),
     );
-  }
-  String _getImageAsset() {
-    final images = [
-      Assets.imagesDrAyeshaRahman,
-      Assets.imagesDrSarah,
-      Assets.imagesDrNobleThorme,
-    ];
-    return images[appointment.doctorId % images.length];
   }
 
   String _formatDate(DateTime date) {

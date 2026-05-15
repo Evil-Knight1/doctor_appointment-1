@@ -15,6 +15,8 @@ class Appointment {
   final DateTime? paymentDate;
   final double? amount;
   final String? doctorNotes;
+  final String? specializationName;
+  final String? doctorProfilePicture;
   final DateTime createdAt;
 
   const Appointment({
@@ -34,6 +36,8 @@ class Appointment {
     required this.paymentDate,
     required this.amount,
     required this.doctorNotes,
+    this.specializationName,
+    this.doctorProfilePicture,
     required this.createdAt,
   });
 }

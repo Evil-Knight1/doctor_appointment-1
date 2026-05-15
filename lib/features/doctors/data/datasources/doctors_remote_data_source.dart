@@ -1,6 +1,7 @@
 import 'package:doctor_appointment/core/errors/exceptions.dart';
 import 'package:doctor_appointment/core/services/api_service.dart';
 import 'package:doctor_appointment/features/doctors/data/models/availability_model.dart';
+import 'package:doctor_appointment/features/doctors/data/models/doctor_api_model.dart';
 import 'package:doctor_appointment/features/doctors/data/models/doctors_page_model.dart';
 
 abstract class DoctorsRemoteDataSource {
@@ -13,6 +14,7 @@ abstract class DoctorsRemoteDataSource {
   });
 
   Future<List<AvailabilityModel>> getDoctorAvailability(int doctorId);
+  Future<DoctorApiModel> getDoctorById(int doctorId);
 }
 
 class DoctorsRemoteDataSourceImpl implements DoctorsRemoteDataSource {
@@ -86,6 +88,18 @@ class DoctorsRemoteDataSourceImpl implements DoctorsRemoteDataSource {
         .map(AvailabilityModel.fromJson)
         .where((a) => a.isAvailable)
         .toList();
+  }
+
+  @override
+  Future<DoctorApiModel> getDoctorById(int doctorId) async {
+    final response = await apiService.get('/api/Doctor/$doctorId');
+    final data = response is Map<String, dynamic> && response['success'] == true
+        ? response['data']
+        : response;
+    if (data is Map<String, dynamic>) {
+      return DoctorApiModel.fromJson(data);
+    }
+    throw const ApiException('Unexpected doctor payload');
   }
 
   String _extractMessage(Map<String, dynamic> json) {

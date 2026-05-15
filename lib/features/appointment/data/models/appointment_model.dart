@@ -18,16 +18,40 @@ class AppointmentModel extends Appointment {
     required super.paymentDate,
     required super.amount,
     required super.doctorNotes,
+    super.specializationName,
+    super.doctorProfilePicture,
     required super.createdAt,
   });
 
   factory AppointmentModel.fromJson(Map<String, dynamic> json) {
+    // The backend may nest doctor info under a 'doctor' object or use flat keys
+    final doctorObj = json['doctor'] as Map<String, dynamic>?;
+
+    // Doctor name: try flat keys first, then nested doctor object
+    final doctorName = json['doctorName'] as String? ??
+        json['doctorFullName'] as String? ??
+        doctorObj?['fullName'] as String? ??
+        doctorObj?['name'] as String? ??
+        '';
+
+    // Specialization: may be nested in doctor object or at top level
+    final specializationName = json['specializationName'] as String? ??
+        json['specialization'] as String? ??
+        doctorObj?['specializationName'] as String? ??
+        doctorObj?['specialization'] as String?;
+
+    // Doctor profile picture
+    final doctorProfilePicture = json['doctorProfilePicture'] as String? ??
+        json['profilePicture'] as String? ??
+        doctorObj?['profilePicture'] as String? ??
+        doctorObj?['profilePictureUrl'] as String?;
+
     return AppointmentModel(
       id: json['id'] as int? ?? 0,
       patientId: json['patientId'] as int? ?? 0,
       patientName: json['patientName'] as String? ?? '',
-      doctorId: json['doctorId'] as int? ?? 0,
-      doctorName: json['doctorName'] as String? ?? '',
+      doctorId: json['doctorId'] as int? ?? doctorObj?['id'] as int? ?? 0,
+      doctorName: doctorName,
       startTime:
           DateTime.tryParse(json['startTime'] as String? ?? '') ??
               DateTime.fromMillisecondsSinceEpoch(0),
@@ -43,6 +67,8 @@ class AppointmentModel extends Appointment {
           DateTime.tryParse(json['paymentDate'] as String? ?? ''),
       amount: (json['amount'] as num?)?.toDouble(),
       doctorNotes: json['doctorNotes'] as String?,
+      specializationName: specializationName,
+      doctorProfilePicture: doctorProfilePicture,
       createdAt:
           DateTime.tryParse(json['createdAt'] as String? ?? '') ??
               DateTime.fromMillisecondsSinceEpoch(0),

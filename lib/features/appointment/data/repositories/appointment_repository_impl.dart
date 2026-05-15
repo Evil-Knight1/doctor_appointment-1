@@ -3,14 +3,18 @@ import 'package:doctor_appointment/core/errors/exceptions.dart';
 import 'package:doctor_appointment/core/errors/failures.dart';
 import 'package:doctor_appointment/core/utils/result.dart';
 import 'package:doctor_appointment/features/appointment/data/datasources/appointment_remote_data_source.dart';
+import 'package:doctor_appointment/features/appointment/data/models/appointment_model.dart';
 import 'package:doctor_appointment/features/appointment/data/models/slot_model.dart';
 import 'package:doctor_appointment/features/appointment/domain/entities/appointment.dart';
 import 'package:doctor_appointment/features/appointment/domain/repositories/appointment_repository.dart';
+import 'package:doctor_appointment/features/doctors/data/datasources/doctors_remote_data_source.dart';
+import 'package:doctor_appointment/features/doctors/data/models/doctor_api_model.dart';
 
 class AppointmentRepositoryImpl implements AppointmentRepository {
   final AppointmentRemoteDataSource remoteDataSource;
+  final DoctorsRemoteDataSource doctorsDataSource;
 
-  AppointmentRepositoryImpl(this.remoteDataSource);
+  AppointmentRepositoryImpl(this.remoteDataSource, this.doctorsDataSource);
 
   @override
   Future<Result<Appointment>> createAppointment({
@@ -43,8 +47,54 @@ class AppointmentRepositoryImpl implements AppointmentRepository {
   @override
   Future<Result<List<Appointment>>> getMyAppointments() async {
     try {
-      final response = await remoteDataSource.getMyAppointments();
-      return Result.success(response);
+      final appointments = await remoteDataSource.getMyAppointments();
+
+      // Collect unique doctor IDs that need enrichment
+      final uniqueDoctorIds = appointments
+          .where((a) => a.doctorId != 0)
+          .map((a) => a.doctorId)
+          .toSet();
+
+      // Fetch all doctor details in parallel (with a simple cache)
+      final Map<int, DoctorApiModel> doctorCache = {};
+      await Future.wait(
+        uniqueDoctorIds.map((id) async {
+          try {
+            doctorCache[id] = await doctorsDataSource.getDoctorById(id);
+          } catch (_) {
+            // Skip enrichment for this doctor if the call fails
+          }
+        }),
+      );
+
+      // Enrich each appointment with doctor data
+      final enriched = appointments.map((a) {
+        final doctor = doctorCache[a.doctorId];
+        if (doctor == null) return a;
+        return AppointmentModel(
+          id: a.id,
+          patientId: a.patientId,
+          patientName: a.patientName,
+          doctorId: a.doctorId,
+          doctorName: doctor.fullName,
+          startTime: a.startTime,
+          endTime: a.endTime,
+          reason: a.reason,
+          status: a.status,
+          isPaid: a.isPaid,
+          paymentMethod: a.paymentMethod,
+          paymentStatus: a.paymentStatus,
+          paymentTransactionId: a.paymentTransactionId,
+          paymentDate: a.paymentDate,
+          amount: a.amount,
+          doctorNotes: a.doctorNotes,
+          specializationName: doctor.specialization.name,
+          doctorProfilePicture: doctor.profilePictureUrl,
+          createdAt: a.createdAt,
+        );
+      }).toList();
+
+      return Result.success(enriched);
     } on ApiException catch (exception) {
       return Result.failure(
         ServerFailure(exception.message, statusCode: exception.statusCode),
@@ -55,6 +105,7 @@ class AppointmentRepositoryImpl implements AppointmentRepository {
       return Result.failure(const UnknownFailure('Unexpected error occurred'));
     }
   }
+
 
   Failure _mapDioFailure(DioException exception) {
     if (exception.type == DioExceptionType.connectionTimeout ||

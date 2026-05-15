@@ -1,7 +1,4 @@
-import 'package:doctor_appointment/core/errors/exceptions.dart';
-import 'package:doctor_appointment/core/errors/failures.dart';
 import 'package:doctor_appointment/core/utils/result.dart';
-import 'package:doctor_appointment/features/appointment/data/datasources/appointment_remote_data_source.dart';
 import 'package:doctor_appointment/features/appointment/domain/entities/appointment.dart';
 import 'package:doctor_appointment/features/appointment/data/models/slot_model.dart';
 

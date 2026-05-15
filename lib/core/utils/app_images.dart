@@ -53,8 +53,8 @@ class Assets {
   static const String imagesGroup3 = "assets/images/Group 3.png";
 
   /// Assets for imagesLogo
-  /// assets/images/logo.svg
-  static const String imagesLogo = "assets/images/logo.svg";
+  /// assets/images/logo.png
+  static const String imagesLogo = "assets/images/logo.png";
 
   /// Assets for imagesNotificationIcon
   /// assets/images/notificationIcon.svg

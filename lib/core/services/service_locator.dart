@@ -230,7 +230,10 @@ void setupServiceLocator() {
     () => AppointmentRemoteDataSourceImpl(getIt<ApiService>()),
   );
   getIt.registerLazySingleton<AppointmentRepository>(
-    () => AppointmentRepositoryImpl(getIt<AppointmentRemoteDataSource>()),
+    () => AppointmentRepositoryImpl(
+      getIt<AppointmentRemoteDataSource>(),
+      getIt<DoctorsRemoteDataSource>(),
+    ),
   );
   getIt.registerLazySingleton(
     () => CreateAppointmentUseCase(getIt<AppointmentRepository>()),
