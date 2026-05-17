@@ -23,6 +23,15 @@ class ThemeCubit extends Cubit<ThemeMode> {
     emit(newMode);
   }
 
+  void setThemeMode(ThemeMode mode) {
+    if (mode == ThemeMode.system) {
+      SharedPreferencesHelper.saveThemeMode('system');
+    } else {
+      SharedPreferencesHelper.saveThemeMode(mode == ThemeMode.dark ? 'dark' : 'light');
+    }
+    emit(mode);
+  }
+
   void setSystemTheme() {
     SharedPreferencesHelper.saveThemeMode('system');
     emit(ThemeMode.system);

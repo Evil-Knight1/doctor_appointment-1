@@ -3,14 +3,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:doctor_appointment/core/utils/app_dimensions.dart';
 import 'package:doctor_appointment/features/doctors/domain/entities/doctor.dart';
 import 'package:doctor_appointment/core/utils/routes.dart';
-
 import 'package:doctor_appointment/core/utils/image_url_helper.dart';
 import 'package:doctor_appointment/features/payments/logic/payment_cubit.dart';
 import 'package:doctor_appointment/features/payments/logic/payment_state.dart';
+import 'package:doctor_appointment/features/payments/presentation/views/payment_webview_screen.dart';
+
+import 'package:doctor_appointment/core/utils/go_router.dart' show AppRouter;
 import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
 import '../widgets/booking_stepper.dart';
 import '../widgets/shared_app_bar.dart';
@@ -34,48 +35,49 @@ class BookingSummaryView extends StatelessWidget {
         args['amount'] as double? ?? doctor.consultationFee ?? 0.0;
 
     return BlocConsumer<PaymentCubit, PaymentState>(
-      listener: (context, state) async {
-        if (state is PaymentRequiresAction) {
-          // Open Paymob unified checkout in browser
-          final uri = Uri.parse(state.paymentUrl);
-          bool launched = false;
-          try {
-            launched = await launchUrl(
-              uri,
-              mode: LaunchMode.externalApplication,
-            );
-          } catch (e) {
-            launched = false;
-          }
-
-          if (!launched) {
-            if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Could not open payment page.')),
-              );
-            }
-          }
-          // After returning from browser, navigate to confirmed view
-          if (context.mounted) {
-            context.goNamed(Routes.bookingConfirmedView, extra: args);
-          }
-        } else if (state is PaymentSuccess) {
-          if (context.mounted) {
-            context.goNamed(Routes.bookingConfirmedView, extra: args);
-          }
-        } else if (state is PaymentError) {
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: colorScheme.error,
+      listener: (context, state) {
+        if (state is PaymentSessionCreated) {
+          // Open Paymob in-app WebView — no browser redirect.
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => PaymentWebViewScreen(
+                paymentUrl: state.session.paymentUrl,
+                cubit: context.read<PaymentCubit>(),
               ),
-            );
-          }
+            ),
+          );
+        } else if (state is PaymentPendingVerification) {
+          // Navigate to polling/status screen.
+          context.push(
+            AppRouter.kPaymentStatusView,
+            extra: {
+              'cubit': context.read<PaymentCubit>(),
+              'appointmentId': state.appointmentId,
+              'amount': state.amount,
+              'currency': state.currency,
+            },
+          );
+        } else if (state is PaymentSuccess || state is PaymentCashConfirmed) {
+          context.goNamed(Routes.bookingConfirmedView, extra: args);
+        } else if (state is PaymentFailure) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: colorScheme.error,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        } else if (state is PaymentCancelled) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Payment cancelled. You can try again.'),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
         }
       },
       builder: (context, state) {
-        final isLoading = state is PaymentProcessing;
+        final isLoading = state is PaymentLoading;
 
         return Scaffold(
           backgroundColor: colorScheme.surface,
@@ -226,7 +228,7 @@ class BookingSummaryView extends StatelessWidget {
                       SizedBox(height: AppSpacing.md),
                       _InfoBanner(
                         message:
-                            'You will be redirected to Paymob\'s secure payment page to complete your payment.',
+                            'You will complete payment securely inside the app via Paymob. No browser redirect.',
                         isPaymob: true,
                       ),
                     ],

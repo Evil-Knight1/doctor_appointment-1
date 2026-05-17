@@ -12,6 +12,7 @@ abstract class ChatSignalRService {
   Future<void> sendMessage(int receiverId, String message);
   Stream<ChatMessageModel> get messageStream;
   Stream<String> get errorStream;
+  Stream<int> get readStream;
   HubConnectionState get state;
 }
 
@@ -22,6 +23,7 @@ class ChatSignalRServiceImpl implements ChatSignalRService {
   
   final _messageController = StreamController<ChatMessageModel>.broadcast();
   final _errorController = StreamController<String>.broadcast();
+  final _readController = StreamController<int>.broadcast();
 
   ChatSignalRServiceImpl(this._config, this._authLocalDataSource);
 
@@ -30,6 +32,9 @@ class ChatSignalRServiceImpl implements ChatSignalRService {
 
   @override
   Stream<String> get errorStream => _errorController.stream;
+
+  @override
+  Stream<int> get readStream => _readController.stream;
 
   @override
   HubConnectionState get state => _connection?.state ?? HubConnectionState.disconnected;
@@ -68,6 +73,44 @@ class ChatSignalRServiceImpl implements ChatSignalRService {
       if (arguments != null && arguments.isNotEmpty) {
         final messageDto = ChatMessageModel.fromJson(arguments[0] as Map<String, dynamic>);
         _messageController.add(messageDto);
+      }
+    });
+
+    _connection!.on('MessagesRead', (arguments) {
+      if (arguments != null && arguments.isNotEmpty) {
+        final readerId = arguments[0];
+        if (readerId is int) {
+          _readController.add(readerId);
+        } else if (readerId is Map<String, dynamic>) {
+          final id = readerId['readerId'] ?? readerId['userId'] ?? readerId['senderId'];
+          if (id != null) {
+            _readController.add(int.parse(id.toString()));
+          }
+        } else {
+          final id = int.tryParse(readerId.toString());
+          if (id != null) {
+            _readController.add(id);
+          }
+        }
+      }
+    });
+
+    _connection!.on('MessageRead', (arguments) {
+      if (arguments != null && arguments.isNotEmpty) {
+        final readerId = arguments[0];
+        if (readerId is int) {
+          _readController.add(readerId);
+        } else if (readerId is Map<String, dynamic>) {
+          final id = readerId['readerId'] ?? readerId['userId'] ?? readerId['senderId'];
+          if (id != null) {
+            _readController.add(int.parse(id.toString()));
+          }
+        } else {
+          final id = int.tryParse(readerId.toString());
+          if (id != null) {
+            _readController.add(id);
+          }
+        }
       }
     });
 

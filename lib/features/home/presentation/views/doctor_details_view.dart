@@ -66,7 +66,10 @@ class _DoctorDetailsViewState extends State<DoctorDetailsView>
                       context.pushNamed(
                         Routes.chatView,
                         pathParameters: {'userId': widget.doctor.id.toString()},
-                        extra: widget.doctor.name,
+                        extra: {
+                          'otherUserName': widget.doctor.name,
+                          'otherUserProfilePicture': widget.doctor.doctor.profilePictureUrl,
+                        },
                       );
                     },
                     child: Container(
@@ -508,7 +511,10 @@ class _AppointmentButton extends StatelessWidget {
                 onPressed: () => context.pushNamed(
                   Routes.chatView,
                   pathParameters: {'userId': doctor.id.toString()},
-                  extra: doctor.name,
+                  extra: {
+                    'otherUserName': doctor.name,
+                    'otherUserProfilePicture': doctor.doctor.profilePictureUrl,
+                  },
                 ),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: colorScheme.primary,

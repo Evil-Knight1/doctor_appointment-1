@@ -152,10 +152,21 @@ class NotificationService {
     );
   }
   void _navigateBasedOnData(Map<String, dynamic> data) {
-    if (data['type'] == 'chat' && data['userId'] != null) {
+    final type = data['type'];
+    if (type == 'chat' && data['userId'] != null) {
       final userId = data['userId'];
       final userName = data['userName'] ?? 'Chat';
-      AppRouter.router.push('/chat/$userId', extra: userName);
+      final userProfilePicture = data['userProfilePicture'];
+      AppRouter.router.push(
+        '/chat/$userId',
+        extra: {
+          'otherUserName': userName,
+          'otherUserProfilePicture': userProfilePicture,
+        },
+      );
+    } else if (type == 'appointment') {
+      // Route to Calendar/Bookings view to see the appointments
+      AppRouter.router.push(AppRouter.kCalendarView);
     }
   }
 }

@@ -121,7 +121,10 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                           conversation: conversation,
                           onTap: () => context.push(
                             '/chat/${conversation.otherUserId}',
-                            extra: conversation.otherUserName,
+                            extra: {
+                              'otherUserName': conversation.otherUserName,
+                              'otherUserProfilePicture': conversation.otherUserProfilePicture,
+                            },
                           ),
                         );
                       },

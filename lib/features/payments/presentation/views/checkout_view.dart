@@ -1,11 +1,11 @@
 import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
-import 'package:url_launcher/url_launcher.dart';
-
 import 'package:doctor_appointment/core/utils/go_router.dart';
+
 import 'package:doctor_appointment/features/appointment/presentation/models/appointment_draft.dart';
 import 'package:doctor_appointment/features/on_boarding_view/presentation/widgets/custom_button.dart';
 import 'package:doctor_appointment/features/payments/logic/payment_cubit.dart';
 import 'package:doctor_appointment/features/payments/logic/payment_state.dart';
+import 'package:doctor_appointment/features/payments/presentation/views/payment_webview_screen.dart';
 import 'package:doctor_appointment/core/services/service_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,138 +29,104 @@ class CheckoutView extends StatefulWidget {
 }
 
 class _CheckoutViewState extends State<CheckoutView> {
-  int _selectedMethod = 1; // 1 = Credit/Debit Card, 2 = Mobile Wallet, 3 = Cash at Clinic
-  late final PaymentCubit _paymentCubit;
+  /// 1 = Credit/Debit Card, 2 = Mobile Wallet, 3 = Cash at Clinic
+  int _selectedMethod = 1;
+  late final PaymentCubit _cubit;
 
   @override
   void initState() {
     super.initState();
-    _paymentCubit = getIt<PaymentCubit>();
+    _cubit = getIt<PaymentCubit>();
   }
 
   @override
   void dispose() {
-    _paymentCubit.close();
+    _cubit.close();
     super.dispose();
   }
 
+  // ─── UI ──────────────────────────────────────────────────────────────────
+
   @override
   Widget build(BuildContext context) {
-    final double amount = widget.payload.draft.amount;
+    final amount = widget.payload.draft.amount;
 
     return BlocProvider.value(
-      value: _paymentCubit,
-      child: Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          elevation: 0,
-          titleSpacing: 0,
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back_ios_new_rounded,
-              color: Theme.of(context).colorScheme.onSurface,
-              size: 20.sp,
+      value: _cubit,
+      child: BlocConsumer<PaymentCubit, PaymentState>(
+        listener: _handleStateChange,
+        builder: (context, state) {
+          final isLoading = state is PaymentLoading;
+
+          return Scaffold(
+            backgroundColor: Theme.of(context).colorScheme.surface,
+            appBar: AppBar(
+              backgroundColor: Theme.of(context).colorScheme.surface,
+              elevation: 0,
+              titleSpacing: 0,
+              leading: IconButton(
+                icon: Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  color: Theme.of(context).colorScheme.onSurface,
+                  size: 20.sp,
+                ),
+                onPressed: isLoading ? null : () => context.pop(),
+              ),
+              title: Text(
+                'Payment',
+                style: context.styleSemiBold22.copyWith(fontSize: 18.sp),
+              ),
             ),
-            onPressed: () => context.pop(),
-          ),
-          title: Text(
-            'Payment',
-            style: context.styleSemiBold22.copyWith(fontSize: 18.sp),
-          ),
-        ),
-        body: Padding(
-          padding: EdgeInsets.all(24.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Select Payment Method',
-                style: context.styleSemiBold16,
-              ),
-              SizedBox(height: 16.h),
-              _buildPaymentMethod(
-                1,
-                'Credit/Debit Card',
-                Icons.credit_card_rounded,
-              ),
-              SizedBox(height: 12.h),
-              _buildPaymentMethod(
-                2,
-                'Mobile Wallet',
-                Icons.account_balance_wallet_rounded,
-              ),
-              SizedBox(height: 12.h),
-              _buildPaymentMethod(3, 'Cash at Clinic', Icons.money_rounded),
-              const Spacer(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            body: Padding(
+              padding: EdgeInsets.all(24.w),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Total Fees:',
-                    style: context.styleMedium14.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
+                    'Select Payment Method',
+                    style: context.styleSemiBold16,
                   ),
-                  Text(
-                    'EGP ${amount.toStringAsFixed(2)}',
-                    style: context.styleSemiBold24.copyWith(
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
+                  SizedBox(height: 16.h),
+                  _buildMethodTile(
+                    value: 1,
+                    label: 'Credit / Debit Card',
+                    icon: Icons.credit_card_rounded,
+                    subtitle: 'Visa, Mastercard accepted',
                   ),
-                ],
-              ),
-              SizedBox(height: 24.h),
-              BlocConsumer<PaymentCubit, PaymentState>(
-                listener: (context, state) {
-                  if (state is PaymentError) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(state.message)),
-                    );
-                  } else if (state is PaymentSuccess) {
-                    context.pushReplacement(AppRouter.kAppointmentSuccess);
-                  } else if (state is PaymentRequiresAction) {
-                    final uri = Uri.parse(state.paymentUrl);
-                    final router = GoRouter.of(context);
-                    final messenger = ScaffoldMessenger.of(context);
-                    launchUrl(uri, mode: LaunchMode.externalApplication)
-                        .then((launched) {
-                          if (!launched) {
-                            messenger.showSnackBar(
-                              const SnackBar(
-                                content: Text('Could not open payment gateway'),
-                              ),
-                            );
-                          }
-                          router.pushReplacement(AppRouter.kAppointmentSuccess);
-                        })
-                        .catchError((_) {
-                          messenger.showSnackBar(
-                            const SnackBar(
-                              content: Text('Could not open payment gateway'),
-                            ),
-                          );
-                          router.pushReplacement(AppRouter.kAppointmentSuccess);
-                        });
-                  }
-                },
-                builder: (context, state) {
-                  final isLoading = state is PaymentProcessing;
-                  return CustomButton(
-                    text: isLoading ? 'Processing...' : 'Confirm Payment',
-                    onPressed: isLoading
-                        ? () {}
-                        : () {
-                            _paymentCubit.checkout(
-                              doctorId: widget.payload.draft.doctor.doctor.id,
-                              slotId: widget.payload.draft.slot.id,
-                              reason: widget.payload.reason,
-                              paymentMethod: _selectedMethod,
-                              amount: amount,
-                            );
-                          },
+                  SizedBox(height: 12.h),
+                  _buildMethodTile(
+                    value: 2,
+                    label: 'Mobile Wallet',
+                    icon: Icons.account_balance_wallet_rounded,
+                    subtitle: 'Vodafone Cash, Etisalat Cash',
+                  ),
+                  SizedBox(height: 12.h),
+                  _buildMethodTile(
+                    value: 3,
+                    label: 'Cash at Clinic',
+                    icon: Icons.payments_rounded,
+                    subtitle: 'Pay directly at the clinic',
+                  ),
+                  const Spacer(),
+                  _buildAmountRow(context, amount),
+                  SizedBox(height: 8.h),
+                  if (state is PaymentLoading) ...[
+                    SizedBox(height: 8.h),
+                    Center(
+                      child: Text(
+                        state.message,
+                        style: context.styleRegular12.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                  ],
+                  SizedBox(height: 16.h),
+                  CustomButton(
+                    text: isLoading ? 'Processing…' : 'Confirm & Pay',
+                    onPressed: isLoading ? () {} : _onConfirm,
                     width: double.infinity,
-                    height: 50.h,
+                    height: 52.h,
                     circleSize: 12.r,
                     textStyle: context.styleSemiBold16.copyWith(
                       color: Theme.of(context).colorScheme.onPrimary,
@@ -168,65 +134,160 @@ class _CheckoutViewState extends State<CheckoutView> {
                     buttonColor: isLoading
                         ? Theme.of(context).colorScheme.outlineVariant
                         : Theme.of(context).colorScheme.primary,
-                  );
-                },
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }
 
-  Widget _buildPaymentMethod(int methodValue, String label, IconData icon) {
-    final isSelected = _selectedMethod == methodValue;
+  // ─── State Handler ────────────────────────────────────────────────────────
+
+  void _handleStateChange(BuildContext context, PaymentState state) {
+    if (state is PaymentSessionCreated) {
+      // Open Paymob WebView in-app — no browser redirect.
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => PaymentWebViewScreen(
+            paymentUrl: state.session.paymentUrl,
+            cubit: _cubit,
+          ),
+        ),
+      );
+    } else if (state is PaymentPendingVerification) {
+      // Navigate to polling/status screen.
+      context.push(
+        AppRouter.kPaymentStatusView,
+        extra: {
+          'cubit': _cubit,
+          'appointmentId': state.appointmentId,
+          'amount': state.amount,
+          'currency': state.currency,
+        },
+      );
+    } else if (state is PaymentCashConfirmed) {
+      context.pushReplacement(AppRouter.kAppointmentSuccess);
+    } else if (state is PaymentFailure) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(state.message),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
+    } else if (state is PaymentCancelled) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Payment cancelled.'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  }
+
+  // ─── Helpers ─────────────────────────────────────────────────────────────
+
+  void _onConfirm() {
+    _cubit.checkout(
+      doctorId: widget.payload.draft.doctor.doctor.id,
+      slotId: widget.payload.draft.slot.id,
+      reason: widget.payload.reason,
+      paymentMethod: _selectedMethod,
+      amount: widget.payload.draft.amount,
+    );
+  }
+
+  Widget _buildAmountRow(BuildContext context, double amount) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          'Total Fees:',
+          style: context.styleMedium14.copyWith(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+        ),
+        Text(
+          'EGP ${amount.toStringAsFixed(2)}',
+          style: context.styleSemiBold24.copyWith(
+            color: Theme.of(context).colorScheme.primary,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMethodTile({
+    required int value,
+    required String label,
+    required IconData icon,
+    required String subtitle,
+  }) {
+    final isSelected = _selectedMethod == value;
+    final colorScheme = Theme.of(context).colorScheme;
+
     return GestureDetector(
-      onTap: () => setState(() => _selectedMethod = methodValue),
-      child: Container(
-        padding: EdgeInsets.all(16.w),
+      onTap: () => setState(() => _selectedMethod = value),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
         decoration: BoxDecoration(
           color: isSelected
-              ? Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.1)
-              : Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(12.r),
+              ? colorScheme.primary.withValues(alpha: 0.06)
+              : colorScheme.surface,
+          borderRadius: BorderRadius.circular(14.r),
           border: Border.all(
-            color: isSelected
-                ? Theme.of(context).colorScheme.primary
-                : Theme.of(context).colorScheme.outlineVariant,
+            color: isSelected ? colorScheme.primary : colorScheme.outlineVariant,
+            width: isSelected ? 1.5 : 1.0,
           ),
         ),
         child: Row(
           children: [
-            Icon(
-              icon,
-              color: isSelected
-                  ? Theme.of(context).colorScheme.primary
-                  : Theme.of(context).colorScheme.onSurfaceVariant,
-              size: 28.sp,
+            Container(
+              padding: EdgeInsets.all(10.w),
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? colorScheme.primary.withValues(alpha: 0.12)
+                    : colorScheme.surfaceContainerHighest,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                icon,
+                color: isSelected ? colorScheme.primary : colorScheme.onSurfaceVariant,
+                size: 22.sp,
+              ),
             ),
-            SizedBox(width: 16.w),
+            SizedBox(width: 14.w),
             Expanded(
-              child: Text(
-                label,
-                style: context.styleMedium14.copyWith(
-                  color: isSelected
-                      ? Theme.of(context).colorScheme.primary
-                      : Theme.of(context).colorScheme.onSurface,
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: context.styleMedium14.copyWith(
+                      color: isSelected
+                          ? colorScheme.primary
+                          : colorScheme.onSurface,
+                    ),
+                  ),
+                  SizedBox(height: 2.h),
+                  Text(
+                    subtitle,
+                    style: context.styleRegular12.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
               ),
             ),
-            if (isSelected)
-              Icon(
-                Icons.check_circle_rounded,
-                color: Theme.of(context).colorScheme.primary,
-                size: 20.sp,
-              )
-            else
-              Icon(
-                Icons.circle_outlined,
-                color: Theme.of(context).colorScheme.outlineVariant,
-                size: 20.sp,
-              ),
+            Icon(
+              isSelected ? Icons.check_circle_rounded : Icons.radio_button_unchecked_rounded,
+              color: isSelected ? colorScheme.primary : colorScheme.outlineVariant,
+              size: 22.sp,
+            ),
           ],
         ),
       ),

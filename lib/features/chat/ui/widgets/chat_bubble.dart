@@ -2,16 +2,19 @@ import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:doctor_appointment/core/utils/image_url_helper.dart';
 import 'package:doctor_appointment/features/chat/data/models/chat_message_model.dart';
-
 class ChatBubble extends StatelessWidget {
   final ChatMessageModel message;
   final bool isMe;
+  final String? otherUserProfilePicture;
 
   const ChatBubble({
     super.key,
     required this.message,
     required this.isMe,
+    this.otherUserProfilePicture,
   });
 
   @override
@@ -38,7 +41,7 @@ class ChatBubble extends StatelessWidget {
             Flexible(
               child: Container(
                 padding:
-                    EdgeInsets.symmetric(vertical: 10.h, horizontal: 14.w),
+                    EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
                 decoration: BoxDecoration(
                   gradient: isMe
                       ? LinearGradient(
@@ -52,10 +55,10 @@ class ChatBubble extends StatelessWidget {
                       : null,
                   color: isMe ? null : customColors.chatBubbleOthers,
                   borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(18.r),
-                    topRight: Radius.circular(18.r),
-                    bottomLeft: Radius.circular(isMe ? 18.r : 4.r),
-                    bottomRight: Radius.circular(isMe ? 4.r : 18.r),
+                    topLeft: Radius.circular(20.r),
+                    topRight: Radius.circular(20.r),
+                    bottomLeft: Radius.circular(isMe ? 20.r : 4.r),
+                    bottomRight: Radius.circular(isMe ? 4.r : 20.r),
                   ),
                   boxShadow: [
                     BoxShadow(
@@ -79,6 +82,7 @@ class ChatBubble extends StatelessWidget {
                         color:
                             isMe ? Colors.white : colorScheme.onSurface,
                         height: 1.4,
+                        fontSize: 15.sp,
                       ),
                     ),
                     SizedBox(height: 4.h),
@@ -88,7 +92,7 @@ class ChatBubble extends StatelessWidget {
                         Text(
                           _formatTime(message.timestamp),
                           style: TextStyle(
-                            fontSize: 10.sp,
+                            fontSize: 11.sp,
                             color: isMe
                                 ? Colors.white.withValues(alpha: 0.75)
                                 : colorScheme.onSurfaceVariant,
@@ -97,9 +101,9 @@ class ChatBubble extends StatelessWidget {
                         if (isMe) ...[
                           SizedBox(width: 4.w),
                           Icon(
-                            Icons.done_all_rounded,
-                            size: 14.r,
-                            color: Colors.white.withValues(alpha: 0.8),
+                            message.isRead ? Icons.done_all_rounded : Icons.done_rounded,
+                            size: 15.r,
+                            color: Colors.white.withValues(alpha: message.isRead ? 0.95 : 0.6),
                           ),
                         ],
                       ],
@@ -115,6 +119,30 @@ class ChatBubble extends StatelessWidget {
   }
 
   Widget _senderDot(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    if (otherUserProfilePicture != null && otherUserProfilePicture!.isNotEmpty) {
+      return Container(
+        width: 28.r,
+        height: 28.r,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(
+              color: colorScheme.primary.withValues(alpha: 0.2), width: 1.5),
+        ),
+        child: ClipOval(
+          child: CachedNetworkImage(
+            imageUrl: ImageUrlHelper.getFullUrl(otherUserProfilePicture),
+            httpHeaders: ImageUrlHelper.getImageHeaders(),
+            fit: BoxFit.cover,
+            errorWidget: (context, url, error) => _buildPlaceholderDot(context),
+          ),
+        ),
+      );
+    }
+    return _buildPlaceholderDot(context);
+  }
+
+  Widget _buildPlaceholderDot(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     return Container(
       width: 28.r,

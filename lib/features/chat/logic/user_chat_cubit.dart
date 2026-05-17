@@ -12,6 +12,7 @@ class UserChatCubit extends Cubit<ChatState> {
   final ChatSignalRService _signalRService;
   StreamSubscription? _messageSubscription;
   StreamSubscription? _errorSubscription;
+  StreamSubscription? _readSubscription;
 
   UserChatCubit(this._remoteDataSource, this._signalRService) : super(const ChatState()) {
     _init();
@@ -19,9 +20,22 @@ class UserChatCubit extends Cubit<ChatState> {
 
   void _init() {
     _messageSubscription = _signalRService.messageStream.listen(_onMessageReceived);
+    _readSubscription = _signalRService.readStream.listen(_onMessagesReadReceived);
     _errorSubscription = _signalRService.errorStream.listen((error) {
       emit(state.copyWith(status: ChatStatus.error, errorMessage: error));
     });
+  }
+
+  void _onMessagesReadReceived(int readerId) {
+    if (state.activeChatUserId == readerId) {
+      final updatedMessages = state.messages.map((message) {
+        if (message.receiverId == readerId && !message.isRead) {
+          return message.copyWith(isRead: true);
+        }
+        return message;
+      }).toList();
+      emit(state.copyWith(messages: updatedMessages));
+    }
   }
 
   void _onMessageReceived(ChatMessageModel message) {
@@ -57,7 +71,8 @@ class UserChatCubit extends Cubit<ChatState> {
     emit(state.copyWith(status: ChatStatus.loading));
     try {
       final message = await _remoteDataSource.sendMessage(receiverId, text);
-      final updatedMessages = List<ChatMessageModel>.from(state.messages)..add(message);
+      final updatedMessage = message.copyWith(isRead: false);
+      final updatedMessages = List<ChatMessageModel>.from(state.messages)..add(updatedMessage);
       emit(state.copyWith(status: ChatStatus.success, messages: updatedMessages));
     } catch (e) {
       emit(state.copyWith(status: ChatStatus.error, errorMessage: e.toString()));
@@ -91,6 +106,7 @@ class UserChatCubit extends Cubit<ChatState> {
   Future<void> close() {
     _messageSubscription?.cancel();
     _errorSubscription?.cancel();
+    _readSubscription?.cancel();
     return super.close();
   }
 }

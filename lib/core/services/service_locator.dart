@@ -45,8 +45,10 @@ import 'package:doctor_appointment/features/appointment/domain/usecases/get_doct
 import 'package:doctor_appointment/features/appointment/domain/usecases/cancel_appointment_usecase.dart';
 import 'package:doctor_appointment/features/appointment/logic/doctor_slots_cubit.dart';
 import 'package:doctor_appointment/features/payments/data/datasources/payment_remote_data_source.dart';
+import 'package:doctor_appointment/features/payments/data/repositories/payment_repository_impl.dart';
 import 'package:doctor_appointment/features/payments/domain/repositories/payment_repository.dart';
-import 'package:doctor_appointment/features/payments/domain/usecases/process_payment_usecase.dart';
+import 'package:doctor_appointment/features/payments/domain/usecases/create_payment_session_usecase.dart';
+import 'package:doctor_appointment/features/payments/domain/usecases/get_payment_status_usecase.dart';
 import 'package:doctor_appointment/features/payments/logic/payment_cubit.dart';
 import 'package:doctor_appointment/features/doctors/data/datasources/specializations_remote_data_source.dart';
 import 'package:doctor_appointment/features/doctors/data/repositories/specializations_repository_impl.dart';
@@ -263,7 +265,8 @@ void setupServiceLocator() {
         DoctorSlotsCubit(getDoctorSlotsUseCase: getIt<GetDoctorSlotsUseCase>()),
   );
 
-  // Payments
+  // ── Payments ────────────────────────────────────────────────────────────
+  // Backend drives all Paymob interactions; Flutter never touches secrets.
   getIt.registerLazySingleton<PaymentRemoteDataSource>(
     () => PaymentRemoteDataSourceImpl(getIt<ApiService>()),
   );
@@ -271,12 +274,17 @@ void setupServiceLocator() {
     () => PaymentRepositoryImpl(getIt<PaymentRemoteDataSource>()),
   );
   getIt.registerLazySingleton(
-    () => ProcessPaymentUseCase(getIt<PaymentRepository>()),
+    () => CreatePaymentSessionUseCase(getIt<PaymentRepository>()),
+  );
+  getIt.registerLazySingleton(
+    () => GetPaymentStatusUseCase(getIt<PaymentRepository>()),
   );
   getIt.registerFactory(
     () => PaymentCubit(
       createAppointmentUseCase: getIt<CreateAppointmentUseCase>(),
-      processPaymentUseCase: getIt<ProcessPaymentUseCase>(),
+      createPaymentSessionUseCase: getIt<CreatePaymentSessionUseCase>(),
+      getPaymentStatusUseCase: getIt<GetPaymentStatusUseCase>(),
+      paymentRepository: getIt<PaymentRepository>(),
     ),
   );
 

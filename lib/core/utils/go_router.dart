@@ -46,6 +46,7 @@ import 'package:doctor_appointment/features/doctor_flow/presentation/views/docto
 import 'package:doctor_appointment/features/payments/presentation/views/payment_history_view.dart';
 import 'package:doctor_appointment/features/payments/presentation/views/transaction_details_view.dart';
 import 'package:doctor_appointment/features/payments/presentation/views/checkout_view.dart';
+import 'package:doctor_appointment/features/payments/presentation/views/payment_status_view.dart';
 import 'package:doctor_appointment/features/payments/logic/payment_cubit.dart';
 import 'package:doctor_appointment/features/chatbot/presentation/views/chat_history_view.dart';
 import 'package:doctor_appointment/features/chatbot/logic/chat_cubit.dart';
@@ -86,6 +87,7 @@ abstract class AppRouter {
   static const kPaymentHistoryView = '/paymentHistoryView';
   static const kTransactionDetailsView = '/transactionDetailsView';
   static const kCheckoutView = '/checkoutView';
+  static const kPaymentStatusView = '/paymentStatusView';
   static const kChatHistoryView = '/chatHistoryView';
   static const kAppointmentDetailsView = '/appointmentDetailsView';
   static const kDoctorRoot = '/doctorRoot';
@@ -241,6 +243,13 @@ abstract class AppRouter {
         builder: (context, state) {
           final payload = state.extra as CheckoutPayload;
           return CheckoutView(payload: payload);
+        },
+      ),
+      GoRoute(
+        path: kPaymentStatusView,
+        builder: (context, state) {
+          final args = state.extra as Map<String, dynamic>;
+          return PaymentStatusView(args: args);
         },
       ),
       GoRoute(
@@ -438,8 +447,20 @@ abstract class AppRouter {
         path: kChatView,
         builder: (context, state) {
           final userId = int.parse(state.pathParameters['userId']!);
-          final userName = state.extra as String? ?? 'Chat';
-          return ChatScreen(otherUserId: userId, otherUserName: userName);
+          String userName = 'Chat';
+          String? userProfilePicture;
+          if (state.extra is String) {
+            userName = state.extra as String;
+          } else if (state.extra is Map<String, dynamic>) {
+            final map = state.extra as Map<String, dynamic>;
+            userName = map['otherUserName'] as String? ?? 'Chat';
+            userProfilePicture = map['otherUserProfilePicture'] as String?;
+          }
+          return ChatScreen(
+            otherUserId: userId,
+            otherUserName: userName,
+            otherUserProfilePicture: userProfilePicture,
+          );
         },
       ),
     ],

@@ -1,7 +1,6 @@
 import 'package:doctor_appointment/core/utils/app_images.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
 
 class SplashDesktop extends StatelessWidget {
@@ -18,30 +17,19 @@ class SplashDesktop extends StatelessWidget {
           builder: (context, constraints) {
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        Assets.imagesLogo,
-                        width: 150.w,
-                        fit: BoxFit.contain,
-                      ),
-                      SizedBox(height: 12.h),
-                      Text(
-                        'MedLink',
-                        style: context.styleBold32.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                      ),
-                    ],
-                  ),
+                Image.asset(
+                  Assets.imagesLogo,
+                  width: 150.w,
+                  fit: BoxFit.contain,
                 ),
-                const SizedBox(height: 40),
-                SpinKitFadingCircle(
-                  color: Theme.of(context).colorScheme.primary,
-                  size: 60,
+                SizedBox(height: 12.h),
+                Text(
+                  'MedLink',
+                  style: context.styleBold32.copyWith(
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
                 ),
               ],
             );

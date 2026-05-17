@@ -46,4 +46,26 @@ class ChatMessageModel {
       'isRead': isRead,
     };
   }
+
+  ChatMessageModel copyWith({
+    int? id,
+    int? senderId,
+    String? senderName,
+    int? receiverId,
+    String? receiverName,
+    String? message,
+    DateTime? timestamp,
+    bool? isRead,
+  }) {
+    return ChatMessageModel(
+      id: id ?? this.id,
+      senderId: senderId ?? this.senderId,
+      senderName: senderName ?? this.senderName,
+      receiverId: receiverId ?? this.receiverId,
+      receiverName: receiverName ?? this.receiverName,
+      message: message ?? this.message,
+      timestamp: timestamp ?? this.timestamp,
+      isRead: isRead ?? this.isRead,
+    );
+  }
 }
