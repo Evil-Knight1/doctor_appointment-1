@@ -10,6 +10,11 @@ import 'package:doctor_appointment/features/doctors/data/datasources/doctors_rem
 import 'package:doctor_appointment/core/utils/go_router.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:doctor_appointment/features/appointment/domain/entities/appointment.dart';
+import 'package:doctor_appointment/features/appointment/domain/usecases/get_my_appointments_usecase.dart';
+import 'package:doctor_appointment/core/utils/result.dart';
+
+
 class NotificationTile extends StatefulWidget {
   const NotificationTile({super.key, required this.notification, this.onTap});
   final NotificationEntity notification;
@@ -50,6 +55,74 @@ class _NotificationTileState extends State<NotificationTile> {
         } catch (_) {}
       }
     }
+  }
+
+  void _handleAppointmentNotificationTap(BuildContext context, String? relatedEntityId) async {
+    if (relatedEntityId == null) return;
+    final appointmentId = int.tryParse(relatedEntityId);
+    if (appointmentId == null) return;
+
+    // Show a premium loading indicator dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => Center(
+        child: Container(
+          padding: EdgeInsets.all(AppSpacing.lg),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(AppRadius.lg),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.1),
+                blurRadius: 15,
+                offset: const Offset(0, 5),
+              ),
+            ],
+          ),
+          child: const CircularProgressIndicator(),
+        ),
+      ),
+    );
+
+    try {
+      final useCase = getIt<GetMyAppointmentsUseCase>();
+      final result = await useCase();
+      
+      if (context.mounted) {
+        // Pop loading indicator
+        Navigator.of(context).pop();
+        
+        if (result is Success<List<Appointment>>) {
+          final appointments = result.data;
+          final appointment = appointments.firstWhere(
+            (app) => app.id == appointmentId,
+            orElse: () => throw Exception('Appointment not found'),
+          );
+          
+          if (context.mounted) {
+            context.push(AppRouter.kAppointmentDetailsView, extra: appointment);
+          }
+        } else {
+          _showError(context, 'Failed to load appointment details');
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        Navigator.of(context).pop();
+        _showError(context, 'Appointment details not found or failed to load');
+      }
+    }
+  }
+
+  void _showError(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Theme.of(context).colorScheme.error,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 
   @override
@@ -99,7 +172,7 @@ class _NotificationTileState extends State<NotificationTile> {
             },
           );
         } else if (widget.notification.type == 1 || widget.notification.type == 235) {
-          context.push(AppRouter.kCalendarView);
+          _handleAppointmentNotificationTap(context, widget.notification.relatedEntityId);
         }
       },
       child: Container(

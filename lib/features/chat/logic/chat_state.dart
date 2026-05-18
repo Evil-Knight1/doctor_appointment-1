@@ -4,6 +4,8 @@ import 'package:doctor_appointment/features/chat/data/models/chat_message_model.
 enum ChatStatus { initial, loading, success, sending, error }
 
 class ChatState extends Equatable {
+  static const Object _unset = Object();
+
   final ChatStatus status;
   final List<ChatMessageModel> messages;
   final int? activeChatUserId;
@@ -22,14 +24,16 @@ class ChatState extends Equatable {
     ChatStatus? status,
     List<ChatMessageModel>? messages,
     int? activeChatUserId,
-    String? errorMessage,
+    Object? errorMessage = _unset,
     bool? isConnected,
   }) {
     return ChatState(
       status: status ?? this.status,
       messages: messages ?? this.messages,
       activeChatUserId: activeChatUserId ?? this.activeChatUserId,
-      errorMessage: errorMessage ?? this.errorMessage,
+      errorMessage: identical(errorMessage, _unset)
+          ? this.errorMessage
+          : errorMessage as String?,
       isConnected: isConnected ?? this.isConnected,
     );
   }

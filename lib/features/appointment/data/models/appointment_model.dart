@@ -74,4 +74,28 @@ class AppointmentModel extends Appointment {
               DateTime.fromMillisecondsSinceEpoch(0),
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'patientId': patientId,
+      'patientName': patientName,
+      'doctorId': doctorId,
+      'doctorName': doctorName,
+      'startTime': startTime.toIso8601String(),
+      'endTime': endTime.toIso8601String(),
+      'reason': reason,
+      'status': status,
+      'isPaid': isPaid,
+      if (paymentMethod != null) 'paymentMethod': paymentMethod,
+      if (paymentStatus != null) 'paymentStatus': paymentStatus,
+      if (paymentTransactionId != null) 'paymentTransactionId': paymentTransactionId,
+      if (paymentDate != null) 'paymentDate': paymentDate!.toIso8601String(),
+      if (amount != null) 'amount': amount,
+      if (doctorNotes != null) 'doctorNotes': doctorNotes,
+      if (specializationName != null) 'specializationName': specializationName,
+      if (doctorProfilePicture != null) 'doctorProfilePicture': doctorProfilePicture,
+      'createdAt': createdAt.toIso8601String(),
+    };
+  }
 }

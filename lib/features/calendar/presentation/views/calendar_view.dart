@@ -63,7 +63,8 @@ class _CalendarViewState extends State<CalendarView>
       ),
       body: NotificationListener<ScrollNotification>(
         onNotification: (ScrollNotification notification) {
-          if (notification is OverscrollNotification) {
+          if (notification is OverscrollNotification &&
+              notification.metrics.axis == Axis.horizontal) {
             final rootState = context.findAncestorStateOfType<RootState>();
             if (rootState != null) {
               if (notification.overscroll < 0 && _tabController.index == 0) {

@@ -20,7 +20,13 @@ import 'package:geocoding/geocoding.dart' as geo;
 
 class DoctorDetailsView extends StatefulWidget {
   final HomeDoctorModel doctor;
-  const DoctorDetailsView({super.key, required this.doctor});
+  final String? heroTag;
+
+  const DoctorDetailsView({
+    super.key,
+    required this.doctor,
+    this.heroTag,
+  });
 
   @override
   State<DoctorDetailsView> createState() => _DoctorDetailsViewState();
@@ -120,7 +126,7 @@ class _DoctorDetailsViewState extends State<DoctorDetailsView>
             context,
           ).colorScheme.primaryContainer.withValues(alpha: 0.4),
           child: Hero(
-            tag: 'doctor-${widget.doctor.id}',
+            tag: widget.heroTag ?? 'doctor-${widget.doctor.id}',
             child: widget.doctor.doctor.profilePictureUrl != null
                 ? GestureDetector(
                     onTap: () {

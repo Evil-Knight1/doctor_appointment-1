@@ -11,9 +11,14 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'star_rating.dart';
 
 class DoctorCard extends StatelessWidget {
-  const DoctorCard({super.key, required this.doctor});
+  const DoctorCard({
+    super.key,
+    required this.doctor,
+    this.heroTag,
+  });
 
   final HomeDoctorModel doctor;
+  final String? heroTag;
 
   @override
   Widget build(BuildContext context) {
@@ -40,13 +45,19 @@ class DoctorCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppRadius.xl),
         child: InkWell(
           onTap: () =>
-              context.pushNamed(Routes.doctorDetailsView, extra: doctor),
+              context.pushNamed(
+                Routes.doctorDetailsView,
+                extra: {
+                  'doctor': doctor,
+                  'heroTag': resolvedHeroTag,
+                },
+              ),
           borderRadius: BorderRadius.circular(AppRadius.xl),
           child: Padding(
             padding: EdgeInsets.all(AppSpacing.lg),
             child: Row(
               children: [
-                _DoctorAvatar(doctor: doctor),
+                _DoctorAvatar(doctor: doctor, heroTag: resolvedHeroTag),
                 SizedBox(width: AppSpacing.md),
                 Expanded(child: _DoctorInfo(doctor: doctor)),
                 const _BookmarkButton(),
@@ -57,12 +68,15 @@ class DoctorCard extends StatelessWidget {
       ),
     );
   }
+
+  String get resolvedHeroTag => heroTag ?? 'doctor-${doctor.id}';
 }
 
 class _DoctorAvatar extends StatelessWidget {
-  const _DoctorAvatar({required this.doctor});
+  const _DoctorAvatar({required this.doctor, required this.heroTag});
 
   final HomeDoctorModel doctor;
+  final String heroTag;
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +86,7 @@ class _DoctorAvatar extends StatelessWidget {
     return Stack(
       children: [
         Hero(
-          tag: 'doctor-${doctor.id}',
+          tag: heroTag,
           child: Container(
             width: 64.w,
             height: 64.h,

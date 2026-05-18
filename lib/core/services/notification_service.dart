@@ -7,6 +7,9 @@ import 'package:doctor_appointment/core/utils/go_router.dart';
 
 import 'package:doctor_appointment/core/logging/log_service.dart';
 import 'package:doctor_appointment/core/services/service_locator.dart';
+import 'package:doctor_appointment/features/appointment/domain/entities/appointment.dart';
+import 'package:doctor_appointment/features/appointment/domain/usecases/get_my_appointments_usecase.dart';
+import 'package:doctor_appointment/core/utils/result.dart';
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
@@ -168,8 +171,31 @@ class NotificationService {
           'otherUserProfilePicture': userProfilePicture,
         },
       );
-    } else if (type == 'appointment') {
-      // Route to Calendar/Bookings view to see the appointments
+    } else if (type == 'appointment' || data['appointmentId'] != null || data['relatedEntityId'] != null) {
+      final idStr = data['appointmentId'] ?? data['relatedEntityId'];
+      final appointmentId = idStr != null ? int.tryParse(idStr.toString()) : null;
+      if (appointmentId != null) {
+        _handleAppointmentTapAsync(appointmentId);
+      } else {
+        AppRouter.router.push(AppRouter.kCalendarView);
+      }
+    }
+  }
+
+  void _handleAppointmentTapAsync(int appointmentId) async {
+    try {
+      final useCase = getIt<GetMyAppointmentsUseCase>();
+      final result = await useCase();
+      if (result is Success<List<Appointment>>) {
+        final appointment = result.data.firstWhere(
+          (app) => app.id == appointmentId,
+          orElse: () => throw Exception('Appointment not found'),
+        );
+        AppRouter.router.push(AppRouter.kAppointmentDetailsView, extra: appointment);
+      } else {
+        AppRouter.router.push(AppRouter.kCalendarView);
+      }
+    } catch (_) {
       AppRouter.router.push(AppRouter.kCalendarView);
     }
   }

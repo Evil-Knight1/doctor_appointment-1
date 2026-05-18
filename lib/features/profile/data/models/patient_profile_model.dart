@@ -28,4 +28,18 @@ class PatientProfileModel extends PatientProfile {
               DateTime.fromMillisecondsSinceEpoch(0),
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'fullName': fullName,
+      'email': email,
+      'phone': phone,
+      if (profilePicture != null) 'profilePicture': profilePicture,
+      if (dateOfBirth != null) 'dateOfBirth': dateOfBirth!.toIso8601String(),
+      if (gender != null) 'gender': gender,
+      if (address != null) 'address': address,
+      'createdAt': createdAt.toIso8601String(),
+    };
+  }
 }

@@ -45,9 +45,10 @@ class RecommendedDoctorsList extends StatelessWidget {
                   separatorBuilder: (_, _) => SizedBox(height: AppSpacing.sm),
                   itemBuilder: (_, index) {
                     return DoctorCard(
+                      heroTag: 'recommended-loading-$index',
                       doctor: HomeDoctorModel(
                         doctor: Doctor(
-                          id: 1,
+                          id: index + 1,
                           fullName: 'Doctor Full Name',
                           email: 'doctor@example.com',
                           phone: '1234567890',
@@ -89,7 +90,10 @@ class RecommendedDoctorsList extends StatelessWidget {
                 separatorBuilder: (_, _) => SizedBox(height: AppSpacing.sm),
                 itemBuilder: (_, index) {
                   final doctor = doctors[index];
-                  return DoctorCard(doctor: doctor.toHomeModel());
+                  return DoctorCard(
+                    doctor: doctor.toHomeModel(),
+                    heroTag: 'recommended-${doctor.id}-$index',
+                  );
                 },
               );
             }

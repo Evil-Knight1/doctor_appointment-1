@@ -85,12 +85,11 @@ class _UserInfoRow extends StatelessWidget {
                           placeholder: (context, url) => Skeletonizer(
                             enabled: true,
                             child: Container(
-                              color: colorScheme.primaryContainer,
                               width: 45.r,
                               height: 45.r,
-                              decoration: const BoxDecoration(
+                              decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: Colors.white,
+                                color: colorScheme.primaryContainer,
                               ),
                             ),
                           ),
@@ -212,4 +211,3 @@ class _NotificationButton extends StatelessWidget {
     );
   }
 }
-

@@ -384,12 +384,22 @@ abstract class AppRouter {
         name: Routes.doctorDetailsView,
         path: kHomeDoctorDetailsView,
         builder: (context, state) {
-          final doctor = state.extra as HomeDoctorModel;
+          late final HomeDoctorModel doctor;
+          String? heroTag;
+
+          if (state.extra is Map<String, dynamic>) {
+            final extra = state.extra as Map<String, dynamic>;
+            doctor = extra['doctor'] as HomeDoctorModel;
+            heroTag = extra['heroTag'] as String?;
+          } else {
+            doctor = state.extra as HomeDoctorModel;
+          }
+
           return BlocProvider(
             create: (context) =>
                 getIt<DoctorDetailsCubit>()
                   ..loadDoctorDetails(doctor.doctor.id),
-            child: DoctorDetailsView(doctor: doctor),
+            child: DoctorDetailsView(doctor: doctor, heroTag: heroTag),
           );
         },
       ),

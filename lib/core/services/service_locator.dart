@@ -90,6 +90,9 @@ import 'package:doctor_appointment/features/chat/data/datasources/chat_remote_da
 import 'package:doctor_appointment/features/chat/data/services/chat_signalr_service.dart';
 import 'package:doctor_appointment/features/chat/logic/user_chat_cubit.dart';
 import 'package:doctor_appointment/features/chat/logic/conversations_cubit.dart';
+import 'package:doctor_appointment/core/services/chat_cache_service.dart';
+import 'package:doctor_appointment/core/services/app_cache_service.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import 'package:doctor_appointment/core/logic/locale_cubit.dart';
 
@@ -225,6 +228,7 @@ void setupServiceLocator() {
     () => ProfileCubit(
       getPatientProfileUseCase: getIt<GetPatientProfileUseCase>(),
       updatePatientProfileUseCase: getIt<UpdatePatientProfileUseCase>(),
+      appCacheService: getIt<AppCacheService>(),
     ),
   );
 
@@ -258,6 +262,7 @@ void setupServiceLocator() {
     () => AppointmentsCubit(
       getMyAppointmentsUseCase: getIt<GetMyAppointmentsUseCase>(),
       cancelAppointmentUseCase: getIt<CancelAppointmentUseCase>(),
+      appCacheService: getIt<AppCacheService>(),
     ),
   );
   getIt.registerFactory(
@@ -369,6 +374,18 @@ void setupServiceLocator() {
   );
 
   // Chat Feature
+  getIt.registerLazySingleton<ChatCacheService>(
+    () => ChatCacheService(
+      Hive.box<String>(ChatCacheService.conversationsBoxName),
+      Hive.box<String>(ChatCacheService.messagesBoxName),
+    ),
+  );
+  getIt.registerLazySingleton<AppCacheService>(
+    () => AppCacheService(
+      Hive.box<String>(AppCacheService.profileBoxName),
+      Hive.box<String>(AppCacheService.appointmentsBoxName),
+    ),
+  );
   getIt.registerLazySingleton<ChatRemoteDataSource>(
     () => ChatRemoteDataSourceImpl(getIt<ApiService>()),
   );
@@ -378,8 +395,8 @@ void setupServiceLocator() {
       getIt<AuthLocalDataSource>(),
     ),
   );
-  getIt.registerFactory(() => UserChatCubit(getIt(), getIt()));
-  getIt.registerFactory(() => ConversationsCubit(getIt(), getIt()));
+  getIt.registerFactory(() => UserChatCubit(getIt(), getIt(), getIt()));
+  getIt.registerFactory(() => ConversationsCubit(getIt(), getIt(), getIt()));
 
   // Notifications
   getIt.registerLazySingleton<NotificationRemoteDataSource>(

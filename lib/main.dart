@@ -16,6 +16,9 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:doctor_appointment/core/logic/theme_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_offline/flutter_offline.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:doctor_appointment/core/services/chat_cache_service.dart';
+import 'package:doctor_appointment/core/services/app_cache_service.dart';
 import 'package:doctor_appointment/l10n/app_localizations.dart';
 import 'package:doctor_appointment/core/logic/locale_cubit.dart';
 import 'package:responsive_framework/responsive_framework.dart';
@@ -46,6 +49,11 @@ void main() async {
 
       await loadEnv();
       await SharedPreferencesHelper.init();
+      
+      await Hive.initFlutter();
+      await ChatCacheService.openBoxes();
+      await AppCacheService.openBoxes();
+
       setupServiceLocator();
       await getIt<NotificationService>().init();
       await getIt<LogService>().init();
