@@ -43,6 +43,17 @@ class SharedPreferencesHelper {
     return _prefs.getString('user_data');
   }
 
+  static bool isDoctor() {
+    final userData = getUserData();
+    if (userData == null) return false;
+    try {
+      final decoded = jsonDecode(userData) as Map<String, dynamic>;
+      return decoded['role'] == 'doctor';
+    } catch (_) {
+      return false;
+    }
+  }
+
   static Future<bool> removeUserData() async {
     return await _prefs.remove('user_data');
   }

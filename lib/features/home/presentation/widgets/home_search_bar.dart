@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:doctor_appointment/core/utils/app_dimensions.dart';
-
-
 import 'package:doctor_appointment/l10n/app_localizations.dart';
 import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
+import 'package:doctor_appointment/features/search/presentation/views/search_view.dart';
+import 'package:doctor_appointment/core/widgets/bottom_navigation_bar.dart';
 
 class HomeSearchBar extends StatelessWidget {
   const HomeSearchBar({super.key});
@@ -44,6 +44,16 @@ class _SearchInput extends StatelessWidget {
         ],
       ),
       child: TextField(
+        textInputAction: TextInputAction.search,
+        onSubmitted: (value) {
+          if (value.trim().isNotEmpty) {
+            SearchView.pendingSearchQuery.value = value.trim();
+            final rootState = context.findAncestorStateOfType<RootState>();
+            if (rootState != null) {
+              rootState.changePage(2);
+            }
+          }
+        },
         decoration: InputDecoration(
           hintText: l10n.searchHint,
           hintStyle: context.bodyMedium,

@@ -257,7 +257,10 @@ abstract class AppRouter {
         path: kAppointmentDetailsView,
         builder: (context, state) {
           final appointment = state.extra as Appointment;
-          return AppointmentDetailsView(appointment: appointment);
+          return BlocProvider(
+            create: (context) => getIt<AppointmentsCubit>(),
+            child: AppointmentDetailsView(appointment: appointment),
+          );
         },
       ),
       GoRoute(
@@ -356,7 +359,10 @@ abstract class AppRouter {
       GoRoute(
         name: Routes.findNearbyView,
         path: kFindNearbyView,
-        builder: (context, state) => const FindNearbyView(),
+        builder: (context, state) => BlocProvider(
+          create: (context) => getIt<DoctorsCubit>()..fetchDoctors(),
+          child: const FindNearbyView(),
+        ),
       ),
       GoRoute(
         name: Routes.doctorSpecialityView,

@@ -3,6 +3,7 @@ import 'package:doctor_appointment/features/appointment/domain/entities/appointm
 import 'package:doctor_appointment/features/appointment/logic/appointments_cubit.dart';
 import 'package:doctor_appointment/features/appointment/logic/appointments_state.dart';
 import 'package:doctor_appointment/features/calendar/presentation/widgets/appointment_card.dart';
+import 'package:doctor_appointment/core/widgets/bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -60,18 +61,35 @@ class _CalendarViewState extends State<CalendarView>
           ),
         ),
       ),
-      body: LiquidPullToRefresh(
-        onRefresh: () => context.read<AppointmentsCubit>().loadAppointments(),
-        color: colorScheme.primary,
-        backgroundColor: colorScheme.surface,
-        showChildOpacityTransition: false,
-        child: TabBarView(
-          controller: _tabController,
-          children: [
-            _buildList(AppointmentTab.upcoming),
-            _buildList(AppointmentTab.completed),
-            _buildList(AppointmentTab.cancelled),
-          ],
+      body: NotificationListener<ScrollNotification>(
+        onNotification: (ScrollNotification notification) {
+          if (notification is OverscrollNotification) {
+            final rootState = context.findAncestorStateOfType<RootState>();
+            if (rootState != null) {
+              if (notification.overscroll < 0 && _tabController.index == 0) {
+                // Dragged to the right at the leftmost tab -> go to Search (Index 2)
+                rootState.changePage(2);
+              } else if (notification.overscroll > 0 && _tabController.index == 2) {
+                // Dragged to the left at the rightmost tab -> go to Profile (Index 4)
+                rootState.changePage(4);
+              }
+            }
+          }
+          return false;
+        },
+        child: LiquidPullToRefresh(
+          onRefresh: () => context.read<AppointmentsCubit>().loadAppointments(),
+          color: colorScheme.primary,
+          backgroundColor: colorScheme.surface,
+          showChildOpacityTransition: false,
+          child: TabBarView(
+            controller: _tabController,
+            children: [
+              _buildList(AppointmentTab.upcoming),
+              _buildList(AppointmentTab.completed),
+              _buildList(AppointmentTab.cancelled),
+            ],
+          ),
         ),
       ),
     );

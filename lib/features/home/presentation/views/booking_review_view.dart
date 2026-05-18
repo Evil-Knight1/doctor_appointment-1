@@ -115,6 +115,7 @@ class _BookingReviewViewState extends State<BookingReviewView> {
                       hintText: 'Write your review here...',
                       hintStyle: context.bodySmall.copyWith(color: colorScheme.onSurfaceVariant),
                       contentPadding: EdgeInsets.all(AppSpacing.lg),
+                      filled: false,
                       border: InputBorder.none,
                       enabledBorder: InputBorder.none,
                       focusedBorder: InputBorder.none,

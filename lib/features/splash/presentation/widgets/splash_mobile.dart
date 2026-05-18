@@ -3,7 +3,6 @@ import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-
 class SplashMobile extends StatelessWidget {
   const SplashMobile({super.key});
 
@@ -12,7 +11,7 @@ class SplashMobile extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     return SafeArea(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisAlignment: .center,
         children: [
           SizedBox(

@@ -1,33 +1,116 @@
 import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:doctor_appointment/core/utils/app_dimensions.dart';
 import 'package:doctor_appointment/features/home/domain/entities/notification_entity.dart';
 import 'package:intl/intl.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:doctor_appointment/core/services/service_locator.dart';
+import 'package:doctor_appointment/features/doctors/data/datasources/doctors_remote_data_source.dart';
+import 'package:doctor_appointment/core/utils/go_router.dart';
+import 'package:go_router/go_router.dart';
 
-class NotificationTile extends StatelessWidget {
+class NotificationTile extends StatefulWidget {
   const NotificationTile({super.key, required this.notification, this.onTap});
   final NotificationEntity notification;
   final VoidCallback? onTap;
 
   @override
+  State<NotificationTile> createState() => _NotificationTileState();
+}
+
+class _NotificationTileState extends State<NotificationTile> {
+  String? _fetchedDoctorName;
+  String? _fetchedDoctorPic;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDoctorIfNeeded();
+  }
+
+  void _loadDoctorIfNeeded() async {
+    final isChat = widget.notification.type == 5 ||
+        (widget.notification.relatedEntityId != null &&
+            (widget.notification.title.toLowerCase().contains('message') ||
+                widget.notification.title.toLowerCase().contains('chat')));
+
+    if (isChat && widget.notification.relatedEntityId != null) {
+      final docId = int.tryParse(widget.notification.relatedEntityId!);
+      if (docId != null) {
+        try {
+          final doctorDataSource = getIt<DoctorsRemoteDataSource>();
+          final doctor = await doctorDataSource.getDoctorById(docId);
+          if (mounted) {
+            setState(() {
+              _fetchedDoctorName = doctor.fullName;
+              _fetchedDoctorPic = doctor.profilePictureUrl;
+            });
+          }
+        } catch (_) {}
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final theme = _getThemeForType(context, notification.type);
-    final timeAgo = _formatTimestamp(notification.createdAt);
+    final theme = _getThemeForType(context, widget.notification.type);
+    final timeAgo = _formatTimestamp(widget.notification.createdAt);
+
+    final isChat = widget.notification.type == 5 ||
+        (widget.notification.relatedEntityId != null &&
+            (widget.notification.title.toLowerCase().contains('message') ||
+                widget.notification.title.toLowerCase().contains('chat')));
+
+    final String displayTitle;
+    final String displayMessage;
+
+    if (isChat) {
+      if (_fetchedDoctorName != null) {
+        displayTitle = 'New Message from Dr. $_fetchedDoctorName';
+      } else {
+        displayTitle = widget.notification.title.isNotEmpty
+            ? widget.notification.title
+            : 'New Message';
+      }
+
+      displayMessage = widget.notification.message.isNotEmpty &&
+              widget.notification.message != 'You received a new message'
+          ? widget.notification.message
+          : 'Tap to read the conversation';
+    } else {
+      displayTitle = widget.notification.title;
+      displayMessage = widget.notification.message;
+    }
 
     return GestureDetector(
-      onTap: onTap,
+      onTap: () {
+        if (widget.onTap != null) {
+          widget.onTap!();
+        }
+
+        if (isChat && widget.notification.relatedEntityId != null) {
+          context.push(
+            '/chat/${widget.notification.relatedEntityId}',
+            extra: {
+              'otherUserName': _fetchedDoctorName ?? 'Chat',
+              'otherUserProfilePicture': _fetchedDoctorPic,
+            },
+          );
+        } else if (widget.notification.type == 1 || widget.notification.type == 235) {
+          context.push(AppRouter.kCalendarView);
+        }
+      },
       child: Container(
         margin: EdgeInsets.only(bottom: AppSpacing.md),
         padding: EdgeInsets.all(AppSpacing.md),
         decoration: BoxDecoration(
-          color: notification.isRead
+          color: widget.notification.isRead
               ? colorScheme.surface
               : colorScheme.primary.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(AppRadius.lg),
-          border: notification.isRead
+          border: widget.notification.isRead
               ? null
               : Border.all(
                   color: colorScheme.primary.withValues(alpha: 0.15),
@@ -51,7 +134,24 @@ class NotificationTile extends StatelessWidget {
                 color: theme.bg,
                 borderRadius: BorderRadius.circular(AppRadius.md),
               ),
-              child: Icon(theme.icon, color: theme.color, size: 22.sp),
+              child: isChat && _fetchedDoctorPic != null && _fetchedDoctorPic!.isNotEmpty
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(AppRadius.md),
+                      child: CachedNetworkImage(
+                        imageUrl: _fetchedDoctorPic!,
+                        fit: BoxFit.cover,
+                        errorWidget: (_, _, _) => Icon(
+                          Icons.chat_rounded,
+                          color: colorScheme.primary,
+                          size: 22.sp,
+                        ),
+                      ),
+                    )
+                  : Icon(
+                      isChat ? Icons.chat_rounded : theme.icon,
+                      color: isChat ? colorScheme.primary : theme.color,
+                      size: 22.sp,
+                    ),
             ),
             SizedBox(width: AppSpacing.md),
             Expanded(
@@ -63,7 +163,7 @@ class NotificationTile extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          notification.title,
+                          displayTitle,
                           style: context.headingSmall
                               .copyWith(color: colorScheme.onSurface),
                           maxLines: 1,
@@ -80,7 +180,7 @@ class NotificationTile extends StatelessWidget {
                   ),
                   SizedBox(height: 4.h),
                   Text(
-                    notification.message,
+                    displayMessage,
                     style: context.bodySmall
                         .copyWith(color: colorScheme.onSurfaceVariant),
                     maxLines: 2,
@@ -89,7 +189,7 @@ class NotificationTile extends StatelessWidget {
                 ],
               ),
             ),
-            if (!notification.isRead) ...[
+            if (!widget.notification.isRead) ...[
               SizedBox(width: 8.w),
               Container(
                 width: 8.w,
@@ -125,27 +225,27 @@ class NotificationTile extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     switch (type) {
-      case 235: // Success / Appointment
+      case 235:
       case 1:
         return _NotificationTheme(
           icon: Icons.check_circle_rounded,
           color: customColors.success!,
           bg: customColors.success!.withValues(alpha: 0.1),
         );
-      case 2170: // Info / Update
+      case 2170:
       case 2:
         return _NotificationTheme(
           icon: Icons.info_rounded,
           color: colorScheme.primary,
           bg: colorScheme.primary.withValues(alpha: 0.1),
         );
-      case 3: // Warning / Reminder
+      case 3:
         return _NotificationTheme(
           icon: Icons.warning_rounded,
           color: customColors.warning!,
           bg: customColors.warning!.withValues(alpha: 0.1),
         );
-      case 4: // Error / Alert
+      case 4:
         return _NotificationTheme(
           icon: Icons.error_rounded,
           color: customColors.error!,

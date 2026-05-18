@@ -7,6 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:doctor_appointment/features/doctors/domain/entities/doctor.dart';
+import 'package:doctor_appointment/features/doctors/domain/entities/specialization.dart';
+import 'package:doctor_appointment/core/utils/routes.dart';
 
 class AppointmentDetailsView extends StatelessWidget {
   final Appointment appointment;
@@ -149,6 +152,26 @@ class AppointmentDetailsView extends StatelessWidget {
     );
   }
 
+  Doctor _getDoctorFromAppointment() {
+    return Doctor(
+      id: appointment.doctorId,
+      fullName: appointment.doctorName,
+      email: '',
+      phone: '',
+      specializationId: 0,
+      specialization: Specialization(
+        id: 0,
+        name: appointment.specializationName ?? 'Specialist',
+      ),
+      isApproved: true,
+      totalReviews: 0,
+      createdAt: DateTime.now(),
+      profilePictureUrl: appointment.doctorProfilePicture,
+      isAvailable: true,
+      consultationFee: appointment.amount,
+    );
+  }
+
   Widget _buildActions(BuildContext context, bool isCancelled, bool isCompleted) {
     final colorScheme = Theme.of(context).colorScheme;
     if (!isCancelled && !isCompleted) {
@@ -157,8 +180,9 @@ class AppointmentDetailsView extends StatelessWidget {
           CustomButton(
             text: 'Reschedule',
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Rescheduling functionality coming soon')),
+              context.pushNamed(
+                Routes.bookingDateView,
+                extra: _getDoctorFromAppointment(),
               );
             },
             width: double.infinity,
@@ -191,9 +215,17 @@ class AppointmentDetailsView extends StatelessWidget {
       return CustomButton(
         text: isCompleted ? 'Leave Review' : 'Book Again',
         onPressed: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(isCompleted ? 'Leave Review coming soon' : 'Booking again...')),
-          );
+          if (isCompleted) {
+            context.pushNamed(
+              Routes.bookingReviewView,
+              extra: _getDoctorFromAppointment(),
+            );
+          } else {
+            context.pushNamed(
+              Routes.bookingDateView,
+              extra: _getDoctorFromAppointment(),
+            );
+          }
         },
         width: double.infinity,
         height: 54.h,

@@ -7,6 +7,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:doctor_appointment/core/utils/go_router.dart';
+import 'package:doctor_appointment/features/doctors/domain/entities/doctor.dart';
+import 'package:doctor_appointment/features/doctors/domain/entities/specialization.dart';
+import 'package:doctor_appointment/core/utils/routes.dart';
+
 
 class AppointmentCard extends StatelessWidget {
   final Appointment appointment;
@@ -229,16 +233,37 @@ class AppointmentCard extends StatelessWidget {
     );
   }
 
+  Doctor _getDoctorFromAppointment() {
+    return Doctor(
+      id: appointment.doctorId,
+      fullName: appointment.doctorName,
+      email: '',
+      phone: '',
+      specializationId: 0,
+      specialization: Specialization(
+        id: 0,
+        name: appointment.specializationName ?? 'Specialist',
+      ),
+      isApproved: true,
+      totalReviews: 0,
+      createdAt: DateTime.now(),
+      profilePictureUrl: appointment.doctorProfilePicture,
+      isAvailable: true,
+      consultationFee: appointment.amount,
+    );
+  }
+
   Widget _buildActions(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final isUpcoming = !isCompleted && !isCancelled;
     return Row(
       children: [
         Expanded(
           child: OutlinedButton(
             onPressed: () {
-              // TODO: Implement Re-book logic
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Re-booking functionality coming soon')),
+              context.pushNamed(
+                Routes.bookingDateView,
+                extra: _getDoctorFromAppointment(),
               );
             },
             style: OutlinedButton.styleFrom(
@@ -249,7 +274,7 @@ class AppointmentCard extends StatelessWidget {
               padding: EdgeInsets.symmetric(vertical: 12.h),
             ),
             child: Text(
-              'Re-book',
+              isUpcoming ? 'Reschedule' : 'Re-book',
               style: context.styleSemiBold14.copyWith(
                 color: colorScheme.primary,
                 fontSize: 13.sp,
@@ -261,19 +286,19 @@ class AppointmentCard extends StatelessWidget {
         Expanded(
           child: ElevatedButton(
             onPressed: () {
-              if (isCompleted || isCancelled) {
-                // TODO: Implement Review logic
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Leave Review coming soon')),
-                );
-              } else {
+              if (isUpcoming) {
                 _showCancelDialog(context);
+              } else {
+                context.pushNamed(
+                  Routes.bookingReviewView,
+                  extra: _getDoctorFromAppointment(),
+                );
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: isCompleted || isCancelled
-                  ? colorScheme.secondary
-                  : colorScheme.primary,
+              backgroundColor: isUpcoming
+                  ? colorScheme.primary
+                  : colorScheme.secondary,
               foregroundColor: colorScheme.onPrimary,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12.r),
@@ -282,7 +307,7 @@ class AppointmentCard extends StatelessWidget {
               elevation: 0,
             ),
             child: Text(
-              isCompleted || isCancelled ? 'Leave Review' : 'Cancel',
+              isUpcoming ? 'Cancel' : 'Leave Review',
               style: context.styleSemiBold14.copyWith(
                 color: colorScheme.onPrimary,
                 fontSize: 13.sp,

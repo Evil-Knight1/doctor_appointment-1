@@ -189,6 +189,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get notifications => 'الإشعارات';
 
   @override
+  String get appearance => 'المظهر';
+
+  @override
+  String get systemDefault => 'النظام';
+
+  @override
+  String get lightMode => 'الوضع الفاتح';
+
+  @override
   String get darkMode => 'الوضع الداكن';
 
   @override

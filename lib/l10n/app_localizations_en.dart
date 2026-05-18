@@ -189,6 +189,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notifications => 'Notifications';
 
   @override
+  String get appearance => 'Appearance';
+
+  @override
+  String get systemDefault => 'System Default';
+
+  @override
+  String get lightMode => 'Light Mode';
+
+  @override
   String get darkMode => 'Dark Mode';
 
   @override

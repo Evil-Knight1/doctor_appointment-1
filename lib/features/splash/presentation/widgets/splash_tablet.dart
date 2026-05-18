@@ -10,7 +10,7 @@ class SplashTablet extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         SizedBox(width: 100.w, child: Image.asset(Assets.imagesLogo)),
         SizedBox(height: 12.h),

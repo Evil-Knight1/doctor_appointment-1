@@ -19,6 +19,9 @@ import 'package:skeletonizer/skeletonizer.dart';
 class SearchView extends StatefulWidget {
   const SearchView({super.key});
 
+  // Global static notifier to pass search query from other screens (e.g. Home)
+  static final ValueNotifier<String?> pendingSearchQuery = ValueNotifier<String?>(null);
+
   @override
   State<SearchView> createState() => _SearchViewState();
 }
@@ -37,8 +40,22 @@ class _SearchViewState extends State<SearchView> {
     _doctorsCubit = getIt<DoctorsCubit>();
     _specializationsCubit = getIt<SpecializationsCubit>();
     
+    // Listen to pending search query
+    SearchView.pendingSearchQuery.addListener(_handlePendingSearch);
+    
+    // Check if there is an initial pending query
+    if (SearchView.pendingSearchQuery.value != null) {
+      _searchTerm = SearchView.pendingSearchQuery.value!;
+      _searchController.text = _searchTerm;
+      SearchView.pendingSearchQuery.value = null; // Consume it
+    }
+
     // Load data
-    _doctorsCubit.fetchDoctors(pageNumber: 1, pageSize: 10);
+    _doctorsCubit.fetchDoctors(
+      pageNumber: 1, 
+      pageSize: 10,
+      searchTerm: _searchTerm.isEmpty ? null : _searchTerm,
+    );
     if (_specializationsCubit.state is! SpecializationsSuccess) {
       _specializationsCubit.fetchSpecializations();
     }
@@ -46,8 +63,21 @@ class _SearchViewState extends State<SearchView> {
     _scrollController.addListener(_onScroll);
   }
 
+  void _handlePendingSearch() {
+    if (SearchView.pendingSearchQuery.value != null && mounted) {
+      setState(() {
+        _searchTerm = SearchView.pendingSearchQuery.value!;
+        _searchController.text = _searchTerm;
+        _selectedSpecializationId = null; // Clear specialization filter when searching from Home
+      });
+      SearchView.pendingSearchQuery.value = null; // Consume it
+      _search();
+    }
+  }
+
   @override
   void dispose() {
+    SearchView.pendingSearchQuery.removeListener(_handlePendingSearch);
     _searchController.dispose();
     _scrollController.dispose();
     _doctorsCubit.close();

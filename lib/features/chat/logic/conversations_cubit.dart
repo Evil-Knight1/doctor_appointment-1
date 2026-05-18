@@ -18,6 +18,13 @@ class ConversationsCubit extends Cubit<ConversationsState> {
 
   void _init() {
     _messageSubscription = _signalRService.messageStream.listen(_onMessageReceived);
+    _connect();
+  }
+
+  Future<void> _connect() async {
+    try {
+      await _signalRService.connect();
+    } catch (_) {}
   }
 
   void _onMessageReceived(ChatMessageModel message) {

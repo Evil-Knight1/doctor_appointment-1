@@ -12,6 +12,7 @@ import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
 import 'package:doctor_appointment/core/utils/routes.dart';
 import 'package:go_router/go_router.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
+import 'package:doctor_appointment/core/services/shared_preferences_helper.dart';
 
 class ConversationsScreen extends StatefulWidget {
   const ConversationsScreen({super.key});
@@ -35,106 +36,144 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
     final colorScheme = Theme.of(context).colorScheme;
     return BlocProvider(
       create: (context) => getIt<ConversationsCubit>()..fetchConversations(),
-      child: Scaffold(
-        backgroundColor: colorScheme.surface,
-        body: Column(
-          children: [
-            _buildHeader(context),
-            Expanded(
-              child: LiquidPullToRefresh(
-                onRefresh: () =>
-                    context.read<ConversationsCubit>().fetchConversations(),
-                color: colorScheme.primary,
-                backgroundColor: colorScheme.surface,
-                showChildOpacityTransition: false,
-                child: BlocBuilder<ConversationsCubit, ConversationsState>(
-                  builder: (context, state) {
-                    if (state.status == ConversationsStatus.loading &&
-                        state.conversations.isEmpty) {
-                      return Skeletonizer(
-                        enabled: true,
-                        child: ListView.builder(
-                          padding: EdgeInsets.only(top: 8.h, bottom: 24.h),
-                          itemCount: 10,
-                          itemBuilder: (context, index) {
-                            return ConversationTile(
-                              conversation: ConversationModel(
-                                otherUserId: index,
-                                otherUserName: 'User Name Loading',
-                                otherUserRole: 'Doctor',
-                                unreadCount: 0,
-                                lastMessage:
-                                    'This is a loading message placeholder',
-                                lastMessageTime: DateTime.now(),
-                              ),
-                              onTap: () {},
-                            );
-                          },
-                        ),
-                      );
-                    }
-
-                    final all = state.conversations;
-                    final filtered = _query.isEmpty
-                        ? all
-                        : all
-                              .where(
-                                (c) => c.otherUserName.toLowerCase().contains(
-                                  _query.toLowerCase(),
+      child: Builder(
+        builder: (context) {
+          return PopScope(
+            canPop: context.canPop(),
+            onPopInvokedWithResult: (didPop, result) {
+              if (didPop) return;
+              if (SharedPreferencesHelper.isDoctor()) {
+                context.go('/doctorRoot');
+              } else {
+                context.go('/root');
+              }
+            },
+            child: Scaffold(
+              backgroundColor: colorScheme.surface,
+              body: Column(
+                children: [
+                  _buildHeader(context),
+                  Expanded(
+                    child: LiquidPullToRefresh(
+                      onRefresh: () => context
+                          .read<ConversationsCubit>()
+                          .fetchConversations(),
+                      color: colorScheme.primary,
+                      backgroundColor: colorScheme.surface,
+                      showChildOpacityTransition: false,
+                      child: BlocBuilder<ConversationsCubit, ConversationsState>(
+                        builder: (context, state) {
+                          if (state.status == ConversationsStatus.loading) {
+                            final showFake = state.conversations.isEmpty;
+                            return Skeletonizer(
+                              enabled: true,
+                              child: ListView.builder(
+                                padding: EdgeInsets.only(
+                                  top: 8.h,
+                                  bottom: 24.h,
                                 ),
-                              )
-                              .toList();
+                                itemCount: showFake
+                                    ? 10
+                                    : state.conversations.length,
+                                itemBuilder: (context, index) {
+                                  if (showFake) {
+                                    return ConversationTile(
+                                      conversation: ConversationModel(
+                                        otherUserId: index,
+                                        otherUserName: 'User Name Loading',
+                                        otherUserRole: 'Doctor',
+                                        unreadCount: 0,
+                                        lastMessage:
+                                            'This is a loading message placeholder',
+                                        lastMessageTime: DateTime.now(),
+                                      ),
+                                      onTap: () {},
+                                    );
+                                  }
+                                  return ConversationTile(
+                                    conversation: state.conversations[index],
+                                    onTap: () {},
+                                  );
+                                },
+                              ),
+                            );
+                          }
 
-                    // AI entry + filtered real conversations
-                    final bool showAi =
-                        _query.isEmpty ||
-                        'ai health assistant'.contains(_query.toLowerCase());
+                          final all = state.conversations;
+                          final filtered = _query.isEmpty
+                              ? all
+                              : all
+                                    .where(
+                                      (c) => c.otherUserName
+                                          .toLowerCase()
+                                          .contains(_query.toLowerCase()),
+                                    )
+                                    .toList();
 
-                    final int total = filtered.length + (showAi ? 1 : 0);
+                          // AI entry + filtered real conversations
+                          final bool showAi =
+                              _query.isEmpty ||
+                              'ai health assistant'.contains(
+                                _query.toLowerCase(),
+                              );
 
-                    if (total == 0) {
-                      return _buildEmpty(context);
-                    }
+                          final int total = filtered.length + (showAi ? 1 : 0);
 
-                    return ListView.builder(
-                      padding: EdgeInsets.only(top: 8.h, bottom: 24.h),
-                      itemCount: total,
-                      itemBuilder: (context, index) {
-                        if (showAi && index == 0) {
-                          return ConversationTile(
-                            conversation: ConversationModel(
-                              otherUserId: -1,
-                              otherUserName: 'AI Health Assistant',
-                              otherUserRole: 'AI',
-                              unreadCount: 0,
-                              lastMessage: 'Your smart health companion',
-                              lastMessageTime: DateTime.now(),
-                            ),
-                            isAi: true,
-                            onTap: () =>
-                                context.pushNamed(Routes.chatHistoryView),
-                          );
-                        }
-                        final conversation =
-                            filtered[showAi ? index - 1 : index];
-                        return ConversationTile(
-                          conversation: conversation,
-                          onTap: () => context.push(
-                            '/chat/${conversation.otherUserId}',
-                            extra: {
-                              'otherUserName': conversation.otherUserName,
-                              'otherUserProfilePicture': conversation.otherUserProfilePicture,
+                          if (total == 0) {
+                            return _buildEmpty(context);
+                          }
+
+                          return ListView.builder(
+                            padding: EdgeInsets.only(top: 8.h, bottom: 24.h),
+                            itemCount: total,
+                            itemBuilder: (context, index) {
+                              if (showAi && index == 0) {
+                                return ConversationTile(
+                                  conversation: ConversationModel(
+                                    otherUserId: -1,
+                                    otherUserName: 'AI Health Assistant',
+                                    otherUserRole: 'AI',
+                                    unreadCount: 0,
+                                    lastMessage: 'Your smart health companion',
+                                    lastMessageTime: DateTime.now(),
+                                  ),
+                                  isAi: true,
+                                  onTap: () =>
+                                      context.pushNamed(Routes.chatHistoryView),
+                                );
+                              }
+                              final conversation =
+                                  filtered[showAi ? index - 1 : index];
+                              return ConversationTile(
+                                conversation: conversation,
+                                onTap: () async {
+                                  await context.push(
+                                    '/chat/${conversation.otherUserId}',
+                                    extra: {
+                                      'otherUserName':
+                                          conversation.otherUserName,
+                                      'otherUserProfilePicture':
+                                          conversation.otherUserProfilePicture,
+                                    },
+                                  );
+                                  if (context.mounted) {
+                                    context
+                                        .read<ConversationsCubit>()
+                                        .fetchConversations();
+                                  }
+                                },
+                              );
                             },
-                          ),
-                        );
-                      },
-                    );
-                  },
-                ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
@@ -161,7 +200,15 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
             children: [
               Row(
                 children: [
-                  const BackButton(color: Colors.white),
+                  if (context.canPop())
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back, color: Colors.white),
+                      onPressed: () {
+                        context.pop();
+                      },
+                    )
+                  else
+                    SizedBox(width: 40.w),
                   const Spacer(),
                   Text(
                     'Messages',
@@ -235,5 +282,4 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
       ),
     );
   }
-
 }

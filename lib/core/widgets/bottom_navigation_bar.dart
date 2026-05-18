@@ -15,11 +15,13 @@ class Root extends StatefulWidget {
   const Root({super.key});
 
   @override
-  State<Root> createState() => _RootState();
+  State<Root> createState() => RootState();
 }
 
-class _RootState extends State<Root> {
+class RootState extends State<Root> {
   int _currentIndex = 0;
+  late final PageController _pageController;
+
   static const List<Widget> _widgetOptions = [
     HomeView(),
     ConversationsScreen(),
@@ -27,13 +29,55 @@ class _RootState extends State<Root> {
     CalendarView(),
     ProfileView(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: _currentIndex);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void changePage(int index) {
+    if (index >= 0 && index < _widgetOptions.length) {
+      _pageController.animateToPage(
+        index,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
+  void _changeItem(int value) {
+    setState(() {
+      _currentIndex = value;
+    });
+    _pageController.animateToPage(
+      value,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
       extendBody: true,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: IndexedStack(index: _currentIndex, children: _widgetOptions),
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+        children: _widgetOptions,
+      ),
       bottomNavigationBar: CurvedNavigationBar(
         index: _currentIndex,
         backgroundColor: Colors.transparent,
@@ -125,12 +169,5 @@ class _RootState extends State<Root> {
         onTap: _changeItem,
       ),
     );
-  }
-
-
-  void _changeItem(int value) {
-    setState(() {
-      _currentIndex = value;
-    });
   }
 }

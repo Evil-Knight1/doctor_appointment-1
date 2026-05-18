@@ -108,6 +108,8 @@ class NotificationService {
           'Notifications for appointments, status changes, and new messages.',
       importance: Importance.max,
       priority: Priority.high,
+      category: AndroidNotificationCategory.message,
+      showWhen: true,
     );
 
     const NotificationDetails notificationDetails = NotificationDetails(
@@ -144,6 +146,7 @@ class NotificationService {
               'Notifications for appointments, status changes, and new messages.',
           importance: Importance.max,
           priority: Priority.high,
+          category: AndroidNotificationCategory.event,
         ),
         iOS: DarwinNotificationDetails(),
       ),
@@ -151,12 +154,13 @@ class NotificationService {
       payload: payload,
     );
   }
+
   void _navigateBasedOnData(Map<String, dynamic> data) {
     final type = data['type'];
-    if (type == 'chat' && data['userId'] != null) {
-      final userId = data['userId'];
-      final userName = data['userName'] ?? 'Chat';
-      final userProfilePicture = data['userProfilePicture'];
+    final userId = data['userId'] ?? data['senderId'];
+    if ((type == 'chat' || userId != null) && userId != null) {
+      final userName = data['userName'] ?? data['senderName'] ?? 'Chat';
+      final userProfilePicture = data['userProfilePicture'] ?? data['senderProfilePicture'];
       AppRouter.router.push(
         '/chat/$userId',
         extra: {

@@ -17,7 +17,7 @@ class SplashDesktop extends StatelessWidget {
           builder: (context, constraints) {
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Image.asset(
                   Assets.imagesLogo,

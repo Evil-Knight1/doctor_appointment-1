@@ -55,11 +55,7 @@ class _ProfileViewState extends State<ProfileView> {
             constraints: BoxConstraints(maxWidth: 600.w),
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
-              padding: EdgeInsets.only(
-                left: 20.w,
-                right: 20.w,
-                bottom: 100.h,
-              ),
+              padding: EdgeInsets.only(left: 20.w, right: 20.w, bottom: 100.h),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -111,9 +107,7 @@ class _ProfileViewState extends State<ProfileView> {
                         onTap: () async {
                           if (state is! ProfileSuccess) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(l10n.seeAll),
-                              ),
+                              SnackBar(content: Text(l10n.seeAll)),
                             );
                             return;
                           }
@@ -170,7 +164,8 @@ class _ProfileViewState extends State<ProfileView> {
                         : l10n.disabled,
                     trailing: Switch(
                       value: _notificationsEnabled,
-                      onChanged: (v) => setState(() => _notificationsEnabled = v),
+                      onChanged: (v) =>
+                          setState(() => _notificationsEnabled = v),
                       activeThumbColor: colorScheme.primary,
                     ),
                   ),
@@ -178,18 +173,77 @@ class _ProfileViewState extends State<ProfileView> {
                   BlocBuilder<ThemeCubit, ThemeMode>(
                     builder: (context, themeMode) {
                       return ProfileMenuItem(
-                        icon: Icons.dark_mode_outlined,
-                        title: l10n.darkMode,
-                        subtitle: themeMode == ThemeMode.dark
-                            ? l10n.enabled
-                            : l10n.disabled,
-                        trailing: Switch(
-                          value: themeMode == ThemeMode.dark,
-                          onChanged: (v) {
-                            context.read<ThemeCubit>().toggleTheme(v);
-                          },
-                          activeThumbColor: colorScheme.primary,
+                        icon: Icons.palette_outlined,
+                        title: l10n.appearance,
+                        subtitle: themeMode == ThemeMode.system
+                            ? l10n.systemDefault
+                            : (themeMode == ThemeMode.dark ? l10n.darkMode : l10n.lightMode),
+                        trailing: Icon(
+                          Icons.keyboard_arrow_down_rounded,
+                          color: colorScheme.onSurfaceVariant,
+                          size: 20.sp,
                         ),
+                        onTap: () async {
+                          final RenderBox button = context.findRenderObject() as RenderBox;
+                          final RenderBox overlay = Navigator.of(context).overlay!.context.findRenderObject() as RenderBox;
+                          final RelativeRect position = RelativeRect.fromRect(
+                            Rect.fromPoints(
+                              button.localToGlobal(Offset(0, button.size.height), ancestor: overlay),
+                              button.localToGlobal(button.size.bottomRight(Offset.zero), ancestor: overlay),
+                            ),
+                            Offset.zero & overlay.size,
+                          );
+
+                          final activeMode = themeMode;
+                          final allModes = [ThemeMode.system, ThemeMode.light, ThemeMode.dark];
+                          final items = [
+                            activeMode,
+                            ...allModes.where((mode) => mode != activeMode),
+                          ];
+
+                          final newMode = await showMenu<ThemeMode>(
+                            context: context,
+                            position: position,
+                            elevation: 4,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16.r),
+                            ),
+                            items: items.map((mode) {
+                              final isSelected = mode == themeMode;
+                              final String label = mode == ThemeMode.system
+                                  ? l10n.systemDefault
+                                  : (mode == ThemeMode.dark ? l10n.darkMode : l10n.lightMode);
+                              return PopupMenuItem<ThemeMode>(
+                                value: mode,
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(vertical: 4.h),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        label,
+                                        style: context.bodyMedium.copyWith(
+                                          color: isSelected ? colorScheme.primary : colorScheme.onSurface,
+                                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                                        ),
+                                      ),
+                                      if (isSelected)
+                                        Icon(
+                                          Icons.check_rounded,
+                                          color: colorScheme.primary,
+                                          size: 18.sp,
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          );
+
+                          if (newMode != null && context.mounted) {
+                            context.read<ThemeCubit>().setThemeMode(newMode);
+                          }
+                        },
                       );
                     },
                   ),
@@ -377,21 +431,66 @@ class _LanguageOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 12.h),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(label, style: context.styleMedium14),
-            if (isSelected)
-              Icon(
-                Icons.check_rounded,
-                color: Theme.of(context).colorScheme.primary,
-                size: 18.sp,
+    final colorScheme = Theme.of(context).colorScheme;
+    return Padding(
+      padding: EdgeInsets.only(bottom: 12.h),
+      child: Material(
+        color: isSelected
+            ? colorScheme.primary.withValues(alpha: 0.08)
+            : colorScheme.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(16.r),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16.r),
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: isSelected
+                    ? colorScheme.primary
+                    : colorScheme.outlineVariant.withValues(alpha: 0.5),
+                width: 1.5,
               ),
-          ],
+              borderRadius: BorderRadius.circular(16.r),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  label,
+                  style: context.styleMedium14.copyWith(
+                    color: isSelected
+                        ? colorScheme.primary
+                        : colorScheme.onSurface,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                  ),
+                ),
+                Container(
+                  width: 22.r,
+                  height: 22.r,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: isSelected
+                          ? colorScheme.primary
+                          : colorScheme.outlineVariant,
+                      width: 2,
+                    ),
+                    color: isSelected
+                        ? colorScheme.primary
+                        : Colors.transparent,
+                  ),
+                  child: isSelected
+                      ? Icon(
+                          Icons.check_rounded,
+                          color: Colors.white,
+                          size: 14.sp,
+                        )
+                      : null,
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
