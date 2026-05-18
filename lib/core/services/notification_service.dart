@@ -1,17 +1,19 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:doctor_appointment/core/config/env.dart';
 import 'package:doctor_appointment/core/logging/log_service.dart';
 import 'package:doctor_appointment/core/services/service_locator.dart';
 import 'package:doctor_appointment/core/services/shared_preferences_helper.dart';
 import 'package:doctor_appointment/core/utils/go_router.dart';
+import 'package:doctor_appointment/core/utils/image_url_helper.dart';
 import 'package:doctor_appointment/core/utils/result.dart';
 import 'package:doctor_appointment/features/appointment/domain/entities/appointment.dart';
 import 'package:doctor_appointment/features/appointment/domain/usecases/get_my_appointments_usecase.dart';
 import 'package:doctor_appointment/features/chat/data/datasources/chat_remote_data_source.dart';
-import 'package:doctor_appointment/features/chat/data/models/conversation_model.dart';
 import 'package:doctor_appointment/features/home/data/datasource/notification_remote_data_source.dart';
 import 'package:doctor_appointment/features/home/domain/entities/app_notification_type.dart';
+import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -45,11 +47,7 @@ class NotificationService {
 
     tz.initializeTimeZones();
 
-    await _fcm.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
+    await _fcm.requestPermission(alert: true, badge: true, sound: true);
     await _ensureLocalNotificationsInitialized();
 
     FirebaseMessaging.onMessage.listen((message) async {
@@ -84,7 +82,9 @@ class NotificationService {
     await NotificationService()._ensureLocalNotificationsInitialized();
   }
 
-  static Future<void> handleBackgroundRemoteMessage(RemoteMessage message) async {
+  static Future<void> handleBackgroundRemoteMessage(
+    RemoteMessage message,
+  ) async {
     WidgetsFlutterBinding.ensureInitialized();
     await ensureBackgroundDependencies();
     await NotificationService().showRemoteMessageNotification(
@@ -101,24 +101,43 @@ class NotificationService {
     RemoteMessage message, {
     bool fromBackground = false,
   }) async {
+    print('[FCM] showRemoteMessageNotification: message received! fromBackground=$fromBackground');
+    print('[FCM] Message Data: ${message.data}');
+    print('[FCM] Message Notification: Title="${message.notification?.title}", Body="${message.notification?.body}"');
+
     if (fromBackground && message.notification != null) {
+      print('[FCM] Ignoring background notification because it contains a Notification block.');
       return;
     }
 
     final title = _extractNotificationTitle(message);
     final body = _extractNotificationBody(message);
-    if (title == null && body == null) return;
+    print('[FCM] Extracted Title: "$title", Body: "$body"');
+    if (title == null && body == null) {
+      print('[FCM] Title and Body are both null. Aborting.');
+      return;
+    }
 
     final payloadMap = Map<String, dynamic>.from(message.data);
     payloadMap['title'] ??= title;
     payloadMap['message'] ??= body;
+    payloadMap['relatedEntityId'] =
+        payloadMap['relatedEntityId']?.toString() ??
+        payloadMap['chatUserId']?.toString();
+
+    final notificationType = _parseNotificationType(payloadMap['type']);
+    print('[FCM] Parsed notification type: $notificationType');
 
     await showNotification(
       id: message.messageId?.hashCode ?? message.hashCode,
       title: title ?? 'New Notification',
       body: body ?? '',
       payload: jsonEncode(payloadMap),
-      type: _parseNotificationType(payloadMap['type']),
+      type: notificationType,
+      avatarUrl:
+          (payloadMap['senderProfilePicture'] ??
+                  payloadMap['userProfilePicture'])
+              ?.toString(),
     );
   }
 
@@ -128,8 +147,14 @@ class NotificationService {
     required String body,
     String? payload,
     AppNotificationType? type,
+    String? avatarUrl,
   }) async {
+    print('[FCM] showNotification: id=$id, title="$title", type=$type, avatarUrl="$avatarUrl"');
     final notificationType = type ?? AppNotificationType.unknown;
+    final largeIcon = notificationType.isChat
+        ? await _loadAvatarBitmap(avatarUrl)
+        : null;
+    print('[FCM] Loaded largeIcon: $largeIcon');
 
     final androidDetails = AndroidNotificationDetails(
       'doctor_appointment_channel',
@@ -142,6 +167,7 @@ class NotificationService {
           ? AndroidNotificationCategory.message
           : AndroidNotificationCategory.event,
       showWhen: true,
+      largeIcon: largeIcon,
       actions: notificationType.isChat
           ? <AndroidNotificationAction>[
               AndroidNotificationAction(
@@ -149,7 +175,7 @@ class NotificationService {
                 'Reply',
                 allowGeneratedReplies: true,
                 cancelNotification: false,
-                contextual: true,
+                contextual: false,
                 semanticAction: SemanticAction.reply,
                 inputs: const <AndroidNotificationActionInput>[
                   AndroidNotificationActionInput(label: 'Type a reply'),
@@ -166,16 +192,24 @@ class NotificationService {
 
     final notificationDetails = NotificationDetails(
       android: androidDetails,
-      iOS: const DarwinNotificationDetails(),
+      iOS: DarwinNotificationDetails(
+        categoryIdentifier: notificationType.isChat ? 'chat_category' : null,
+      ),
     );
 
-    await _flutterLocalNotificationsPlugin.show(
-      id,
-      title,
-      body,
-      notificationDetails,
-      payload: payload,
-    );
+    try {
+      await _flutterLocalNotificationsPlugin.show(
+        id: id,
+        title: title,
+        body: body,
+        notificationDetails: notificationDetails,
+        payload: payload,
+      );
+      print('[FCM] Successfully showed local notification in tray!');
+    } catch (e, stack) {
+      print('[FCM] Error showing local notification: $e');
+      print(stack);
+    }
   }
 
   Future<void> scheduleNotification({
@@ -186,11 +220,11 @@ class NotificationService {
     String? payload,
   }) async {
     await _flutterLocalNotificationsPlugin.zonedSchedule(
-      id,
-      title,
-      body,
-      tz.TZDateTime.from(scheduledDate, tz.local),
-      const NotificationDetails(
+      id: id,
+      title: title,
+      body: body,
+      scheduledDate: tz.TZDateTime.from(scheduledDate, tz.local),
+      notificationDetails: const NotificationDetails(
         android: AndroidNotificationDetails(
           'doctor_appointment_channel',
           'Doctor Appointment Notifications',
@@ -221,9 +255,15 @@ class NotificationService {
             await _sendQuickReply(data, replyText);
           }
           await _markAsSeenFromPayload(data);
+          if (response.id != null) {
+            await _flutterLocalNotificationsPlugin.cancel(id: response.id!);
+          }
           break;
         case _seenActionId:
           await _markAsSeenFromPayload(data);
+          if (response.id != null) {
+            await _flutterLocalNotificationsPlugin.cancel(id: response.id!);
+          }
           break;
         default:
           _navigateBasedOnData(data);
@@ -248,8 +288,9 @@ class NotificationService {
         data['appointmentId'] != null ||
         data['relatedEntityId'] != null) {
       final idStr = data['appointmentId'] ?? data['relatedEntityId'];
-      final appointmentId =
-          idStr != null ? int.tryParse(idStr.toString()) : null;
+      final appointmentId = idStr != null
+          ? int.tryParse(idStr.toString())
+          : null;
       if (appointmentId != null) {
         _handleAppointmentTapAsync(appointmentId);
       } else {
@@ -261,12 +302,7 @@ class NotificationService {
   }
 
   void _openChatFromNotification(Map<String, dynamic> data) async {
-    final fallbackUserId = _parseInt(
-      data['userId'] ??
-          data['senderId'] ??
-          data['chatUserId'] ??
-          data['relatedEntityId'],
-    );
+    final resolvedUserId = _chatUserIdFromData(data);
 
     final userName = (data['userName'] ?? data['senderName'] ?? 'Chat')
         .toString()
@@ -275,45 +311,18 @@ class NotificationService {
         (data['userProfilePicture'] ?? data['senderProfilePicture'])
             ?.toString();
 
-    try {
-      final chatRemoteDataSource = getIt<ChatRemoteDataSource>();
-      final conversations = await chatRemoteDataSource.getConversations();
-      final matchedConversation = _matchConversationFromData(
-        conversations,
-        data,
-      );
-
-      final resolvedUserId = matchedConversation?.otherUserId ?? fallbackUserId;
-      if (resolvedUserId == null) {
-        AppRouter.router.push(AppRouter.kConversationsView);
-        return;
-      }
-
-      AppRouter.router.push(
-        AppRouter.kChatView.replaceFirst(':userId', '$resolvedUserId'),
-        extra: {
-          'otherUserName':
-              matchedConversation?.otherUserName.isNotEmpty == true
-              ? matchedConversation!.otherUserName
-              : userName,
-          'otherUserProfilePicture':
-              matchedConversation?.otherUserProfilePicture ?? userProfilePicture,
-        },
-      );
-    } catch (_) {
-      if (fallbackUserId == null) {
-        AppRouter.router.push(AppRouter.kConversationsView);
-        return;
-      }
-
-      AppRouter.router.push(
-        AppRouter.kChatView.replaceFirst(':userId', '$fallbackUserId'),
-        extra: {
-          'otherUserName': userName,
-          'otherUserProfilePicture': userProfilePicture,
-        },
-      );
+    if (resolvedUserId == null) {
+      AppRouter.router.push(AppRouter.kConversationsView);
+      return;
     }
+
+    AppRouter.router.push(
+      AppRouter.kChatView.replaceFirst(':userId', '$resolvedUserId'),
+      extra: {
+        'otherUserName': userName.isNotEmpty ? userName : 'Chat',
+        'otherUserProfilePicture': userProfilePicture,
+      },
+    );
   }
 
   Future<void> _sendQuickReply(
@@ -321,15 +330,7 @@ class NotificationService {
     String replyText,
   ) async {
     final chatRemoteDataSource = getIt<ChatRemoteDataSource>();
-    final conversations = await chatRemoteDataSource.getConversations();
-    final matchedConversation = _matchConversationFromData(conversations, data);
-    final resolvedUserId = matchedConversation?.otherUserId ??
-        _parseInt(
-          data['userId'] ??
-              data['senderId'] ??
-              data['chatUserId'] ??
-              data['relatedEntityId'],
-        );
+    final resolvedUserId = _chatUserIdFromData(data);
 
     if (resolvedUserId == null) {
       throw Exception('Could not resolve conversation for quick reply');
@@ -347,15 +348,7 @@ class NotificationService {
     }
 
     final chatRemoteDataSource = getIt<ChatRemoteDataSource>();
-    final conversations = await chatRemoteDataSource.getConversations();
-    final matchedConversation = _matchConversationFromData(conversations, data);
-    final resolvedUserId = matchedConversation?.otherUserId ??
-        _parseInt(
-          data['userId'] ??
-              data['senderId'] ??
-              data['chatUserId'] ??
-              data['relatedEntityId'],
-        );
+    final resolvedUserId = _chatUserIdFromData(data);
 
     if (resolvedUserId != null) {
       try {
@@ -386,23 +379,27 @@ class NotificationService {
   }
 
   AppNotificationType _parseNotificationType(dynamic rawType) {
-    if (rawType is int) {
-      return AppNotificationType.fromValue(rawType);
+    if (rawType == null) return AppNotificationType.unknown;
+
+    final strVal = rawType.toString().trim();
+    final parsedInt = int.tryParse(strVal);
+    if (parsedInt != null) {
+      return AppNotificationType.fromValue(parsedInt);
     }
 
-    if (rawType is String) {
-      final normalized = rawType.trim().toLowerCase();
-      if (normalized == 'chat' || normalized == 'chatmessage') {
-        return AppNotificationType.chatMessage;
-      }
-      if (normalized == 'appointment') {
-        return AppNotificationType.appointmentBooked;
-      }
+    final normalized = strVal.toLowerCase();
+    if (normalized == 'chat' ||
+        normalized == 'chatmessage' ||
+        normalized == '4') {
+      return AppNotificationType.chatMessage;
+    }
+    if (normalized == 'appointment') {
+      return AppNotificationType.appointmentBooked;
+    }
 
-      for (final type in AppNotificationType.values) {
-        if (type.name.toLowerCase() == normalized) {
-          return type;
-        }
+    for (final type in AppNotificationType.values) {
+      if (type.name.toLowerCase() == normalized) {
+        return type;
       }
     }
 
@@ -412,13 +409,11 @@ class NotificationService {
   String? _extractNotificationTitle(RemoteMessage message) {
     final data = message.data;
     final type = _parseNotificationType(data['type']);
-    final senderName = (data['senderName'] ?? data['userName'])?.toString().trim();
-    final senderRole = data['senderRole']?.toString().toLowerCase();
+    final senderName = (data['senderName'] ?? data['userName'])
+        ?.toString()
+        .trim();
 
     if (type.isChat && senderName != null && senderName.isNotEmpty) {
-      if (senderRole == 'doctor' && !senderName.toLowerCase().startsWith('dr.')) {
-        return 'Dr. $senderName';
-      }
       return senderName;
     }
 
@@ -446,88 +441,6 @@ class NotificationService {
     }
 
     return null;
-  }
-
-  ConversationModel? _matchConversationFromData(
-    List<ConversationModel> conversations,
-    Map<String, dynamic> data,
-  ) {
-    ConversationModel? bestMatch;
-    var bestScore = 0;
-
-    for (final conversation in conversations) {
-      final score = _conversationMatchScore(conversation, data);
-      if (score > bestScore) {
-        bestScore = score;
-        bestMatch = conversation;
-      }
-    }
-
-    return bestScore > 0 ? bestMatch : null;
-  }
-
-  int _conversationMatchScore(
-    ConversationModel conversation,
-    Map<String, dynamic> data,
-  ) {
-    var score = 0;
-    final fallbackUserId = _parseInt(
-      data['userId'] ??
-          data['senderId'] ??
-          data['chatUserId'] ??
-          data['relatedEntityId'],
-    );
-    final senderName = (data['senderName'] ?? data['userName'])
-        ?.toString()
-        .trim()
-        .toLowerCase();
-    final normalizedConversationName = conversation.otherUserName
-        .replaceFirst(RegExp(r'^dr\.\s*', caseSensitive: false), '')
-        .trim()
-        .toLowerCase();
-    final normalizedSenderName = senderName
-        ?.replaceFirst(RegExp(r'^dr\.\s*', caseSensitive: false), '')
-        .trim()
-        .toLowerCase();
-    final senderPicture =
-        (data['senderProfilePicture'] ?? data['userProfilePicture'])
-            ?.toString()
-            .trim();
-    final conversationPicture = conversation.otherUserProfilePicture?.trim();
-    final messageText = _extractDataBody(data)?.toLowerCase() ?? '';
-    final lastMessage = conversation.lastMessage.trim().toLowerCase();
-
-    if (senderName != null && senderName.isNotEmpty) {
-      if (conversation.otherUserName.trim().toLowerCase() == senderName) {
-        score += 100;
-      }
-      if (normalizedSenderName != null &&
-          normalizedConversationName == normalizedSenderName) {
-        score += 90;
-      }
-    }
-
-    if (senderPicture != null &&
-        senderPicture.isNotEmpty &&
-        conversationPicture != null &&
-        conversationPicture.isNotEmpty &&
-        senderPicture == conversationPicture) {
-      score += 70;
-    }
-
-    if (!_isGenericChatText(messageText) &&
-        lastMessage.isNotEmpty &&
-        (lastMessage == messageText ||
-            lastMessage.contains(messageText) ||
-            messageText.contains(lastMessage))) {
-      score += 50;
-    }
-
-    if (fallbackUserId != null && conversation.otherUserId == fallbackUserId) {
-      score += senderName == null || senderName.isEmpty ? 40 : 15;
-    }
-
-    return score;
   }
 
   String? _extractDataBody(Map<String, dynamic> data) {
@@ -565,20 +478,50 @@ class NotificationService {
     return parsed;
   }
 
+  int? _chatUserIdFromData(Map<String, dynamic> data) {
+    return _parseInt(data['relatedEntityId']) ??
+        _parseInt(data['chatUserId']) ??
+        _parseInt(data['senderId']) ??
+        _parseInt(data['userId']);
+  }
+
   bool _isChatPayload(Map<String, dynamic> data) =>
-      data['senderId'] != null ||
-      data['userId'] != null ||
-      data['chatUserId'] != null ||
+      data['relatedEntityId'] != null ||
       (data['type']?.toString().toLowerCase().contains('chat') ?? false);
 
   Future<void> _ensureLocalNotificationsInitialized() async {
     if (_localNotificationsInitialized) return;
 
-    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidSettings = AndroidInitializationSettings(
+      '@mipmap/ic_launcher',
+    );
+
+    final darwinCategories = [
+      DarwinNotificationCategory(
+        'chat_category',
+        actions: <DarwinNotificationAction>[
+          DarwinNotificationAction.text(
+            _replyActionId,
+            'Reply',
+            buttonTitle: 'Send',
+            placeholder: 'Type a reply',
+          ),
+          DarwinNotificationAction.plain(
+            _seenActionId,
+            'Seen',
+            options: <DarwinNotificationActionOption>{
+              DarwinNotificationActionOption.foreground,
+            },
+          ),
+        ],
+      ),
+    ];
+
     final darwinSettings = DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
       requestSoundPermission: true,
+      notificationCategories: darwinCategories,
     );
 
     final settings = InitializationSettings(
@@ -587,7 +530,7 @@ class NotificationService {
     );
 
     await _flutterLocalNotificationsPlugin.initialize(
-      settings,
+      settings: settings,
       onDidReceiveNotificationResponse: (response) async {
         await handleNotificationResponse(response);
       },
@@ -595,5 +538,33 @@ class NotificationService {
     );
 
     _localNotificationsInitialized = true;
+  }
+
+  Future<AndroidBitmap<Object>?> _loadAvatarBitmap(String? avatarUrl) async {
+    if (avatarUrl == null || avatarUrl.trim().isEmpty) {
+      return null;
+    }
+
+    try {
+      final fullUrl = ImageUrlHelper.getFullUrl(avatarUrl);
+      if (fullUrl.isEmpty) return null;
+
+      final response = await getIt<Dio>().get<List<int>>(
+        fullUrl,
+        options: Options(
+          responseType: ResponseType.bytes,
+          headers: ImageUrlHelper.getImageHeaders(),
+        ),
+      );
+
+      final bytes = response.data;
+      if (bytes == null || bytes.isEmpty) {
+        return null;
+      }
+
+      return ByteArrayAndroidBitmap(Uint8List.fromList(bytes));
+    } catch (_) {
+      return null;
+    }
   }
 }

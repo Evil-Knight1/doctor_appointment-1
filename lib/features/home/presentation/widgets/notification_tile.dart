@@ -52,27 +52,14 @@ class _NotificationTileState extends State<NotificationTile> {
 
     if (!_needsChatEnrichment) return;
 
-    try {
-      final chatRemoteDataSource = getIt<ChatRemoteDataSource>();
-      final conversations = await chatRemoteDataSource.getConversations();
-      final matchedConversation = _matchConversation(conversations);
-      if (!mounted || matchedConversation == null) return;
-
-      setState(() {
-        _resolvedChatUserId ??= matchedConversation.otherUserId;
-        _resolvedChatPreview = matchedConversation.lastMessage.trim().isEmpty
-            ? null
-            : matchedConversation.lastMessage.trim();
-        _resolvedChatName = matchedConversation.otherUserName;
-        _resolvedChatAvatar = matchedConversation.otherUserProfilePicture;
-      });
-    } catch (_) {}
+    await _enrichChatDisplayFromConversation();
+    if (!mounted) return;
+    setState(() {});
   }
 
   bool get _needsChatEnrichment =>
       notification.notificationType.isChat &&
-      (_resolvedChatUserId == null ||
-          _isGenericChatText(notification.message) ||
+      (_isGenericChatText(notification.message) ||
           (notification.senderName?.trim().isEmpty ?? true) ||
           (notification.senderProfilePicture?.trim().isEmpty ?? true));
 
@@ -362,27 +349,29 @@ class _NotificationTileState extends State<NotificationTile> {
   }
 
   Future<void> _openChat(BuildContext context) async {
-    var chatUserId = _resolvedChatUserId;
-
-    try {
-      final chatRemoteDataSource = getIt<ChatRemoteDataSource>();
-      final conversations = await chatRemoteDataSource.getConversations();
-      final matchedConversation = _matchConversation(conversations);
-      chatUserId = matchedConversation?.otherUserId ?? chatUserId;
-      _resolvedChatUserId = chatUserId;
-      _resolvedChatPreview ??= matchedConversation?.lastMessage;
-      _resolvedChatName ??= matchedConversation?.otherUserName;
-      _resolvedChatAvatar ??= matchedConversation?.otherUserProfilePicture;
-    } catch (_) {
-      chatUserId ??= _parseChatUserId(notification.relatedEntityId);
-    }
-
-    if (!context.mounted) return;
+    final chatUserId = _parseChatUserId(notification.relatedEntityId);
 
     if (chatUserId == null) {
       _showError(context, 'Could not find this conversation');
       return;
     }
+
+    if (_needsChatEnrichment) {
+      try {
+        final chatRemoteDataSource = getIt<ChatRemoteDataSource>();
+        final conversations = await chatRemoteDataSource.getConversations();
+        final matchedConversation = conversations
+            .where((conversation) => conversation.otherUserId == chatUserId)
+            .cast<ConversationModel?>()
+            .firstWhere((_) => true, orElse: () => null);
+        _resolvedChatUserId = chatUserId;
+        _resolvedChatPreview ??= matchedConversation?.lastMessage;
+        _resolvedChatName ??= matchedConversation?.otherUserName;
+        _resolvedChatAvatar ??= matchedConversation?.otherUserProfilePicture;
+      } catch (_) {}
+    }
+
+    if (!context.mounted) return;
 
     await context.push(
       AppRouter.kChatView.replaceFirst(':userId', '$chatUserId'),
@@ -391,6 +380,25 @@ class _NotificationTileState extends State<NotificationTile> {
         'otherUserProfilePicture': _displayAvatarUrl,
       },
     );
+  }
+
+  Future<void> _enrichChatDisplayFromConversation() async {
+    final chatUserId = _parseChatUserId(notification.relatedEntityId);
+    if (chatUserId == null) return;
+
+    try {
+      final chatRemoteDataSource = getIt<ChatRemoteDataSource>();
+      final conversations = await chatRemoteDataSource.getConversations();
+      final matchedConversation = conversations
+          .where((conversation) => conversation.otherUserId == chatUserId)
+          .cast<ConversationModel?>()
+          .firstWhere((_) => true, orElse: () => null);
+      if (matchedConversation == null) return;
+      _resolvedChatUserId = chatUserId;
+      _resolvedChatPreview ??= matchedConversation?.lastMessage;
+      _resolvedChatName ??= matchedConversation?.otherUserName;
+      _resolvedChatAvatar ??= matchedConversation?.otherUserProfilePicture;
+    } catch (_) {}
   }
 
   Future<void> _openAppointmentDetails(BuildContext context) async {
@@ -448,71 +456,6 @@ class _NotificationTileState extends State<NotificationTile> {
     }
   }
 
-  ConversationModel? _matchConversation(List<ConversationModel> conversations) {
-    ConversationModel? bestMatch;
-    var bestScore = 0;
-
-    for (final conversation in conversations) {
-      final score = _conversationMatchScore(conversation);
-      if (score > bestScore) {
-        bestScore = score;
-        bestMatch = conversation;
-      }
-    }
-
-    return bestScore > 0 ? bestMatch : null;
-  }
-
-  int _conversationMatchScore(ConversationModel conversation) {
-    var score = 0;
-    final relatedId = _parseChatUserId(notification.relatedEntityId);
-    final senderName = notification.senderName?.trim().toLowerCase();
-    final normalizedConversationName = conversation.otherUserName
-        .replaceFirst(RegExp(r'^dr\.\s*', caseSensitive: false), '')
-        .trim()
-        .toLowerCase();
-    final normalizedSenderName = senderName
-        ?.replaceFirst(RegExp(r'^dr\.\s*', caseSensitive: false), '')
-        .trim()
-        .toLowerCase();
-    final senderPicture = notification.senderProfilePicture?.trim();
-    final conversationPicture = conversation.otherUserProfilePicture?.trim();
-    final messageText = notification.message.trim().toLowerCase();
-    final lastMessage = conversation.lastMessage.trim().toLowerCase();
-
-    if (senderName != null && senderName.isNotEmpty) {
-      if (conversation.otherUserName.trim().toLowerCase() == senderName) {
-        score += 100;
-      }
-      if (normalizedSenderName != null &&
-          normalizedConversationName == normalizedSenderName) {
-        score += 90;
-      }
-    }
-
-    if (senderPicture != null &&
-        senderPicture.isNotEmpty &&
-        conversationPicture != null &&
-        conversationPicture.isNotEmpty &&
-        senderPicture == conversationPicture) {
-      score += 70;
-    }
-
-    if (!_isGenericChatText(messageText) &&
-        lastMessage.isNotEmpty &&
-        (lastMessage == messageText ||
-            lastMessage.contains(messageText) ||
-            messageText.contains(lastMessage))) {
-      score += 50;
-    }
-
-    if (relatedId != null && conversation.otherUserId == relatedId) {
-      score += senderName == null || senderName.isEmpty ? 40 : 15;
-    }
-
-    return score;
-  }
-
   int? _parseChatUserId(String? raw) {
     final parsed = int.tryParse(raw ?? '');
     if (parsed == null || parsed <= 0) return null;
@@ -543,11 +486,6 @@ class _NotificationTileState extends State<NotificationTile> {
 
     if (baseName.isEmpty) {
       return 'Chat';
-    }
-
-    final senderRole = notification.senderRole?.toLowerCase();
-    if (senderRole == 'doctor' && !baseName.toLowerCase().startsWith('dr.')) {
-      return 'Dr. $baseName';
     }
 
     return baseName;

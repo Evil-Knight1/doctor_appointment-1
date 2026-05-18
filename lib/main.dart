@@ -25,8 +25,11 @@ import 'package:responsive_framework/responsive_framework.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  print('[FCM] _firebaseMessagingBackgroundHandler received a background message!');
+  print('[FCM] Background Message Data: ${message.data}');
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await NotificationService.handleBackgroundRemoteMessage(message);
+  print('[FCM] Background Message handling completed.');
 }
 
 void main() async {

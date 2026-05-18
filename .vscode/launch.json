@@ -7,16 +7,21 @@
         {
             "name": "doctor_appointment",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "args": [
+                "--flavor",
+                "production"
+            ]
         },
         {
-            "name": "doctor_appointment (production)",
+            "name": "doctor_appointment (debug)",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "release",
-            // "args": [
-            //     "--dart-define=API_BASE_URL=${env:API_BASE_URL_PRODUCTION}"
-            // ]
+            "flutterMode": "debug",
+            "args": [
+                "--flavor",
+                "production"
+            ]
         },
         {
             "name": "doctor_appointment (profile mode)",
@@ -28,7 +33,11 @@
             "name": "doctor_appointment (release mode)",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "release"
+            "flutterMode": "release",
+            "args": [
+                "--flavor",
+                "production"
+            ]
         }
     ]
 }
