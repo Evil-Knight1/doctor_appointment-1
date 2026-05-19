@@ -78,13 +78,13 @@ class _NotificationTileState extends State<NotificationTile> {
         padding: EdgeInsets.all(AppSpacing.md),
         decoration: BoxDecoration(
           color: notification.isRead
-              ? colorScheme.surface
+              ? theme.highlight.withValues(alpha: 0.03)
               : theme.highlight.withValues(alpha: 0.12),
           borderRadius: BorderRadius.circular(AppRadius.xl),
           border: Border.all(
             color: notification.isRead
-                ? colorScheme.outlineVariant.withValues(alpha: 0.35)
-                : theme.highlight.withValues(alpha: 0.35),
+                ? theme.highlight.withValues(alpha: 0.15)
+                : theme.highlight.withValues(alpha: 0.4),
           ),
           boxShadow: [
             BoxShadow(
@@ -579,7 +579,7 @@ class _NotificationTileState extends State<NotificationTile> {
         );
       case AppNotificationType.appointmentApproved:
         return _NotificationTheme(
-          icon: Iconsax.clipboard_tick,
+          icon: Iconsax.calendar_tick,
           color: customColors.success ?? colorScheme.primary,
           highlight: customColors.success ?? colorScheme.primary,
           softBackground: (customColors.success ?? colorScheme.primary)
@@ -587,7 +587,7 @@ class _NotificationTileState extends State<NotificationTile> {
         );
       case AppNotificationType.appointmentCancelled:
         return _NotificationTheme(
-          icon: Iconsax.close_circle,
+          icon: Iconsax.calendar_remove,
           color: customColors.error ?? colorScheme.error,
           highlight: customColors.error ?? colorScheme.error,
           softBackground: (customColors.error ?? colorScheme.error).withValues(

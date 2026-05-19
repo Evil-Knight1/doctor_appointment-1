@@ -164,6 +164,21 @@ class NotificationService {
         : null;
     print('[FCM] Loaded largeIcon: $largeIcon');
 
+    Color getNotificationColor(AppNotificationType type) {
+      switch (type) {
+        case AppNotificationType.appointmentApproved:
+        case AppNotificationType.doctorApproved:
+          return const Color(0xFF4CAF50); // Success Green
+        case AppNotificationType.appointmentCancelled:
+        case AppNotificationType.paymentFailed:
+          return const Color(0xFFF44336); // Error Red
+        case AppNotificationType.appointmentReminder:
+          return const Color(0xFFFF9800); // Warning Orange
+        default:
+          return const Color(0xff226CEB); // Primary Blue
+      }
+    }
+
     final androidDetails = AndroidNotificationDetails(
       'doctor_appointment_channel',
       'Doctor Appointment Notifications',
@@ -175,6 +190,7 @@ class NotificationService {
           ? AndroidNotificationCategory.message
           : AndroidNotificationCategory.event,
       showWhen: true,
+      color: getNotificationColor(notificationType),
       largeIcon: largeIcon,
       actions: notificationType.isChat
           ? <AndroidNotificationAction>[
