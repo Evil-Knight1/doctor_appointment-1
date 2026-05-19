@@ -46,7 +46,13 @@ class _BackButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     return GestureDetector(
-      onTap: onBack ?? () => Navigator.of(context).pop(),
+      onTap: onBack ??
+          () {
+            final navigator = Navigator.of(context);
+            if (navigator.canPop()) {
+              navigator.pop();
+            }
+          },
       child: Container(
         margin: EdgeInsets.only(left: 16.w),
         width: 40.w,

@@ -45,7 +45,6 @@ class HomeDoctorModel {
   String get imageAsset =>
       (doctor.profilePictureUrl != null && doctor.profilePictureUrl!.isNotEmpty)
       ? ImageUrlHelper.getFullUrl(doctor.profilePictureUrl!)
-      : 'assets/images/doctor1.png';
+      : 'assets/images/doctor_placeholder.jpg';
   bool get isAvailable => doctor.isAvailable;
-
 }

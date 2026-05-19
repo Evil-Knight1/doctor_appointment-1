@@ -18,12 +18,12 @@ class _DoctorRootState extends State<DoctorRoot> {
   int _currentIndex = 0;
   late final PageController _pageController;
   
-  static const List<Widget> _widgetOptions = [
-    DoctorDashboardView(),
-    DoctorScheduleView(),
-    ConversationsScreen(),
-    DoctorPatientsView(),
-    DoctorProfileView(),
+  List<Widget> get _pages => [
+    DoctorDashboardView(onTabRequested: _changeItem),
+    const DoctorScheduleView(),
+    const ConversationsScreen(),
+    const DoctorPatientsView(),
+    const DoctorProfileView(),
   ];
 
   @override
@@ -49,7 +49,7 @@ class _DoctorRootState extends State<DoctorRoot> {
             _currentIndex = index;
           });
         },
-        children: _widgetOptions,
+        children: _pages,
       ),
       bottomNavigationBar: CurvedNavigationBar(
         index: _currentIndex,

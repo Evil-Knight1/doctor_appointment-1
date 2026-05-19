@@ -38,14 +38,13 @@ class AppointmentsCubit extends Cubit<AppointmentsState> {
     }
   }
 
-  Future<void> cancelAppointment(int appointmentId) async {
+  Future<Result<void>> cancelAppointment(int appointmentId) async {
     final result = await cancelAppointmentUseCase(appointmentId);
 
     if (result is Success) {
       // Reload appointments after successful cancellation
       await loadAppointments();
-    } else if (result is FailureResult) {
-      emit(AppointmentsFailure(result.failure.message));
     }
+    return result;
   }
 }

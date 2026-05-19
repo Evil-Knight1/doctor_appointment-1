@@ -23,6 +23,7 @@ class AppointmentRepositoryImpl implements AppointmentRepository {
     required String reason,
     int? paymentMethod,
     double? amount,
+    int? type,
   }) async {
     try {
       final response = await remoteDataSource.createAppointment(
@@ -31,6 +32,7 @@ class AppointmentRepositoryImpl implements AppointmentRepository {
         reason: reason,
         paymentMethod: paymentMethod,
         amount: amount,
+        type: type,
       );
       return Result.success(response);
     } on ApiException catch (exception) {

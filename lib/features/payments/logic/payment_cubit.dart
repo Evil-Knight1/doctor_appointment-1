@@ -61,6 +61,7 @@ class PaymentCubit extends Cubit<PaymentState> {
     required String reason,
     required int paymentMethod, // 1=Card, 2=Wallet, 3=Cash
     required double amount,
+    int? type,
   }) async {
     emit(PaymentLoading(message: 'Creating appointment…', amount: amount));
 
@@ -72,6 +73,7 @@ class PaymentCubit extends Cubit<PaymentState> {
         reason: reason,
         paymentMethod: paymentMethod,
         amount: amount,
+        type: type,
       ),
     );
 

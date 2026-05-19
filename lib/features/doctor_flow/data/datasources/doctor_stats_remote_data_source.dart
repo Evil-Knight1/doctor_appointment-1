@@ -5,6 +5,7 @@ import 'package:doctor_appointment/features/doctors/data/models/doctor_api_model
 import 'package:doctor_appointment/features/appointment/data/models/appointment_model.dart';
 import 'package:doctor_appointment/features/doctor_flow/data/models/doctor_monthly_revenue_model.dart';
 import 'package:doctor_appointment/features/doctor_flow/data/models/doctor_daily_revenue_model.dart';
+import 'package:doctor_appointment/features/doctors/data/models/availability_model.dart';
 
 abstract class DoctorStatsRemoteDataSource {
   Future<DoctorStatsModel> getDoctorStats();
@@ -14,6 +15,9 @@ abstract class DoctorStatsRemoteDataSource {
   Future<AppointmentModel> updateAppointmentStatus(int appointmentId, int status, {String? notes});
   Future<List<DoctorMonthlyRevenueModel>> getMonthlyRevenue(int year);
   Future<List<DoctorDailyRevenueModel>> getDailyRevenue(int year, int month);
+  Future<List<AvailabilityModel>> getDoctorAvailability(int doctorId);
+  Future<AvailabilityModel> addAvailability(Map<String, dynamic> data);
+  Future<AvailabilityModel> updateAvailability(int availabilityId, Map<String, dynamic> data);
 }
 
 class DoctorStatsRemoteDataSourceImpl implements DoctorStatsRemoteDataSource {
@@ -104,5 +108,33 @@ class DoctorStatsRemoteDataSourceImpl implements DoctorStatsRemoteDataSource {
     }
     final List data = response['data'] ?? [];
     return data.map((e) => DoctorDailyRevenueModel.fromJson(e)).toList();
+  }
+
+  @override
+  Future<AvailabilityModel> addAvailability(Map<String, dynamic> data) async {
+    final response = await apiService.post('/api/Doctor/availability', data: data);
+    if (response['success'] != true) {
+      throw ApiException(response['message'] ?? 'Failed to add availability');
+    }
+    return AvailabilityModel.fromJson(response['data']);
+  }
+
+  @override
+  Future<AvailabilityModel> updateAvailability(int availabilityId, Map<String, dynamic> data) async {
+    final response = await apiService.put('/api/Doctor/availability/$availabilityId', data: data);
+    if (response['success'] != true) {
+      throw ApiException(response['message'] ?? 'Failed to update availability');
+    }
+    return AvailabilityModel.fromJson(response['data']);
+  }
+
+  @override
+  Future<List<AvailabilityModel>> getDoctorAvailability(int doctorId) async {
+    final response = await apiService.get('/api/Doctor/$doctorId/availability');
+    if (response['success'] != true) {
+      throw ApiException(response['message'] ?? 'Failed to load availability');
+    }
+    final List data = response['data'] ?? [];
+    return data.map((e) => AvailabilityModel.fromJson(e)).toList();
   }
 }

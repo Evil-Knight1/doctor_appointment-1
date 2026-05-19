@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:doctor_appointment/core/utils/result.dart';
 import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
 import 'package:doctor_appointment/core/utils/app_images.dart';
 import 'package:doctor_appointment/core/utils/image_url_helper.dart';
@@ -294,10 +295,27 @@ class AppointmentDetailsView extends StatelessWidget {
             ),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(dialogContext);
-              context.read<AppointmentsCubit>().cancelAppointment(appointment.id);
-              context.pop(); // Go back after cancellation
+              final navigator = Navigator.of(context);
+              final messenger = ScaffoldMessenger.of(context);
+              final result = await context.read<AppointmentsCubit>().cancelAppointment(appointment.id);
+              if (result is Success<void>) {
+                messenger.showSnackBar(
+                  const SnackBar(
+                    content: Text('Appointment cancelled successfully'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+                navigator.pop(); // Go back after cancellation
+              } else if (result is FailureResult<void>) {
+                messenger.showSnackBar(
+                  SnackBar(
+                    content: Text(result.failure.message),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
             },
             child: Text(
               'Yes, Cancel',

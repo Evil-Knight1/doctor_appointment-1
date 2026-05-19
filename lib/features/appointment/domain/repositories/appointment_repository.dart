@@ -9,6 +9,7 @@ abstract class AppointmentRepository {
     required String reason,
     int? paymentMethod,
     double? amount,
+    int? type,
   });
 
   Future<Result<List<Appointment>>> getMyAppointments();

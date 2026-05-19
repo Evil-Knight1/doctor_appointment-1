@@ -8,6 +8,7 @@ import 'package:doctor_appointment/features/doctors/domain/entities/doctor.dart'
 import 'package:doctor_appointment/features/appointment/domain/entities/appointment.dart';
 import 'package:doctor_appointment/features/doctor_flow/domain/entities/doctor_monthly_revenue.dart';
 import 'package:doctor_appointment/features/doctor_flow/domain/entities/doctor_daily_revenue.dart';
+import 'package:doctor_appointment/features/doctors/data/models/availability_model.dart';
 
 class DoctorStatsRepositoryImpl implements DoctorStatsRepository {
   final DoctorStatsRemoteDataSource remoteDataSource;
@@ -94,6 +95,42 @@ class DoctorStatsRepositoryImpl implements DoctorStatsRepository {
       return Result.failure(ServerFailure(e.message));
     } catch (e) {
       return Result.failure(const ServerFailure('Unexpected error fetching daily revenue'));
+    }
+  }
+
+  @override
+  Future<Result<AvailabilityModel>> addAvailability(Map<String, dynamic> data) async {
+    try {
+      final res = await remoteDataSource.addAvailability(data);
+      return Result.success(res);
+    } on ApiException catch (e) {
+      return Result.failure(ServerFailure(e.message));
+    } catch (e) {
+      return Result.failure(const ServerFailure('Unexpected error adding availability'));
+    }
+  }
+
+  @override
+  Future<Result<AvailabilityModel>> updateAvailability(int availabilityId, Map<String, dynamic> data) async {
+    try {
+      final res = await remoteDataSource.updateAvailability(availabilityId, data);
+      return Result.success(res);
+    } on ApiException catch (e) {
+      return Result.failure(ServerFailure(e.message));
+    } catch (e) {
+      return Result.failure(const ServerFailure('Unexpected error updating availability'));
+    }
+  }
+
+  @override
+  Future<Result<List<AvailabilityModel>>> getDoctorAvailability(int doctorId) async {
+    try {
+      final res = await remoteDataSource.getDoctorAvailability(doctorId);
+      return Result.success(res);
+    } on ApiException catch (e) {
+      return Result.failure(ServerFailure(e.message));
+    } catch (e) {
+      return Result.failure(const ServerFailure('Unexpected error fetching availability'));
     }
   }
 }

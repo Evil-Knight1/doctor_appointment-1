@@ -71,6 +71,7 @@ import 'package:doctor_appointment/features/doctor_flow/logic/doctor_stats_cubit
 import 'package:doctor_appointment/features/doctor_flow/logic/doctor_profile_cubit.dart';
 import 'package:doctor_appointment/features/doctor_flow/logic/doctor_appointments_cubit.dart';
 import 'package:doctor_appointment/features/doctor_flow/logic/doctor_revenue_cubit.dart';
+import 'package:doctor_appointment/features/doctor_flow/logic/doctor_availability_cubit.dart';
 import 'package:doctor_appointment/features/doctors/data/datasources/review_remote_data_source.dart';
 import 'package:doctor_appointment/features/doctors/data/repositories/review_repository_impl.dart';
 import 'package:doctor_appointment/features/doctors/domain/repositories/review_repository.dart';
@@ -371,6 +372,9 @@ void setupServiceLocator() {
       getDoctorMonthlyRevenueUseCase: getIt<GetDoctorMonthlyRevenueUseCase>(),
       getDoctorDailyRevenueUseCase: getIt<GetDoctorDailyRevenueUseCase>(),
     ),
+  );
+  getIt.registerFactory(
+    () => DoctorAvailabilityCubit(getIt<DoctorStatsRepository>()),
   );
 
   // Chatbot

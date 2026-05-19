@@ -3,6 +3,8 @@ import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
 import 'package:doctor_appointment/core/utils/go_router.dart';
 import 'package:doctor_appointment/features/doctor_flow/logic/doctor_profile_cubit.dart';
 import 'package:doctor_appointment/features/doctor_flow/logic/doctor_profile_state.dart';
+import 'package:doctor_appointment/features/doctor_flow/logic/doctor_availability_cubit.dart';
+import 'package:doctor_appointment/features/doctor_flow/presentation/views/doctor_availability_view.dart';
 import 'package:doctor_appointment/features/profile/presentation/widgets/profile_menu_item.dart';
 import 'package:doctor_appointment/core/services/shared_preferences_helper.dart';
 import 'package:flutter/material.dart';
@@ -110,14 +112,38 @@ class _DoctorProfileViewState extends State<DoctorProfileView> {
                       icon: Icons.payments_outlined,
                       title: 'Setup Fees & Services',
                       subtitle: 'Manage your consultation costs',
-                      onTap: () {},
+                      onTap: () {
+                        if (doctor != null) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => BlocProvider.value(
+                                value: context.read<DoctorAvailabilityCubit>(),
+                                child: DoctorAvailabilityView(doctorId: doctor.id),
+                              ),
+                            ),
+                          );
+                        }
+                      },
                     ),
                     SizedBox(height: 12.h),
                     ProfileMenuItem(
                       icon: Icons.access_time_rounded,
                       title: 'Working Hours',
                       subtitle: 'Set auto-schedule blocks',
-                      onTap: () {},
+                      onTap: () {
+                        if (doctor != null) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => BlocProvider.value(
+                                value: context.read<DoctorAvailabilityCubit>(),
+                                child: DoctorAvailabilityView(doctorId: doctor.id),
+                              ),
+                            ),
+                          );
+                        }
+                      },
                     ),
                     SizedBox(height: 32.h),
                     GestureDetector(

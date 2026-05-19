@@ -27,6 +27,7 @@ class BookingDateView extends StatefulWidget {
 class _BookingDateViewState extends State<BookingDateView> {
   DateTime _selectedDate = DateTime.now();
   SlotModel? _selectedSlot;
+  int _selectedType = 0; // 0 = Regular Visit, 1 = Consultation
 
   @override
   void initState() {
@@ -141,24 +142,41 @@ class _BookingDateViewState extends State<BookingDateView> {
                                   children: slots.map((slot) {
                                     final isSelected = _selectedSlot?.id == slot.id;
                                     final timeStr = DateFormat('hh:mm a').format(slot.startTime);
+                                    final isSlotAvailable = slot.isAvailable && !slot.isBooked;
+
                                     return GestureDetector(
-                                      onTap: () => setState(() => _selectedSlot = slot),
+                                      onTap: isSlotAvailable
+                                          ? () => setState(() => _selectedSlot = slot)
+                                          : null,
                                       child: Container(
                                         width: (1.sw - AppSpacing.lg * 2 - AppSpacing.md * 2) / 3,
                                         padding: EdgeInsets.symmetric(vertical: 12.h),
                                         decoration: BoxDecoration(
-                                          color: isSelected ? colorScheme.primary : colorScheme.surfaceContainerLow,
+                                          color: isSelected
+                                              ? colorScheme.primary
+                                              : (isSlotAvailable
+                                                  ? colorScheme.surfaceContainerLow
+                                                  : colorScheme.surfaceContainerLow.withValues(alpha: 0.4)),
                                           borderRadius: BorderRadius.circular(AppRadius.lg),
                                           border: Border.all(
-                                            color: isSelected ? colorScheme.primary : colorScheme.outlineVariant,
+                                            color: isSelected
+                                                ? colorScheme.primary
+                                                : (isSlotAvailable
+                                                    ? colorScheme.outlineVariant
+                                                    : colorScheme.outlineVariant.withValues(alpha: 0.4)),
                                           ),
                                         ),
                                         child: Center(
                                           child: Text(
                                             timeStr,
                                             style: context.bodySmall.copyWith(
-                                              color: isSelected ? colorScheme.onPrimary : colorScheme.onSurface,
+                                              color: isSelected
+                                                  ? colorScheme.onPrimary
+                                                  : (isSlotAvailable
+                                                      ? colorScheme.onSurface
+                                                      : colorScheme.onSurfaceVariant.withValues(alpha: 0.4)),
                                               fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                                              decoration: isSlotAvailable ? null : TextDecoration.lineThrough,
                                             ),
                                           ),
                                         ),
@@ -175,6 +193,10 @@ class _BookingDateViewState extends State<BookingDateView> {
                     return const SizedBox.shrink();
                   },
                 ),
+                SizedBox(height: AppSpacing.xl),
+                Text('Appointment Type', style: context.headingMedium),
+                SizedBox(height: AppSpacing.md),
+                _buildAppointmentTypeSelector(),
               ],
             ),
           ),
@@ -189,6 +211,7 @@ class _BookingDateViewState extends State<BookingDateView> {
                         'time': DateFormat('hh:mm a').format(_selectedSlot!.startTime),
                         'slotId': _selectedSlot!.id,
                         'amount': widget.doctor.consultationFee ?? 100.0,
+                        'type': _selectedType,
                       },
                     ),
           ),
@@ -315,6 +338,118 @@ class _BookingDateViewState extends State<BookingDateView> {
             child: const Text('Retry'),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildAppointmentTypeSelector() {
+    return Row(
+      children: [
+        Expanded(
+          child: _TypeSelectionCard(
+            title: 'Regular Visit',
+            subtitle: 'Standard medical checkup & follow-up',
+            icon: Icons.favorite_border_rounded,
+            isSelected: _selectedType == 0,
+            onTap: () => setState(() => _selectedType = 0),
+          ),
+        ),
+        SizedBox(width: AppSpacing.md),
+        Expanded(
+          child: _TypeSelectionCard(
+            title: 'Consultation',
+            subtitle: 'Detailed diagnosis & second opinion',
+            icon: Icons.chat_bubble_outline_rounded,
+            isSelected: _selectedType == 1,
+            onTap: () => setState(() => _selectedType = 1),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _TypeSelectionCard extends StatelessWidget {
+  const _TypeSelectionCard({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeInOut,
+        padding: EdgeInsets.all(AppSpacing.md),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? colorScheme.primaryContainer.withValues(alpha: 0.15)
+              : colorScheme.surfaceContainerLow,
+          borderRadius: BorderRadius.circular(AppRadius.xl),
+          border: Border.all(
+            color: isSelected ? colorScheme.primary : colorScheme.outlineVariant,
+            width: isSelected ? 2 : 1,
+          ),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: colorScheme.primary.withValues(alpha: 0.08),
+                    blurRadius: 12.r,
+                    offset: const Offset(0, 4),
+                  ),
+                ]
+              : [],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Icon(
+                  icon,
+                  color: isSelected ? colorScheme.primary : colorScheme.onSurfaceVariant,
+                  size: 24.sp,
+                ),
+                if (isSelected)
+                  Icon(
+                    Icons.check_circle_rounded,
+                    color: colorScheme.primary,
+                    size: 20.sp,
+                  ),
+              ],
+            ),
+            SizedBox(height: AppSpacing.md),
+            Text(
+              title,
+              style: context.bodyMedium.copyWith(
+                fontWeight: FontWeight.w700,
+                color: isSelected ? colorScheme.primary : colorScheme.onSurface,
+              ),
+            ),
+            SizedBox(height: 2.h),
+            Text(
+              subtitle,
+              style: context.bodySmall.copyWith(
+                fontSize: 10.sp,
+                color: colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -11,6 +11,7 @@ abstract class AppointmentRemoteDataSource {
     required String reason,
     int? paymentMethod,
     double? amount,
+    int? type,
   });
 
   Future<List<AppointmentModel>> getMyAppointments();
@@ -31,6 +32,7 @@ class AppointmentRemoteDataSourceImpl implements AppointmentRemoteDataSource {
     required String reason,
     int? paymentMethod,
     double? amount,
+    int? type,
   }) async {
     final body = {
       'doctorId': doctorId,
@@ -39,6 +41,7 @@ class AppointmentRemoteDataSourceImpl implements AppointmentRemoteDataSource {
       'paymentMethod': paymentMethod,
       // Send as whole number — backend may reject float for currency
       'amount': amount?.round(),
+      'type': type ?? 0,
     };
 
     final response = await apiService.post('/api/Appointment', data: body);
@@ -110,7 +113,7 @@ class AppointmentRemoteDataSourceImpl implements AppointmentRemoteDataSource {
 
   @override
   Future<void> cancelAppointment(int appointmentId) async {
-    final response = await apiService.delete('/api/Appointment/$appointmentId');
+    final response = await apiService.post('/api/Appointment/$appointmentId/cancel');
     final success = response['success'] == true;
     if (!success) {
       throw ApiException(_extractMessage(response));

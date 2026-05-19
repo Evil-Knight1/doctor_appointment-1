@@ -33,6 +33,7 @@ class BookingSummaryView extends StatelessWidget {
     final String reason = args['reason'] as String? ?? '';
     final double amount =
         args['amount'] as double? ?? doctor.consultationFee ?? 0.0;
+    final int appointmentType = args['type'] as int? ?? 0;
 
     return BlocConsumer<PaymentCubit, PaymentState>(
       listener: (context, state) {
@@ -163,6 +164,15 @@ class BookingSummaryView extends StatelessWidget {
                             label: 'Time Slot',
                             value: time,
                           ),
+                          Divider(
+                            height: 24.h,
+                            color: colorScheme.outlineVariant,
+                          ),
+                          _DetailRow(
+                            icon: Icons.medical_services_outlined,
+                            label: 'Appointment Type',
+                            value: appointmentType == 1 ? 'Consultation' : 'Regular Visit',
+                          ),
                           if (reason.isNotEmpty) ...[
                             Divider(
                               height: 24.h,
@@ -246,6 +256,7 @@ class BookingSummaryView extends StatelessWidget {
                     reason: reason.isEmpty ? 'General Consultation' : reason,
                     paymentMethod: paymentMethodId,
                     amount: amount,
+                    type: appointmentType,
                   );
                 },
               ),

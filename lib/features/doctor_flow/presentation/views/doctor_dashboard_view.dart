@@ -1,14 +1,17 @@
 import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
-
 import 'package:doctor_appointment/features/doctor_flow/logic/doctor_stats_cubit.dart';
 import 'package:doctor_appointment/features/doctor_flow/logic/doctor_stats_state.dart';
+import 'package:doctor_appointment/features/doctor_flow/logic/doctor_revenue_cubit.dart';
+import 'package:doctor_appointment/features/doctor_flow/presentation/views/doctor_revenue_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class DoctorDashboardView extends StatelessWidget {
-  const DoctorDashboardView({super.key});
+  final void Function(int)? onTabRequested;
+  
+  const DoctorDashboardView({super.key, this.onTabRequested});
 
   @override
   Widget build(BuildContext context) {
@@ -122,6 +125,7 @@ class DoctorDashboardView extends StatelessWidget {
                           stats.totalPatients.toString(),
                           Icons.people_alt_rounded,
                           Theme.of(context).colorScheme.primary,
+                          onTap: () => onTabRequested?.call(3),
                         ),
                       ),
                       SizedBox(width: 16.w),
@@ -132,6 +136,17 @@ class DoctorDashboardView extends StatelessWidget {
                           '\$${stats.totalRevenue.toStringAsFixed(0)}',
                           Icons.attach_money_rounded,
                           context.customColors.success!,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => BlocProvider.value(
+                                  value: context.read<DoctorRevenueCubit>(),
+                                  child: const DoctorRevenueView(),
+                                ),
+                              ),
+                            );
+                          },
                         ),
                       ),
                     ],
@@ -146,6 +161,7 @@ class DoctorDashboardView extends StatelessWidget {
                           stats.totalAppointments.toString(),
                           Icons.calendar_today_rounded,
                           context.customColors.warning!,
+                          onTap: () => onTabRequested?.call(1),
                         ),
                       ),
                       SizedBox(width: 16.w),
@@ -156,6 +172,7 @@ class DoctorDashboardView extends StatelessWidget {
                           stats.averageRating.toStringAsFixed(1),
                           Icons.star_rounded,
                           context.customColors.rating!,
+                          onTap: () => onTabRequested?.call(4),
                         ),
                       ),
                     ],
@@ -228,34 +245,39 @@ class DoctorDashboardView extends StatelessWidget {
     String title,
     String value,
     IconData icon,
-    Color color,
-  ) {
-    return Container(
-      padding: EdgeInsets.all(16.w),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: Theme.of(context).dividerColor),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: EdgeInsets.all(8.w),
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8.r),
+    Color color, {
+    VoidCallback? onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16.r),
+      child: Container(
+        padding: EdgeInsets.all(16.w),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(16.r),
+          border: Border.all(color: Theme.of(context).dividerColor),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: EdgeInsets.all(8.w),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8.r),
+              ),
+              child: Icon(icon, color: color, size: 24.sp),
             ),
-            child: Icon(icon, color: color, size: 24.sp),
-          ),
-          SizedBox(height: 12.h),
-          Text(value, style: context.styleSemiBold22),
-          SizedBox(height: 4.h),
-          Text(
-            title,
-            style: context.styleMedium14.copyWith(color: Theme.of(context).textTheme.bodyMedium?.color),
-          ),
-        ],
+            SizedBox(height: 12.h),
+            Text(value, style: context.styleSemiBold22),
+            SizedBox(height: 4.h),
+            Text(
+              title,
+              style: context.styleMedium14.copyWith(color: Theme.of(context).textTheme.bodyMedium?.color),
+            ),
+          ],
+        ),
       ),
     );
   }

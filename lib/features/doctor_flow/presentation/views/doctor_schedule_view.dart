@@ -214,7 +214,7 @@ class DoctorScheduleView extends StatelessWidget {
                               backgroundColor: Colors.green,
                             ),
                           );
-                        } else if (res is FailureResult) {
+                        } else if (res is FailureResult<Appointment>) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(res.failure.message),
@@ -250,7 +250,7 @@ class DoctorScheduleView extends StatelessWidget {
                               backgroundColor: Colors.green,
                             ),
                           );
-                        } else if (res is FailureResult) {
+                        } else if (res is FailureResult<Appointment>) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(res.failure.message),

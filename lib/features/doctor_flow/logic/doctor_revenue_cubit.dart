@@ -22,15 +22,16 @@ class DoctorRevenueCubit extends Cubit<DoctorRevenueState> {
     final monthlyResult = await getDoctorMonthlyRevenueUseCase(targetYear);
     final dailyResult = await getDoctorDailyRevenueUseCase(targetYear, targetMonth);
 
-    if (monthlyResult is Success && dailyResult is Success) {
-      emit(DoctorRevenueSuccess(
-        monthlyRevenues: monthlyResult.data,
-        dailyRevenues: dailyResult.data,
-      ));
-    } else if (monthlyResult is FailureResult) {
-      emit(DoctorRevenueFailure(monthlyResult.failure.message));
-    } else if (dailyResult is FailureResult) {
-      emit(DoctorRevenueFailure(dailyResult.failure.message));
+    switch ((monthlyResult, dailyResult)) {
+      case (Success(data: final monthly), Success(data: final daily)):
+        emit(DoctorRevenueSuccess(
+          monthlyRevenues: monthly,
+          dailyRevenues: daily,
+        ));
+      case (FailureResult(failure: final f), _):
+        emit(DoctorRevenueFailure(f.message));
+      case (_, FailureResult(failure: final f)):
+        emit(DoctorRevenueFailure(f.message));
     }
   }
 }

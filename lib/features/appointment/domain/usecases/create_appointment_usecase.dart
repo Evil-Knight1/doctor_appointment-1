@@ -14,6 +14,7 @@ class CreateAppointmentUseCase {
       reason: params.reason,
       paymentMethod: params.paymentMethod,
       amount: params.amount,
+      type: params.type,
     );
   }
 }
@@ -24,6 +25,7 @@ class CreateAppointmentParams {
   final String reason;
   final int? paymentMethod;
   final double? amount;
+  final int? type;
 
   const CreateAppointmentParams({
     required this.doctorId,
@@ -31,5 +33,6 @@ class CreateAppointmentParams {
     required this.reason,
     this.paymentMethod,
     this.amount,
+    this.type,
   });
 }
