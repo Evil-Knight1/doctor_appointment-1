@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:doctor_appointment/features/doctor_flow/presentation/views/patient_appointment_history_view.dart';
 
 class DoctorPatientsView extends StatelessWidget {
   const DoctorPatientsView({super.key});
@@ -88,41 +89,57 @@ class DoctorPatientsView extends StatelessWidget {
                     ? patientName.split(' ').map((e) => e[0]).take(2).join().toUpperCase()
                     : 'P';
 
-                return Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 24.r,
-                      backgroundColor: colorScheme.primaryContainer,
-                      child: Text(
-                        initials,
-                        style: context.styleSemiBold16.copyWith(color: colorScheme.primary),
+                return InkWell(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => PatientAppointmentHistoryView(
+                          patientId: patientId,
+                          patientName: patientName,
+                          appointments: appointments,
+                        ),
                       ),
-                    ),
-                    SizedBox(width: 16.w),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            patientName,
-                            style: context.styleSemiBold16.copyWith(color: colorScheme.onSurface),
+                    );
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8.h),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 24.r,
+                          backgroundColor: colorScheme.primaryContainer,
+                          child: Text(
+                            initials,
+                            style: context.styleSemiBold16.copyWith(color: colorScheme.primary),
                           ),
-                          SizedBox(height: 4.h),
-                          Text(
-                            lastVisit != null
-                                ? 'Last visit: ${DateFormat('dd MMM yyyy').format(lastVisit)}'
-                                : 'Pending visit',
-                            style: context.styleMedium14.copyWith(color: colorScheme.onSurfaceVariant),
+                        ),
+                        SizedBox(width: 16.w),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                patientName,
+                                style: context.styleSemiBold16.copyWith(color: colorScheme.onSurface),
+                              ),
+                              SizedBox(height: 4.h),
+                              Text(
+                                lastVisit != null
+                                    ? 'Last visit: ${DateFormat('dd MMM yyyy').format(lastVisit)}'
+                                    : 'Pending visit',
+                                style: context.styleMedium14.copyWith(color: colorScheme.onSurfaceVariant),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                        Icon(
+                          Icons.chevron_right_rounded,
+                          color: colorScheme.outline,
+                          size: 24.sp,
+                        ),
+                      ],
                     ),
-                    Icon(
-                      Icons.chevron_right_rounded,
-                      color: colorScheme.outline,
-                      size: 24.sp,
-                    ),
-                  ],
+                  ),
                 );
               },
             );

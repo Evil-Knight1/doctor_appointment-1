@@ -25,7 +25,9 @@ import 'package:responsive_framework/responsive_framework.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print('[FCM] _firebaseMessagingBackgroundHandler received a background message!');
+  print(
+    '[FCM] _firebaseMessagingBackgroundHandler received a background message!',
+  );
   print('[FCM] Background Message Data: ${message.data}');
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await NotificationService.handleBackgroundRemoteMessage(message);
@@ -52,7 +54,7 @@ void main() async {
 
       await loadEnv();
       await SharedPreferencesHelper.init();
-      
+
       await Hive.initFlutter();
       await ChatCacheService.openBoxes();
       await AppCacheService.openBoxes();
@@ -88,14 +90,15 @@ class DoctorAppointment extends StatelessWidget {
                       statusBarColor: Colors.transparent,
                       statusBarIconBrightness:
                           Theme.of(context).brightness == Brightness.dark
-                              ? Brightness.light
-                              : Brightness.dark,
-                      systemNavigationBarColor:
-                          Theme.of(context).colorScheme.surface,
+                          ? Brightness.light
+                          : Brightness.dark,
+                      systemNavigationBarColor: Theme.of(
+                        context,
+                      ).colorScheme.surface,
                       systemNavigationBarIconBrightness:
                           Theme.of(context).brightness == Brightness.dark
-                              ? Brightness.light
-                              : Brightness.dark,
+                          ? Brightness.light
+                          : Brightness.dark,
                     ),
                     child: MaterialApp.router(
                       theme: AppTheme.theme,
@@ -115,7 +118,9 @@ class DoctorAppointment extends StatelessWidget {
                             builder: (context) {
                               return MaxWidthBox(
                                 maxWidth: 1200,
-                                backgroundColor: Theme.of(context).colorScheme.surface,
+                                backgroundColor: Theme.of(
+                                  context,
+                                ).colorScheme.surface,
                                 child: ResponsiveScaledBox(
                                   width: ResponsiveValue<double>(
                                     context,
@@ -130,13 +135,16 @@ class DoctorAppointment extends StatelessWidget {
                                         end: 1100,
                                         value: 800,
                                       ),
-                                      const Condition.largerThan(name: TABLET, value: 1000),
+                                      const Condition.largerThan(
+                                        name: TABLET,
+                                        value: 1000,
+                                      ),
                                     ],
                                   ).value,
                                   child: appChild,
                                 ),
                               );
-                            }
+                            },
                           ),
                           breakpoints: [
                             const Breakpoint(start: 0, end: 450, name: MOBILE),

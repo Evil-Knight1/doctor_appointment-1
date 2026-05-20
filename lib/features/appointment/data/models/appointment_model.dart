@@ -20,6 +20,7 @@ class AppointmentModel extends Appointment {
     required super.doctorNotes,
     super.specializationName,
     super.doctorProfilePicture,
+    super.patientProfilePicture,
     required super.createdAt,
   });
 
@@ -46,10 +47,19 @@ class AppointmentModel extends Appointment {
         doctorObj?['profilePicture'] as String? ??
         doctorObj?['profilePictureUrl'] as String?;
 
+    // Patient profile picture
+    final patientProfilePicture = json['patientProfilePicture'] as String? ??
+        json['patientProfilePictureUrl'] as String?;
+
+    // Patient name
+    final patientNameFinal = json['patientName'] as String? ??
+        json['patientFullName'] as String? ??
+        '';
+
     return AppointmentModel(
       id: json['id'] as int? ?? 0,
       patientId: json['patientId'] as int? ?? 0,
-      patientName: json['patientName'] as String? ?? '',
+      patientName: patientNameFinal,
       doctorId: json['doctorId'] as int? ?? doctorObj?['id'] as int? ?? 0,
       doctorName: doctorName,
       startTime:
@@ -69,6 +79,7 @@ class AppointmentModel extends Appointment {
       doctorNotes: json['doctorNotes'] as String?,
       specializationName: specializationName,
       doctorProfilePicture: doctorProfilePicture,
+      patientProfilePicture: patientProfilePicture,
       createdAt:
           DateTime.tryParse(json['createdAt'] as String? ?? '') ??
               DateTime.fromMillisecondsSinceEpoch(0),
@@ -95,6 +106,7 @@ class AppointmentModel extends Appointment {
       if (doctorNotes != null) 'doctorNotes': doctorNotes,
       if (specializationName != null) 'specializationName': specializationName,
       if (doctorProfilePicture != null) 'doctorProfilePicture': doctorProfilePicture,
+      if (patientProfilePicture != null) 'patientProfilePicture': patientProfilePicture,
       'createdAt': createdAt.toIso8601String(),
     };
   }

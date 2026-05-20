@@ -11,6 +11,9 @@ class ChatState extends Equatable {
   final int? activeChatUserId;
   final String? errorMessage;
   final bool isConnected;
+  final int currentPage;
+  final bool hasMore;
+  final bool isLoadingMore;
 
   const ChatState({
     this.status = ChatStatus.initial,
@@ -18,6 +21,9 @@ class ChatState extends Equatable {
     this.activeChatUserId,
     this.errorMessage,
     this.isConnected = false,
+    this.currentPage = 1,
+    this.hasMore = true,
+    this.isLoadingMore = false,
   });
 
   ChatState copyWith({
@@ -26,6 +32,9 @@ class ChatState extends Equatable {
     int? activeChatUserId,
     Object? errorMessage = _unset,
     bool? isConnected,
+    int? currentPage,
+    bool? hasMore,
+    bool? isLoadingMore,
   }) {
     return ChatState(
       status: status ?? this.status,
@@ -35,9 +44,21 @@ class ChatState extends Equatable {
           ? this.errorMessage
           : errorMessage as String?,
       isConnected: isConnected ?? this.isConnected,
+      currentPage: currentPage ?? this.currentPage,
+      hasMore: hasMore ?? this.hasMore,
+      isLoadingMore: isLoadingMore ?? this.isLoadingMore,
     );
   }
 
   @override
-  List<Object?> get props => [status, messages, activeChatUserId, errorMessage, isConnected];
+  List<Object?> get props => [
+        status,
+        messages,
+        activeChatUserId,
+        errorMessage,
+        isConnected,
+        currentPage,
+        hasMore,
+        isLoadingMore,
+      ];
 }

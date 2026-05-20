@@ -97,9 +97,12 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                             ),
                           );
                         }
-                        WidgetsBinding.instance.addPostFrameCallback(
-                          (_) => _scrollToBottom(),
-                        );
+                        // Only auto-scroll to bottom if not loading older messages
+                        if (!state.isLoadingMore) {
+                          WidgetsBinding.instance.addPostFrameCallback(
+                            (_) => _scrollToBottom(),
+                          );
+                        }
                       },
                       builder: (context, state) {
                         if (state.status == ChatStatus.loading &&
@@ -118,38 +121,65 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                           return _buildEmptyState(context);
                         }
 
-                        return ListView.builder(
-                          controller: _scrollController,
-                          padding: EdgeInsets.symmetric(
-                            vertical: 16.h,
-                            horizontal: 16.w,
-                          ),
-                          itemCount: messages.length,
-                          itemBuilder: (context, index) {
-                            final message = messages[index];
-                            final isMe = message.senderId != widget.otherUserId;
-
-                            // Date divider between days
-                            final showDateDivider =
-                                index == 0 ||
-                                !_isSameDay(
-                                  messages[index - 1].timestamp,
-                                  message.timestamp,
-                                );
-
-                            return Column(
-                              children: [
-                                if (showDateDivider)
-                                  _buildDateDivider(context, message.timestamp),
-                                ChatBubble(
-                                  message: message,
-                                  isMe: isMe,
-                                  otherUserProfilePicture:
-                                      widget.otherUserProfilePicture,
-                                ),
-                              ],
-                            );
+                        return NotificationListener<ScrollNotification>(
+                          onNotification: (ScrollNotification scrollInfo) {
+                            if (!state.isLoadingMore &&
+                                state.hasMore &&
+                                scrollInfo.metrics.pixels <= 100) {
+                              context.read<UserChatCubit>().loadMoreMessages();
+                            }
+                            return false;
                           },
+                          child: ListView.builder(
+                            controller: _scrollController,
+                            padding: EdgeInsets.symmetric(
+                              vertical: 16.h,
+                              horizontal: 16.w,
+                            ),
+                            itemCount: messages.length + (state.isLoadingMore ? 1 : 0),
+                            itemBuilder: (context, index) {
+                              if (state.isLoadingMore && index == 0) {
+                                return Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 16.h),
+                                  child: Center(
+                                    child: SizedBox(
+                                      height: 24.r,
+                                      width: 24.r,
+                                      child: CircularProgressIndicator(
+                                        color: colorScheme.primary,
+                                        strokeWidth: 2,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }
+
+                              final messageIndex = state.isLoadingMore ? index - 1 : index;
+                              final message = messages[messageIndex];
+                              final isMe = message.senderId != widget.otherUserId;
+
+                              // Date divider between days
+                              final showDateDivider =
+                                  messageIndex == 0 ||
+                                  !_isSameDay(
+                                    messages[messageIndex - 1].timestamp,
+                                    message.timestamp,
+                                  );
+
+                              return Column(
+                                children: [
+                                  if (showDateDivider)
+                                    _buildDateDivider(context, message.timestamp),
+                                  ChatBubble(
+                                    message: message,
+                                    isMe: isMe,
+                                    otherUserProfilePicture:
+                                        widget.otherUserProfilePicture,
+                                  ),
+                                ],
+                              );
+                            },
+                          ),
                         );
                       },
                     ),

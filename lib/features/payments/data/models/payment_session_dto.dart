@@ -21,6 +21,7 @@ class PaymentSessionDto {
   final String sessionId;
   final int appointmentId;
   final String paymentUrl;
+  final String? clientSecret;
   final String? providerOrderId;
   final double amount;
   final String currency;
@@ -30,6 +31,7 @@ class PaymentSessionDto {
     required this.sessionId,
     required this.appointmentId,
     required this.paymentUrl,
+    this.clientSecret,
     this.providerOrderId,
     required this.amount,
     required this.currency,
@@ -41,6 +43,7 @@ class PaymentSessionDto {
       sessionId: json['sessionId'] as String,
       appointmentId: json['appointmentId'] as int,
       paymentUrl: json['paymentUrl'] as String,
+      clientSecret: json['clientSecret'] as String?,
       providerOrderId: json['providerOrderId'] as String?,
       amount: (json['amount'] as num).toDouble(),
       currency: json['currency'] as String? ?? 'EGP',
@@ -55,6 +58,7 @@ class PaymentSessionDto {
         sessionId: sessionId,
         appointmentId: appointmentId,
         paymentUrl: paymentUrl,
+        clientSecret: clientSecret,
         providerOrderId: providerOrderId,
         amount: amount,
         currency: currency,

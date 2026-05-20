@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:doctor_appointment/core/config/app_config.dart';
 import 'package:doctor_appointment/core/config/env.dart';
 import 'package:doctor_appointment/core/logging/log_service.dart';
 import 'package:doctor_appointment/core/services/service_locator.dart';
@@ -41,6 +42,12 @@ class NotificationService {
 
   bool _initialized = false;
   bool _localNotificationsInitialized = false;
+
+  /// Convenience accessor — safe even if LogService isn't registered yet
+  /// (e.g. background isolate during early init).
+  LogService get _log => getIt.isRegistered<LogService>()
+      ? getIt<LogService>()
+      : _NoOpLogService();
 
   Future<void> init() async {
     if (_initialized) return;
@@ -268,46 +275,75 @@ class NotificationService {
 
   Future<void> handleNotificationResponse(NotificationResponse response) async {
     final payload = response.payload;
-    if (payload == null) return;
+    if (payload == null) {
+      _log.w(
+        '[Notification] handleNotificationResponse: payload is null, ignoring.',
+      );
+      return;
+    }
+
+    _log.d(
+      '[Notification] handleNotificationResponse: '
+      'actionId="${response.actionId}", notificationId=${response.id}',
+    );
 
     try {
       final data = Map<String, dynamic>.from(jsonDecode(payload) as Map);
+      _log.d('[Notification] Decoded payload: $data');
 
       switch (response.actionId) {
         case _replyActionId:
           final replyText = response.input?.trim();
+          _log.i('[Notification] Reply action triggered. Text: "$replyText"');
           if (replyText != null && replyText.isNotEmpty) {
             await _sendQuickReply(data, replyText);
+          } else {
+            _log.w(
+              '[Notification] Reply action had empty input — skipping send.',
+            );
           }
           await _markAsSeenFromPayload(data);
           if (response.id != null) {
             await _flutterLocalNotificationsPlugin.cancel(id: response.id!);
+            _log.d(
+              '[Notification] Dismissed tray notification id=${response.id}.',
+            );
           }
           break;
+
         case _seenActionId:
+          _log.i('[Notification] Seen action triggered.');
           await _markAsSeenFromPayload(data);
           if (response.id != null) {
             await _flutterLocalNotificationsPlugin.cancel(id: response.id!);
+            _log.d(
+              '[Notification] Dismissed tray notification id=${response.id}.',
+            );
           }
           break;
+
         default:
+          _log.i('[Notification] Tap action — navigating based on data.');
           _navigateBasedOnData(data);
           break;
       }
     } catch (error, stackTrace) {
-      if (getIt.isRegistered<LogService>()) {
-        getIt<LogService>().e(
-          'Error handling notification response',
-          error,
-          stackTrace,
-        );
-      }
+      _log.e(
+        '[Notification] Error in handleNotificationResponse',
+        error,
+        stackTrace,
+      );
     }
   }
 
   void _navigateBasedOnData(Map<String, dynamic> data) {
     final type = _parseNotificationType(data['type']);
+    _log.d(
+      '[Notification] _navigateBasedOnData: type=$type, data keys=${data.keys.toList()}',
+    );
+
     if (type.isChat || _isChatPayload(data)) {
+      _log.i('[Notification] Routing to chat screen.');
       _openChatFromNotification(data);
     } else if (type.isAppointmentFlow ||
         data['appointmentId'] != null ||
@@ -316,19 +352,27 @@ class NotificationService {
       final appointmentId = idStr != null
           ? int.tryParse(idStr.toString())
           : null;
+      _log.i(
+        '[Notification] Routing to appointment. relatedEntityId="$idStr", parsed=$appointmentId',
+      );
       if (appointmentId != null) {
         _handleAppointmentTapAsync(appointmentId);
       } else {
+        _log.w(
+          '[Notification] Could not parse appointmentId — falling back to CalendarView.',
+        );
         AppRouter.router.push(AppRouter.kCalendarView);
       }
     } else {
+      _log.i(
+        '[Notification] No specific route match — opening NotificationView.',
+      );
       AppRouter.router.push(AppRouter.kNotificationView);
     }
   }
 
   void _openChatFromNotification(Map<String, dynamic> data) async {
     final resolvedUserId = _chatUserIdFromData(data);
-
     final userName = (data['userName'] ?? data['senderName'] ?? 'Chat')
         .toString()
         .trim();
@@ -336,11 +380,23 @@ class NotificationService {
         (data['userProfilePicture'] ?? data['senderProfilePicture'])
             ?.toString();
 
+    _log.d(
+      '[Notification] _openChatFromNotification: '
+      'resolvedUserId=$resolvedUserId, userName="$userName", '
+      'senderId=${data["senderId"]}, relatedEntityId=${data["relatedEntityId"]}',
+    );
+
     if (resolvedUserId == null) {
+      _log.w(
+        '[Notification] Could not resolve chat userId — falling back to ConversationsView.',
+      );
       AppRouter.router.push(AppRouter.kConversationsView);
       return;
     }
 
+    _log.i(
+      '[Notification] Opening ChatScreen for userId=$resolvedUserId ("$userName").',
+    );
     AppRouter.router.push(
       AppRouter.kChatView.replaceFirst(':userId', '$resolvedUserId'),
       extra: {
@@ -354,51 +410,157 @@ class NotificationService {
     Map<String, dynamic> data,
     String replyText,
   ) async {
-    final chatRemoteDataSource = getIt<ChatRemoteDataSource>();
     final resolvedUserId = _chatUserIdFromData(data);
+    _log.d(
+      '[Notification] _sendQuickReply: resolvedUserId=$resolvedUserId, '
+      'replyLength=${replyText.length}',
+    );
 
     if (resolvedUserId == null) {
+      _log.e(
+        '[Notification] _sendQuickReply: could not resolve userId from payload: $data',
+      );
       throw Exception('Could not resolve conversation for quick reply');
     }
 
-    await chatRemoteDataSource.sendMessage(resolvedUserId, replyText);
+    try {
+      await _executeBackgroundApiCall(
+        endpoint: '/api/Chat/send',
+        method: 'POST',
+        data: {'receiverId': resolvedUserId, 'message': replyText},
+      );
+      _log.i('[Notification] Quick reply sent to userId=$resolvedUserId.');
+    } catch (error, stackTrace) {
+      _log.e(
+        '[Notification] Failed to send quick reply to userId=$resolvedUserId',
+        error,
+        stackTrace,
+      );
+      rethrow;
+    }
   }
 
   Future<void> _markAsSeenFromPayload(Map<String, dynamic> data) async {
     final notificationId = _parseInt(data['notificationId'] ?? data['id']);
+    _log.d(
+      '[Notification] _markAsSeenFromPayload: notificationId=$notificationId',
+    );
+
     if (notificationId != null) {
       try {
-        await getIt<NotificationRemoteDataSource>().markAsRead(notificationId);
-      } catch (_) {}
+        await _executeBackgroundApiCall(
+          endpoint: '/api/Notification/$notificationId/read',
+          method: 'PUT',
+        );
+        _log.i(
+          '[Notification] Marked notification $notificationId as read in backend.',
+        );
+      } catch (error) {
+        _log.w(
+          '[Notification] Failed to mark notification $notificationId as read: $error',
+        );
+      }
+    } else {
+      _log.d(
+        '[Notification] No notificationId in payload — skipping in-app mark-as-read.',
+      );
     }
 
-    final chatRemoteDataSource = getIt<ChatRemoteDataSource>();
     final resolvedUserId = _chatUserIdFromData(data);
+    _log.d(
+      '[Notification] _markAsSeenFromPayload: chat resolvedUserId=$resolvedUserId',
+    );
 
     if (resolvedUserId != null) {
       try {
-        await chatRemoteDataSource.markAsRead(resolvedUserId);
-      } catch (_) {}
+        await _executeBackgroundApiCall(
+          endpoint: '/api/Chat/read/$resolvedUserId',
+          method: 'PUT',
+        );
+        _log.i(
+          '[Notification] Marked chat messages as read for userId=$resolvedUserId.',
+        );
+      } catch (error, stackTrace) {
+        _log.w(
+          '[Notification] Failed to mark chat as read for userId=$resolvedUserId: $error',
+        );
+      }
+    }
+  }
+
+  Future<void> _executeBackgroundApiCall({
+    required String endpoint,
+    required String method,
+    Map<String, dynamic>? data,
+  }) async {
+    final token = SharedPreferencesHelper.getToken();
+    if (token == null || token.isEmpty) {
+      _log.w(
+        '[Notification] _executeBackgroundApiCall: No token available, aborting.',
+      );
+      return;
+    }
+
+    final baseUrl = getIt.isRegistered<AppConfig>()
+        ? getIt<AppConfig>().apiUrl
+        : Env.apiUrl;
+
+    final dio = Dio(
+      BaseOptions(
+        baseUrl: baseUrl,
+        connectTimeout: const Duration(seconds: 10),
+        receiveTimeout: const Duration(seconds: 10),
+        sendTimeout: const Duration(seconds: 10),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      ),
+    );
+
+    try {
+      if (method == 'POST') {
+        await dio.post(endpoint, data: data);
+      } else if (method == 'PUT') {
+        await dio.put(endpoint, data: data);
+      }
+    } finally {
+      dio.close();
     }
   }
 
   void _handleAppointmentTapAsync(int appointmentId) async {
+    _log.i(
+      '[Notification] _handleAppointmentTapAsync: fetching appointmentId=$appointmentId',
+    );
     try {
       final useCase = getIt<GetMyAppointmentsUseCase>();
       final result = await useCase();
       if (result is Success<List<Appointment>>) {
         final appointment = result.data.firstWhere(
           (app) => app.id == appointmentId,
-          orElse: () => throw Exception('Appointment not found'),
+          orElse: () =>
+              throw Exception('Appointment $appointmentId not found in list'),
+        );
+        _log.i(
+          '[Notification] Appointment found — opening AppointmentDetailsView.',
         );
         AppRouter.router.push(
           AppRouter.kAppointmentDetailsView,
           extra: appointment,
         );
       } else {
+        _log.w(
+          '[Notification] GetMyAppointmentsUseCase returned failure — falling back to CalendarView.',
+        );
         AppRouter.router.push(AppRouter.kCalendarView);
       }
-    } catch (_) {
+    } catch (error, stackTrace) {
+      _log.e(
+        '[Notification] _handleAppointmentTapAsync failed for id=$appointmentId',
+        error,
+        stackTrace,
+      );
       AppRouter.router.push(AppRouter.kCalendarView);
     }
   }
@@ -504,11 +666,8 @@ class NotificationService {
   }
 
   int? _chatUserIdFromData(Map<String, dynamic> data) {
-    // senderId is the explicit sender's user ID (added by backend for chat notifications)
-    // relatedEntityId is intentionally last: for chat it holds a message ID, not a user ID
     return _parseInt(data['senderId']) ??
         _parseInt(data['chatUserId']) ??
-        _parseInt(data['relatedEntityId']) ??
         _parseInt(data['userId']);
   }
 
@@ -578,7 +737,7 @@ class NotificationService {
       final fullUrl = ImageUrlHelper.getFullUrl(avatarUrl);
       if (fullUrl.isEmpty) return null;
 
-      final response = await getIt<Dio>().get<List<int>>(
+      final response = await Dio().get<List<int>>(
         fullUrl,
         options: Options(
           responseType: ResponseType.bytes,
@@ -596,4 +755,17 @@ class NotificationService {
       return null;
     }
   }
+}
+
+/// No-op fallback so [NotificationService._log] never throws when
+/// [LogService] is not yet registered (e.g. inside a background isolate).
+class _NoOpLogService extends LogService {
+  @override
+  void d(String message) {}
+  @override
+  void i(String message) {}
+  @override
+  void w(String message) {}
+  @override
+  void e(String message, [dynamic error, StackTrace? stackTrace]) {}
 }

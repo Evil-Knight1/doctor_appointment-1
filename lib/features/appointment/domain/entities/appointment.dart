@@ -17,6 +17,7 @@ class Appointment {
   final String? doctorNotes;
   final String? specializationName;
   final String? doctorProfilePicture;
+  final String? patientProfilePicture;
   final DateTime createdAt;
 
   const Appointment({
@@ -38,6 +39,7 @@ class Appointment {
     required this.doctorNotes,
     this.specializationName,
     this.doctorProfilePicture,
+    this.patientProfilePicture,
     required this.createdAt,
   });
 }

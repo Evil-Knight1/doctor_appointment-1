@@ -9,6 +9,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:doctor_appointment/core/utils/image_url_helper.dart';
 
 class DoctorScheduleView extends StatelessWidget {
   const DoctorScheduleView({super.key});
@@ -135,10 +137,17 @@ class DoctorScheduleView extends StatelessWidget {
               CircleAvatar(
                 radius: 20.r,
                 backgroundColor: colorScheme.secondaryContainer,
-                child: Icon(
-                  Icons.person,
-                  color: colorScheme.onSecondaryContainer,
-                ),
+                backgroundImage: appointment.patientProfilePicture != null
+                    ? CachedNetworkImageProvider(
+                        ImageUrlHelper.getProfileImageUrl(appointment.patientProfilePicture!),
+                      )
+                    : null,
+                child: appointment.patientProfilePicture == null
+                    ? Icon(
+                        Icons.person,
+                        color: colorScheme.onSecondaryContainer,
+                      )
+                    : null,
               ),
               SizedBox(width: 12.w),
               Expanded(

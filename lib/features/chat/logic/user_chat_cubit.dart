@@ -13,7 +13,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:signalr_core/signalr_core.dart';
 
 class UserChatCubit extends Cubit<ChatState> {
-  static const Duration _historyRefreshInterval = Duration(seconds: 4);
+
 
   final ChatRemoteDataSource _remoteDataSource;
   final ChatSignalRService _signalRService;
@@ -23,7 +23,7 @@ class UserChatCubit extends Cubit<ChatState> {
   StreamSubscription? _errorSubscription;
   StreamSubscription? _readSubscription;
   StreamSubscription? _connectionSubscription;
-  Timer? _historyRefreshTimer;
+
 
   UserChatCubit(
     this._remoteDataSource,
@@ -107,17 +107,23 @@ class UserChatCubit extends Cubit<ChatState> {
       errorMessage: null,
     ));
 
-    _startHistoryRefreshTimer();
 
     try {
-      final messages = await _remoteDataSource.getChatHistory(otherUserId);
+      final messages = await _remoteDataSource.getChatHistory(
+        otherUserId,
+        pageNumber: 1,
+        pageSize: 50,
+      );
       final mergedMessages = _mergeMessages(state.messages, messages);
+      final hasMore = messages.length == 50;
 
       await _cacheService.cacheMessages(otherUserId, mergedMessages);
       emit(state.copyWith(
         status: ChatStatus.success,
         messages: mergedMessages,
         errorMessage: null,
+        currentPage: 1,
+        hasMore: hasMore,
       ));
       await markAsRead(otherUserId);
     } catch (e) {
@@ -172,14 +178,70 @@ class UserChatCubit extends Cubit<ChatState> {
         errorMessage: null,
       ));
     } catch (e) {
-      final revertedMessages = List<ChatMessageModel>.from(state.messages)
-        ..removeWhere((message) => message.id == tempId);
+      final failedMessages = optimisticMessages.map((m) {
+        if (m.id == tempId) {
+          return m.copyWith(isFailed: true);
+        }
+        return m;
+      }).toList();
+
+      await _cacheService.cacheMessages(receiverId, failedMessages);
+
       emit(state.copyWith(
         status: ChatStatus.error,
-        errorMessage: e.toString(),
-        messages: revertedMessages,
+        errorMessage: 'Failed to send message.',
+        messages: failedMessages,
       ));
     }
+  }
+
+  Future<void> retryMessage(ChatMessageModel failedMessage) async {
+    final sendingMessages = state.messages.map((m) {
+      if (m.id == failedMessage.id) {
+        return m.copyWith(isFailed: false);
+      }
+      return m;
+    }).toList();
+    
+    emit(state.copyWith(messages: sendingMessages, errorMessage: null));
+
+    try {
+      final message = await _remoteDataSource.sendMessage(
+        failedMessage.receiverId,
+        failedMessage.message,
+      );
+      final realMessage = message.copyWith(isRead: false);
+      
+      final withoutTemp = sendingMessages
+          .where((existingMessage) => existingMessage.id != failedMessage.id)
+          .toList();
+      final realMessages = _mergeMessages(withoutTemp, [realMessage]);
+
+      await _cacheService.cacheMessages(failedMessage.receiverId, realMessages);
+      emit(state.copyWith(
+        status: ChatStatus.success,
+        messages: realMessages,
+        errorMessage: null,
+      ));
+    } catch (e) {
+      final failedAgainMessages = sendingMessages.map((m) {
+        if (m.id == failedMessage.id) {
+          return m.copyWith(isFailed: true);
+        }
+        return m;
+      }).toList();
+
+      await _cacheService.cacheMessages(failedMessage.receiverId, failedAgainMessages);
+      emit(state.copyWith(
+        status: ChatStatus.error,
+        errorMessage: 'Failed to retry message.',
+        messages: failedAgainMessages,
+      ));
+    }
+  }
+
+  Future<void> reportMessage(int messageId, String reason) async {
+    await _remoteDataSource.reportMessage(messageId, reason);
   }
 
   Future<void> markAsRead(int otherUserId) async {
@@ -199,16 +261,9 @@ class UserChatCubit extends Cubit<ChatState> {
   }
 
   Future<void> disconnect() async {
-    _historyRefreshTimer?.cancel();
+
     await _signalRService.disconnect();
     emit(state.copyWith(isConnected: false));
-  }
-
-  void _startHistoryRefreshTimer() {
-    _historyRefreshTimer?.cancel();
-    _historyRefreshTimer = Timer.periodic(_historyRefreshInterval, (_) {
-      unawaited(_refreshActiveChatSilently());
-    });
   }
 
   Future<void> _refreshActiveChatSilently() async {
@@ -304,7 +359,7 @@ class UserChatCubit extends Cubit<ChatState> {
 
   @override
   Future<void> close() {
-    _historyRefreshTimer?.cancel();
+
     _messageSubscription?.cancel();
     _errorSubscription?.cancel();
     _readSubscription?.cancel();

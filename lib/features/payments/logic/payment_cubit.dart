@@ -7,6 +7,7 @@ import 'package:doctor_appointment/features/payments/domain/usecases/create_paym
 import 'package:doctor_appointment/features/payments/domain/usecases/get_payment_status_usecase.dart';
 import 'package:doctor_appointment/features/payments/domain/repositories/payment_repository.dart';
 import 'package:doctor_appointment/features/payments/logic/payment_state.dart';
+import 'package:doctor_appointment/features/payments/data/services/paymob_sdk_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// Orchestrates the entire backend-driven payment flow.
@@ -29,6 +30,7 @@ class PaymentCubit extends Cubit<PaymentState> {
   final CreatePaymentSessionUseCase _createPaymentSessionUseCase;
   final GetPaymentStatusUseCase _getPaymentStatusUseCase;
   final PaymentRepository _paymentRepository;
+  final PaymobSdkService _paymobSdkService = PaymobSdkService();
 
   /// How many times to poll before giving up.
   static const int _maxPollAttempts = 12;
@@ -118,7 +120,25 @@ class PaymentCubit extends Cubit<PaymentState> {
               amount: amount,
             ));
           case Success():
-            emit(PaymentSessionCreated(session: sessionResult.data));
+            final session = sessionResult.data;
+            if (session.clientSecret != null && session.clientSecret!.isNotEmpty) {
+              // Intention API (Native SDK) route
+              final result = await _paymobSdkService.payWithNativeSdk(
+                publicKey: 'YOUR_PUBLIC_KEY', // TODO: Get from env/config
+                clientSecret: session.clientSecret!,
+              );
+              
+              if (result == 'Successfull') {
+                onWebViewResult(success: true);
+              } else if (result == 'Pending') {
+                onWebViewResult(success: true, failureReason: 'Pending');
+              } else {
+                onWebViewResult(success: false, failureReason: 'Rejected');
+              }
+            } else {
+              // Fallback to WebView
+              emit(PaymentSessionCreated(session: session));
+            }
         }
     }
   }

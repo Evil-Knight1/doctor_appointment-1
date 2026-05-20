@@ -56,6 +56,7 @@ class DoctorAppointmentsCubit extends Cubit<DoctorAppointmentsState> {
                 doctorNotes: notes ?? app.doctorNotes,
                 specializationName: app.specializationName,
                 doctorProfilePicture: app.doctorProfilePicture,
+                patientProfilePicture: app.patientProfilePicture,
                 createdAt: app.createdAt,
               );
             }

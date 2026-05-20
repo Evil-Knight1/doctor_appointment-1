@@ -16,6 +16,9 @@ class PaymentSession extends Equatable {
   /// Opened inside a WebView — no browser redirect.
   final String paymentUrl;
 
+  /// The client secret from Paymob's Intention API for native SDK usage.
+  final String? clientSecret;
+
   /// Paymob's order reference ID (stored by backend, returned for tracing).
   final String? providerOrderId;
 
@@ -32,6 +35,7 @@ class PaymentSession extends Equatable {
     required this.sessionId,
     required this.appointmentId,
     required this.paymentUrl,
+    this.clientSecret,
     this.providerOrderId,
     required this.amount,
     required this.currency,
@@ -46,6 +50,7 @@ class PaymentSession extends Equatable {
         sessionId,
         appointmentId,
         paymentUrl,
+        clientSecret,
         providerOrderId,
         amount,
         currency,

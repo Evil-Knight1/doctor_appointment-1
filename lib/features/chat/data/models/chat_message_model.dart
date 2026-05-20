@@ -7,6 +7,7 @@ class ChatMessageModel {
   final String message;
   final DateTime timestamp;
   final bool isRead;
+  final bool isFailed;
 
   ChatMessageModel({
     required this.id,
@@ -17,6 +18,7 @@ class ChatMessageModel {
     required this.message,
     required this.timestamp,
     required this.isRead,
+    this.isFailed = false,
   });
 
   factory ChatMessageModel.fromJson(Map<String, dynamic> json) {
@@ -31,6 +33,7 @@ class ChatMessageModel {
           ? DateTime.parse(json['timestamp'] as String)
           : DateTime.now(),
       isRead: json['isRead'] as bool? ?? false,
+      isFailed: json['isFailed'] as bool? ?? false,
     );
   }
 
@@ -44,6 +47,7 @@ class ChatMessageModel {
       'message': message,
       'timestamp': timestamp.toIso8601String(),
       'isRead': isRead,
+      'isFailed': isFailed,
     };
   }
 
@@ -56,6 +60,7 @@ class ChatMessageModel {
     String? message,
     DateTime? timestamp,
     bool? isRead,
+    bool? isFailed,
   }) {
     return ChatMessageModel(
       id: id ?? this.id,
@@ -66,6 +71,7 @@ class ChatMessageModel {
       message: message ?? this.message,
       timestamp: timestamp ?? this.timestamp,
       isRead: isRead ?? this.isRead,
+      isFailed: isFailed ?? this.isFailed,
     );
   }
 }
