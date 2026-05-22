@@ -1,6 +1,11 @@
 import 'package:doctor_appointment/features/appointment/domain/repositories/appointment_repository.dart';
 import 'package:doctor_appointment/features/appointment/data/repositories/appointment_repository_impl.dart';
 import 'package:doctor_appointment/features/auth/domain/usecases/update_fcm_token_usecase.dart';
+import 'package:doctor_appointment/features/appointment/domain/usecases/request_cancel_usecase.dart';
+import 'package:doctor_appointment/features/appointment/domain/usecases/request_reschedule_usecase.dart';
+import 'package:doctor_appointment/features/appointment/domain/usecases/doctor_approve_reschedule_usecase.dart';
+import 'package:doctor_appointment/features/appointment/domain/usecases/select_reschedule_slot_usecase.dart';
+import 'package:doctor_appointment/features/appointment/domain/usecases/admin_cancel_usecase.dart';
 import 'package:sentry_dio/sentry_dio.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
@@ -126,9 +131,9 @@ void setupServiceLocator() {
       BaseOptions(
         baseUrl: getIt<AppConfig>().apiUrl,
         receiveDataWhenStatusError: true,
-        connectTimeout: const Duration(seconds: 5),
-        receiveTimeout: const Duration(seconds: 5),
-        sendTimeout: const Duration(seconds: 5),
+        connectTimeout: const Duration(seconds: 30),
+        receiveTimeout: const Duration(seconds: 30),
+        sendTimeout: const Duration(seconds: 30),
       ),
     ),
   );
@@ -260,6 +265,22 @@ void setupServiceLocator() {
   getIt.registerLazySingleton(
     () => CancelAppointmentUseCase(getIt<AppointmentRepository>()),
   );
+  getIt.registerLazySingleton(
+    () => RequestCancelUseCase(getIt<AppointmentRepository>()),
+  );
+  getIt.registerLazySingleton(
+    () => RequestRescheduleUseCase(getIt<AppointmentRepository>()),
+  );
+  getIt.registerLazySingleton(
+    () => DoctorApproveRescheduleUseCase(getIt<AppointmentRepository>()),
+  );
+  getIt.registerLazySingleton(
+    () => SelectRescheduleSlotUseCase(getIt<AppointmentRepository>()),
+  );
+  getIt.registerLazySingleton(
+    () => AdminCancelUseCase(getIt<AppointmentRepository>()),
+  );
+
   getIt.registerFactory(
     () => AppointmentCubit(
       createAppointmentUseCase: getIt<CreateAppointmentUseCase>(),
@@ -269,6 +290,9 @@ void setupServiceLocator() {
     () => AppointmentsCubit(
       getMyAppointmentsUseCase: getIt<GetMyAppointmentsUseCase>(),
       cancelAppointmentUseCase: getIt<CancelAppointmentUseCase>(),
+      requestCancelUseCase: getIt<RequestCancelUseCase>(),
+      requestRescheduleUseCase: getIt<RequestRescheduleUseCase>(),
+      selectRescheduleSlotUseCase: getIt<SelectRescheduleSlotUseCase>(),
       appCacheService: getIt<AppCacheService>(),
     ),
   );
@@ -365,6 +389,7 @@ void setupServiceLocator() {
     () => DoctorAppointmentsCubit(
       getDoctorAppointmentsUseCase: getIt<GetDoctorAppointmentsUseCase>(),
       updateAppointmentStatusUseCase: getIt<UpdateAppointmentStatusUseCase>(),
+      doctorApproveRescheduleUseCase: getIt<DoctorApproveRescheduleUseCase>(),
     ),
   );
   getIt.registerFactory(

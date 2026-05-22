@@ -23,17 +23,17 @@ class ChatMessageModel {
 
   factory ChatMessageModel.fromJson(Map<String, dynamic> json) {
     return ChatMessageModel(
-      id: json['id'] as int? ?? 0,
-      senderId: json['senderId'] as int? ?? 0,
-      senderName: json['senderName'] as String? ?? 'Unknown',
-      receiverId: json['receiverId'] as int? ?? 0,
-      receiverName: json['receiverName'] as String? ?? 'Unknown',
-      message: json['message'] as String? ?? '',
-      timestamp: json['timestamp'] != null
-          ? DateTime.parse(json['timestamp'] as String)
+      id: (json['id'] ?? json['Id']) as int? ?? 0,
+      senderId: (json['senderId'] ?? json['SenderId']) as int? ?? 0,
+      senderName: (json['senderName'] ?? json['SenderName']) as String? ?? 'Unknown',
+      receiverId: (json['receiverId'] ?? json['ReceiverId']) as int? ?? 0,
+      receiverName: (json['receiverName'] ?? json['ReceiverName']) as String? ?? 'Unknown',
+      message: (json['message'] ?? json['Message']) as String? ?? '',
+      timestamp: (json['timestamp'] ?? json['Timestamp']) != null
+          ? DateTime.parse((json['timestamp'] ?? json['Timestamp']) as String)
           : DateTime.now(),
-      isRead: json['isRead'] as bool? ?? false,
-      isFailed: json['isFailed'] as bool? ?? false,
+      isRead: (json['isRead'] ?? json['IsRead']) as bool? ?? false,
+      isFailed: (json['isFailed'] ?? json['IsFailed']) as bool? ?? false,
     );
   }
 

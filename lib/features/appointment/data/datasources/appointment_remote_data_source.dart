@@ -18,6 +18,11 @@ abstract class AppointmentRemoteDataSource {
 
   Future<List<SlotModel>> getDoctorSlots(int doctorId, DateTime date);
   Future<void> cancelAppointment(int appointmentId);
+  Future<void> requestCancel(int appointmentId, String reason);
+  Future<void> requestReschedule(int appointmentId, String reason);
+  Future<void> doctorApproveReschedule(int appointmentId);
+  Future<void> selectRescheduleSlot(int appointmentId, int newSlotId);
+  Future<void> adminCancel(int appointmentId);
 }
 
 class AppointmentRemoteDataSourceImpl implements AppointmentRemoteDataSource {
@@ -114,6 +119,51 @@ class AppointmentRemoteDataSourceImpl implements AppointmentRemoteDataSource {
   @override
   Future<void> cancelAppointment(int appointmentId) async {
     final response = await apiService.post('/api/Appointment/$appointmentId/cancel');
+    final success = response['success'] == true;
+    if (!success) {
+      throw ApiException(_extractMessage(response));
+    }
+  }
+
+  @override
+  Future<void> requestCancel(int appointmentId, String reason) async {
+    final response = await apiService.post('/api/Appointment/$appointmentId/request-cancel', data: {'reason': reason});
+    final success = response['success'] == true;
+    if (!success) {
+      throw ApiException(_extractMessage(response));
+    }
+  }
+
+  @override
+  Future<void> requestReschedule(int appointmentId, String reason) async {
+    final response = await apiService.post('/api/Appointment/$appointmentId/request-reschedule', data: {'reason': reason});
+    final success = response['success'] == true;
+    if (!success) {
+      throw ApiException(_extractMessage(response));
+    }
+  }
+
+  @override
+  Future<void> doctorApproveReschedule(int appointmentId) async {
+    final response = await apiService.post('/api/Appointment/$appointmentId/doctor-approve-reschedule');
+    final success = response['success'] == true;
+    if (!success) {
+      throw ApiException(_extractMessage(response));
+    }
+  }
+
+  @override
+  Future<void> selectRescheduleSlot(int appointmentId, int newSlotId) async {
+    final response = await apiService.post('/api/Appointment/$appointmentId/select-reschedule-slot', data: {'newSlotId': newSlotId});
+    final success = response['success'] == true;
+    if (!success) {
+      throw ApiException(_extractMessage(response));
+    }
+  }
+
+  @override
+  Future<void> adminCancel(int appointmentId) async {
+    final response = await apiService.post('/api/Appointment/$appointmentId/admin-cancel');
     final success = response['success'] == true;
     if (!success) {
       throw ApiException(_extractMessage(response));

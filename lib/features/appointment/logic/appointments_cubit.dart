@@ -6,14 +6,24 @@ import 'package:doctor_appointment/features/appointment/domain/usecases/get_my_a
 import 'package:doctor_appointment/features/appointment/domain/usecases/cancel_appointment_usecase.dart';
 import 'package:doctor_appointment/features/appointment/logic/appointments_state.dart';
 
+import 'package:doctor_appointment/features/appointment/domain/usecases/request_cancel_usecase.dart';
+import 'package:doctor_appointment/features/appointment/domain/usecases/request_reschedule_usecase.dart';
+import 'package:doctor_appointment/features/appointment/domain/usecases/select_reschedule_slot_usecase.dart';
+
 class AppointmentsCubit extends Cubit<AppointmentsState> {
   final GetMyAppointmentsUseCase getMyAppointmentsUseCase;
   final CancelAppointmentUseCase cancelAppointmentUseCase;
+  final RequestCancelUseCase requestCancelUseCase;
+  final RequestRescheduleUseCase requestRescheduleUseCase;
+  final SelectRescheduleSlotUseCase selectRescheduleSlotUseCase;
   final AppCacheService appCacheService;
 
   AppointmentsCubit({
     required this.getMyAppointmentsUseCase,
     required this.cancelAppointmentUseCase,
+    required this.requestCancelUseCase,
+    required this.requestRescheduleUseCase,
+    required this.selectRescheduleSlotUseCase,
     required this.appCacheService,
   }) : super(const AppointmentsInitial());
 
@@ -43,6 +53,30 @@ class AppointmentsCubit extends Cubit<AppointmentsState> {
 
     if (result is Success) {
       // Reload appointments after successful cancellation
+      await loadAppointments();
+    }
+    return result;
+  }
+
+  Future<Result<void>> requestCancel(int appointmentId, String reason) async {
+    final result = await requestCancelUseCase(appointmentId, reason);
+    if (result is Success) {
+      await loadAppointments();
+    }
+    return result;
+  }
+
+  Future<Result<void>> requestReschedule(int appointmentId, String reason) async {
+    final result = await requestRescheduleUseCase(appointmentId, reason);
+    if (result is Success) {
+      await loadAppointments();
+    }
+    return result;
+  }
+
+  Future<Result<void>> selectRescheduleSlot(int appointmentId, int newSlotId) async {
+    final result = await selectRescheduleSlotUseCase(appointmentId, newSlotId);
+    if (result is Success) {
       await loadAppointments();
     }
     return result;

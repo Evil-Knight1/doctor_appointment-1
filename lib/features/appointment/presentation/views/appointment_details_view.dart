@@ -151,9 +151,17 @@ class AppointmentDetailsView extends StatelessWidget {
           _buildDetailRow(
             context,
             'Status',
-            isCancelled ? 'Cancelled' : (isCompleted ? 'Completed' : 'Upcoming'),
+            isCancelled 
+                ? 'Cancelled' 
+                : (isCompleted 
+                    ? 'Completed' 
+                    : (appointment.isCancellationRequested
+                        ? 'Cancellation Requested'
+                        : (appointment.isRescheduleRequested
+                            ? (appointment.rescheduleApprovedAt != null ? 'Reschedule Approved' : 'Reschedule Requested')
+                            : 'Upcoming'))),
             icon: Icons.info_outline_rounded,
-            valueColor: isCancelled
+            valueColor: isCancelled || appointment.isCancellationRequested
                 ? context.customColors.error
                 : (isCompleted ? context.customColors.success : colorScheme.primary),
           ),
@@ -206,25 +214,113 @@ class AppointmentDetailsView extends StatelessWidget {
   Widget _buildActions(BuildContext context, bool isCancelled, bool isCompleted) {
     final colorScheme = Theme.of(context).colorScheme;
     if (!isCancelled && !isCompleted) {
+      if (appointment.isCancellationRequested) {
+        return Container(
+          padding: EdgeInsets.all(16.w),
+          decoration: BoxDecoration(
+            color: context.customColors.error?.withValues(alpha: 0.1) ?? Colors.red.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(12.r),
+          ),
+          child: Row(
+            children: [
+              Icon(Icons.hourglass_empty_rounded, color: context.customColors.error),
+              SizedBox(width: 12.w),
+              Expanded(
+                child: Text(
+                  'Your cancellation request is pending review.',
+                  style: context.styleMedium14.copyWith(color: context.customColors.error),
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+
+      if (appointment.isRescheduleRequested) {
+        if (appointment.rescheduleApprovedAt != null) {
+          final expiryTime = appointment.rescheduleApprovedAt!.add(const Duration(hours: 12));
+          if (DateTime.now().isBefore(expiryTime)) {
+            return CustomButton(
+              text: 'Select New Slot',
+              onPressed: () {
+                // Here we will navigate to the booking date view but pass an extra flag or appointmentId
+                context.pushNamed(
+                  Routes.bookingDateView,
+                  extra: {'doctor': _getDoctorFromAppointment(), 'rescheduleAppointmentId': appointment.id},
+                );
+              },
+              width: double.infinity,
+              height: 54.h,
+              circleSize: 12.r,
+              textStyle: context.styleSemiBold16,
+              buttonColor: colorScheme.primary,
+            );
+          } else {
+            return Container(
+              padding: EdgeInsets.all(16.w),
+              decoration: BoxDecoration(
+                color: context.customColors.error?.withValues(alpha: 0.1) ?? Colors.red.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12.r),
+              ),
+              child: Text(
+                'Reschedule window expired.',
+                style: context.styleMedium14.copyWith(color: context.customColors.error),
+                textAlign: TextAlign.center,
+              ),
+            );
+          }
+        }
+        return Container(
+          padding: EdgeInsets.all(16.w),
+          decoration: BoxDecoration(
+            color: Colors.orange.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(12.r),
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.access_time_rounded, color: Colors.orange),
+              SizedBox(width: 12.w),
+              Expanded(
+                child: Text(
+                  'Your reschedule request is pending doctor approval.',
+                  style: context.styleMedium14.copyWith(color: Colors.orange),
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+
+      final bool canReschedule = DateTime.now().isBefore(appointment.startTime.subtract(const Duration(hours: 24)));
+
       return Column(
         children: [
-          CustomButton(
-            text: 'Reschedule',
-            onPressed: () {
-              context.pushNamed(
-                Routes.bookingDateView,
-                extra: _getDoctorFromAppointment(),
-              );
-            },
-            width: double.infinity,
-            height: 54.h,
-            circleSize: 12.r,
-            textStyle: context.styleSemiBold16,
-            buttonColor: colorScheme.primary,
-          ),
+          if (canReschedule)
+            CustomButton(
+              text: 'Request Reschedule',
+              onPressed: () => _showRequestRescheduleDialog(context),
+              width: double.infinity,
+              height: 54.h,
+              circleSize: 12.r,
+              textStyle: context.styleSemiBold16,
+              buttonColor: colorScheme.primary,
+            )
+          else
+            Container(
+              padding: EdgeInsets.all(12.w),
+              decoration: BoxDecoration(
+                color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                borderRadius: BorderRadius.circular(12.r),
+              ),
+              child: Text(
+                'Rescheduling is only allowed up to 24 hours before the appointment.',
+                style: context.styleRegular12.copyWith(color: colorScheme.onSurfaceVariant),
+                textAlign: TextAlign.center,
+              ),
+            ),
           SizedBox(height: 16.h),
           OutlinedButton(
-            onPressed: () => _showCancelDialog(context),
+            onPressed: () => _showRequestCancelDialog(context),
             style: OutlinedButton.styleFrom(
               side: BorderSide(color: context.customColors.error ?? Colors.red),
               shape: RoundedRectangleBorder(
@@ -234,7 +330,7 @@ class AppointmentDetailsView extends StatelessWidget {
               minimumSize: Size(double.infinity, 54.h),
             ),
             child: Text(
-              'Cancel Appointment',
+              'Request Cancel',
               style: context.styleSemiBold16.copyWith(
                 color: context.customColors.error,
               ),
@@ -267,7 +363,8 @@ class AppointmentDetailsView extends StatelessWidget {
     }
   }
 
-  void _showCancelDialog(BuildContext context) {
+  void _showRequestCancelDialog(BuildContext context) {
+    final reasonController = TextEditingController();
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -275,14 +372,31 @@ class AppointmentDetailsView extends StatelessWidget {
           borderRadius: BorderRadius.circular(20.r),
         ),
         title: Text(
-          'Cancel Appointment',
+          'Request Cancellation',
           style: context.styleSemiBold18,
         ),
-        content: Text(
-          'Are you sure you want to cancel your appointment with ${appointment.doctorName}?',
-          style: context.styleRegular14.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-          ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Please provide a reason for cancelling your appointment with ${appointment.doctorName}.',
+              style: context.styleRegular14.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+            SizedBox(height: 16.h),
+            TextField(
+              controller: reasonController,
+              decoration: InputDecoration(
+                hintText: 'Cancellation reason...',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+              ),
+              maxLines: 3,
+            ),
+          ],
         ),
         actions: [
           TextButton(
@@ -296,18 +410,25 @@ class AppointmentDetailsView extends StatelessWidget {
           ),
           TextButton(
             onPressed: () async {
+              final reason = reasonController.text.trim();
+              if (reason.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Please enter a reason')),
+                );
+                return;
+              }
               Navigator.pop(dialogContext);
               final navigator = Navigator.of(context);
               final messenger = ScaffoldMessenger.of(context);
-              final result = await context.read<AppointmentsCubit>().cancelAppointment(appointment.id);
+              final result = await context.read<AppointmentsCubit>().requestCancel(appointment.id, reason);
               if (result is Success<void>) {
                 messenger.showSnackBar(
                   const SnackBar(
-                    content: Text('Appointment cancelled successfully'),
+                    content: Text('Cancellation request submitted successfully'),
                     backgroundColor: Colors.green,
                   ),
                 );
-                navigator.pop(); // Go back after cancellation
+                navigator.pop(); // Go back after request
               } else if (result is FailureResult<void>) {
                 messenger.showSnackBar(
                   SnackBar(
@@ -318,9 +439,96 @@ class AppointmentDetailsView extends StatelessWidget {
               }
             },
             child: Text(
-              'Yes, Cancel',
+              'Submit',
               style: context.styleSemiBold14.copyWith(
                 color: context.customColors.error,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showRequestRescheduleDialog(BuildContext context) {
+    final reasonController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20.r),
+        ),
+        title: Text(
+          'Request Reschedule',
+          style: context.styleSemiBold18,
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Please provide a reason for rescheduling your appointment with ${appointment.doctorName}.',
+              style: context.styleRegular14.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+            SizedBox(height: 16.h),
+            TextField(
+              controller: reasonController,
+              decoration: InputDecoration(
+                hintText: 'Reschedule reason...',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+              ),
+              maxLines: 3,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(
+              'Back',
+              style: context.styleMedium14.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () async {
+              final reason = reasonController.text.trim();
+              if (reason.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Please enter a reason')),
+                );
+                return;
+              }
+              Navigator.pop(dialogContext);
+              final navigator = Navigator.of(context);
+              final messenger = ScaffoldMessenger.of(context);
+              final result = await context.read<AppointmentsCubit>().requestReschedule(appointment.id, reason);
+              if (result is Success<void>) {
+                messenger.showSnackBar(
+                  const SnackBar(
+                    content: Text('Reschedule request submitted successfully'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+                navigator.pop(); // Go back after request
+              } else if (result is FailureResult<void>) {
+                messenger.showSnackBar(
+                  SnackBar(
+                    content: Text(result.failure.message),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+            child: Text(
+              'Submit',
+              style: context.styleSemiBold14.copyWith(
+                color: Theme.of(context).colorScheme.primary,
               ),
             ),
           ),

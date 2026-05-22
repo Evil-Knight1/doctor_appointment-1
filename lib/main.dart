@@ -22,6 +22,7 @@ import 'package:doctor_appointment/core/services/app_cache_service.dart';
 import 'package:doctor_appointment/l10n/app_localizations.dart';
 import 'package:doctor_appointment/core/logic/locale_cubit.dart';
 import 'package:responsive_framework/responsive_framework.dart';
+import 'package:flutter_paymob/flutter_paymob.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -58,6 +59,13 @@ void main() async {
       await Hive.initFlutter();
       await ChatCacheService.openBoxes();
       await AppCacheService.openBoxes();
+
+      await FlutterPaymob.instance.initialize(
+        apiKey: Env.paymobApiKey,
+        integrationID: int.tryParse(Env.paymobIntegrationId) ?? 0,
+        walletIntegrationId: int.tryParse(Env.paymobIntegrationId) ?? 0,
+        iFrameID: int.tryParse(Env.paymobIframeId) ?? 0,
+      );
 
       setupServiceLocator();
       await getIt<NotificationService>().init();

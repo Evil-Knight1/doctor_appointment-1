@@ -192,6 +192,7 @@ class _CheckoutViewState extends State<CheckoutView> {
 
   void _onConfirm() {
     _cubit.checkout(
+      context: context,
       doctorId: widget.payload.draft.doctor.doctor.id,
       slotId: widget.payload.draft.slot.id,
       reason: widget.payload.reason,

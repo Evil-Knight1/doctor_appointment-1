@@ -20,6 +20,12 @@ class Appointment {
   final String? patientProfilePicture;
   final DateTime createdAt;
 
+  final bool isCancellationRequested;
+  final String? cancellationReason;
+  final bool isRescheduleRequested;
+  final String? rescheduleReason;
+  final DateTime? rescheduleApprovedAt;
+
   const Appointment({
     required this.id,
     required this.patientId,
@@ -41,5 +47,10 @@ class Appointment {
     this.doctorProfilePicture,
     this.patientProfilePicture,
     required this.createdAt,
+    this.isCancellationRequested = false,
+    this.cancellationReason,
+    this.isRescheduleRequested = false,
+    this.rescheduleReason,
+    this.rescheduleApprovedAt,
   });
 }

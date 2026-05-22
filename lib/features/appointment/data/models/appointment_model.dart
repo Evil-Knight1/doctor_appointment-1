@@ -22,6 +22,11 @@ class AppointmentModel extends Appointment {
     super.doctorProfilePicture,
     super.patientProfilePicture,
     required super.createdAt,
+    super.isCancellationRequested,
+    super.cancellationReason,
+    super.isRescheduleRequested,
+    super.rescheduleReason,
+    super.rescheduleApprovedAt,
   });
 
   factory AppointmentModel.fromJson(Map<String, dynamic> json) {
@@ -83,6 +88,11 @@ class AppointmentModel extends Appointment {
       createdAt:
           DateTime.tryParse(json['createdAt'] as String? ?? '') ??
               DateTime.fromMillisecondsSinceEpoch(0),
+      isCancellationRequested: json['isCancellationRequested'] as bool? ?? false,
+      cancellationReason: json['cancellationReason'] as String?,
+      isRescheduleRequested: json['isRescheduleRequested'] as bool? ?? false,
+      rescheduleReason: json['rescheduleReason'] as String?,
+      rescheduleApprovedAt: DateTime.tryParse(json['rescheduleApprovedAt'] as String? ?? ''),
     );
   }
 
@@ -108,6 +118,11 @@ class AppointmentModel extends Appointment {
       if (doctorProfilePicture != null) 'doctorProfilePicture': doctorProfilePicture,
       if (patientProfilePicture != null) 'patientProfilePicture': patientProfilePicture,
       'createdAt': createdAt.toIso8601String(),
+      'isCancellationRequested': isCancellationRequested,
+      if (cancellationReason != null) 'cancellationReason': cancellationReason,
+      'isRescheduleRequested': isRescheduleRequested,
+      if (rescheduleReason != null) 'rescheduleReason': rescheduleReason,
+      if (rescheduleApprovedAt != null) 'rescheduleApprovedAt': rescheduleApprovedAt!.toIso8601String(),
     };
   }
 }

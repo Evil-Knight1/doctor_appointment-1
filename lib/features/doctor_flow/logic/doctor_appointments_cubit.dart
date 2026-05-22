@@ -7,13 +7,17 @@ import 'package:doctor_appointment/features/appointment/domain/entities/appointm
 
 import 'package:doctor_appointment/core/errors/failures.dart';
 
+import 'package:doctor_appointment/features/appointment/domain/usecases/doctor_approve_reschedule_usecase.dart';
+
 class DoctorAppointmentsCubit extends Cubit<DoctorAppointmentsState> {
   final GetDoctorAppointmentsUseCase getDoctorAppointmentsUseCase;
   final UpdateAppointmentStatusUseCase updateAppointmentStatusUseCase;
+  final DoctorApproveRescheduleUseCase doctorApproveRescheduleUseCase;
 
   DoctorAppointmentsCubit({
     required this.getDoctorAppointmentsUseCase,
     required this.updateAppointmentStatusUseCase,
+    required this.doctorApproveRescheduleUseCase,
   }) : super(DoctorAppointmentsInitial());
 
   Future<void> fetchAppointments() async {
@@ -69,5 +73,13 @@ class DoctorAppointmentsCubit extends Cubit<DoctorAppointmentsState> {
       }
     }
     return Result.failure(const ServerFailure('Unable to update status: invalid state'));
+  }
+
+  Future<Result<void>> approveReschedule(int appointmentId) async {
+    final result = await doctorApproveRescheduleUseCase(appointmentId);
+    if (result is Success) {
+      await fetchAppointments();
+    }
+    return result;
   }
 }

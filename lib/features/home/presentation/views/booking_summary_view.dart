@@ -251,6 +251,7 @@ class BookingSummaryView extends StatelessWidget {
                 onConfirm: () {
                   final int doctorId = doctor.id;
                   context.read<PaymentCubit>().checkout(
+                    context: context,
                     doctorId: doctorId,
                     slotId: slotId,
                     reason: reason.isEmpty ? 'General Consultation' : reason,

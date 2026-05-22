@@ -176,4 +176,74 @@ class AppointmentRepositoryImpl implements AppointmentRepository {
       return Result.failure(const UnknownFailure('Unexpected error occurred'));
     }
   }
+
+  @override
+  Future<Result<void>> requestCancel(int appointmentId, String reason) async {
+    try {
+      await remoteDataSource.requestCancel(appointmentId, reason);
+      return Result.success(null);
+    } on ApiException catch (exception) {
+      return Result.failure(ServerFailure(exception.message, statusCode: exception.statusCode));
+    } on DioException catch (exception) {
+      return Result.failure(_mapDioFailure(exception));
+    } catch (_) {
+      return Result.failure(const UnknownFailure('Unexpected error occurred'));
+    }
+  }
+
+  @override
+  Future<Result<void>> requestReschedule(int appointmentId, String reason) async {
+    try {
+      await remoteDataSource.requestReschedule(appointmentId, reason);
+      return Result.success(null);
+    } on ApiException catch (exception) {
+      return Result.failure(ServerFailure(exception.message, statusCode: exception.statusCode));
+    } on DioException catch (exception) {
+      return Result.failure(_mapDioFailure(exception));
+    } catch (_) {
+      return Result.failure(const UnknownFailure('Unexpected error occurred'));
+    }
+  }
+
+  @override
+  Future<Result<void>> doctorApproveReschedule(int appointmentId) async {
+    try {
+      await remoteDataSource.doctorApproveReschedule(appointmentId);
+      return Result.success(null);
+    } on ApiException catch (exception) {
+      return Result.failure(ServerFailure(exception.message, statusCode: exception.statusCode));
+    } on DioException catch (exception) {
+      return Result.failure(_mapDioFailure(exception));
+    } catch (_) {
+      return Result.failure(const UnknownFailure('Unexpected error occurred'));
+    }
+  }
+
+  @override
+  Future<Result<void>> selectRescheduleSlot(int appointmentId, int newSlotId) async {
+    try {
+      await remoteDataSource.selectRescheduleSlot(appointmentId, newSlotId);
+      return Result.success(null);
+    } on ApiException catch (exception) {
+      return Result.failure(ServerFailure(exception.message, statusCode: exception.statusCode));
+    } on DioException catch (exception) {
+      return Result.failure(_mapDioFailure(exception));
+    } catch (_) {
+      return Result.failure(const UnknownFailure('Unexpected error occurred'));
+    }
+  }
+
+  @override
+  Future<Result<void>> adminCancel(int appointmentId) async {
+    try {
+      await remoteDataSource.adminCancel(appointmentId);
+      return Result.success(null);
+    } on ApiException catch (exception) {
+      return Result.failure(ServerFailure(exception.message, statusCode: exception.statusCode));
+    } on DioException catch (exception) {
+      return Result.failure(_mapDioFailure(exception));
+    } catch (_) {
+      return Result.failure(const UnknownFailure('Unexpected error occurred'));
+    }
+  }
 }

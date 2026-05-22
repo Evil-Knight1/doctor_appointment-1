@@ -16,4 +16,9 @@ abstract class AppointmentRepository {
   
   Future<Result<List<SlotModel>>> getDoctorSlots(int doctorId, DateTime date);
   Future<Result<void>> cancelAppointment(int appointmentId);
+  Future<Result<void>> requestCancel(int appointmentId, String reason);
+  Future<Result<void>> requestReschedule(int appointmentId, String reason);
+  Future<Result<void>> doctorApproveReschedule(int appointmentId);
+  Future<Result<void>> selectRescheduleSlot(int appointmentId, int newSlotId);
+  Future<Result<void>> adminCancel(int appointmentId);
 }

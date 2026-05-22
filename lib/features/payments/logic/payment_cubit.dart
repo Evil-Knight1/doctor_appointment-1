@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:doctor_appointment/core/config/env.dart';
 import 'package:doctor_appointment/core/utils/result.dart';
 import 'package:doctor_appointment/features/appointment/domain/usecases/create_appointment_usecase.dart';
 import 'package:doctor_appointment/features/payments/domain/entities/payment_status.dart';
@@ -9,6 +10,8 @@ import 'package:doctor_appointment/features/payments/domain/repositories/payment
 import 'package:doctor_appointment/features/payments/logic/payment_state.dart';
 import 'package:doctor_appointment/features/payments/data/services/paymob_sdk_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_paymob/flutter_paymob.dart';
 
 /// Orchestrates the entire backend-driven payment flow.
 ///
@@ -58,6 +61,7 @@ class PaymentCubit extends Cubit<PaymentState> {
   /// Entry point: creates the appointment then either opens a payment session
   /// or confirms a cash booking immediately.
   Future<void> checkout({
+    required BuildContext context,
     required int doctorId,
     required int slotId,
     required String reason,
@@ -104,41 +108,33 @@ class PaymentCubit extends Cubit<PaymentState> {
           amount: amount,
         ));
 
-        final sessionResult = await _createPaymentSessionUseCase(
-          CreatePaymentSessionParams(
-            appointmentId: appointment.id,
+        if (paymentMethod == 1) {
+          await FlutterPaymob.instance.payWithCard(
+            context: context,
+            currency: "EGP",
             amount: amount,
-            paymentMethodType: paymentMethod,
-          ),
-        );
-
-        switch (sessionResult) {
-          case FailureResult():
-            emit(PaymentFailure(
-              message: sessionResult.failure.message,
-              appointmentId: appointment.id,
-              amount: amount,
-            ));
-          case Success():
-            final session = sessionResult.data;
-            if (session.clientSecret != null && session.clientSecret!.isNotEmpty) {
-              // Intention API (Native SDK) route
-              final result = await _paymobSdkService.payWithNativeSdk(
-                publicKey: 'YOUR_PUBLIC_KEY', // TODO: Get from env/config
-                clientSecret: session.clientSecret!,
+            onPayment: (response) {
+              onWebViewResult(
+                success: response.success,
+                providerTransactionId: response.transactionID,
+                failureReason: response.message,
               );
-              
-              if (result == 'Successfull') {
-                onWebViewResult(success: true);
-              } else if (result == 'Pending') {
-                onWebViewResult(success: true, failureReason: 'Pending');
-              } else {
-                onWebViewResult(success: false, failureReason: 'Rejected');
-              }
-            } else {
-              // Fallback to WebView
-              emit(PaymentSessionCreated(session: session));
-            }
+            },
+          );
+        } else if (paymentMethod == 2) {
+          await FlutterPaymob.instance.payWithWallet(
+            context: context,
+            currency: "EGP",
+            amount: amount,
+            number: "01010101010", // Dummy wallet number
+            onPayment: (response) {
+              onWebViewResult(
+                success: response.success,
+                providerTransactionId: response.transactionID,
+                failureReason: response.message,
+              );
+            },
+          );
         }
     }
   }

@@ -172,6 +172,14 @@ class AppointmentCard extends StatelessWidget {
       bgColor = successColor.withValues(alpha: 0.1);
       textColor = successColor;
       label = 'Completed';
+    } else if (appointment.isCancellationRequested) {
+      bgColor = errorColor.withValues(alpha: 0.1);
+      textColor = errorColor;
+      label = 'Cancel Pending';
+    } else if (appointment.isRescheduleRequested) {
+      bgColor = Colors.orange.withValues(alpha: 0.1);
+      textColor = Colors.orange;
+      label = appointment.rescheduleApprovedAt != null ? 'Slot Select' : 'Reschedule Pending';
     } else {
       bgColor = colorScheme.primary.withValues(alpha: 0.1);
       textColor = colorScheme.primary;
@@ -256,16 +264,30 @@ class AppointmentCard extends StatelessWidget {
 
   Widget _buildActions(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final isUpcoming = !isCompleted && !isCancelled;
+    final isUpcoming = !isCompleted && !isCancelled && !appointment.isCancellationRequested && !appointment.isRescheduleRequested;
+
+    if (!isUpcoming && !isCompleted && !isCancelled) {
+      return Center(
+        child: Text(
+          'Action pending. Tap for details.',
+          style: context.styleMedium12.copyWith(color: Colors.orange),
+        ),
+      );
+    }
+
     return Row(
       children: [
         Expanded(
           child: OutlinedButton(
             onPressed: () {
-              context.pushNamed(
-                Routes.bookingDateView,
-                extra: _getDoctorFromAppointment(),
-              );
+              if (isUpcoming) {
+                _showRequestRescheduleDialog(context);
+              } else {
+                context.pushNamed(
+                  Routes.bookingDateView,
+                  extra: _getDoctorFromAppointment(),
+                );
+              }
             },
             style: OutlinedButton.styleFrom(
               side: BorderSide(color: colorScheme.primary.withValues(alpha: 0.5)),
@@ -275,7 +297,7 @@ class AppointmentCard extends StatelessWidget {
               padding: EdgeInsets.symmetric(vertical: 12.h),
             ),
             child: Text(
-              isUpcoming ? 'Reschedule' : 'Re-book',
+              isUpcoming ? 'Req. Reschedule' : 'Re-book',
               style: context.styleSemiBold14.copyWith(
                 color: colorScheme.primary,
                 fontSize: 13.sp,
@@ -288,7 +310,7 @@ class AppointmentCard extends StatelessWidget {
           child: ElevatedButton(
             onPressed: () {
               if (isUpcoming) {
-                _showCancelDialog(context);
+                _showRequestCancelDialog(context);
               } else {
                 context.pushNamed(
                   Routes.bookingReviewView,
@@ -308,7 +330,7 @@ class AppointmentCard extends StatelessWidget {
               elevation: 0,
             ),
             child: Text(
-              isUpcoming ? 'Cancel' : 'Leave Review',
+              isUpcoming ? 'Req. Cancel' : 'Leave Review',
               style: context.styleSemiBold14.copyWith(
                 color: colorScheme.onPrimary,
                 fontSize: 13.sp,
@@ -320,7 +342,8 @@ class AppointmentCard extends StatelessWidget {
     );
   }
 
-  void _showCancelDialog(BuildContext context) {
+  void _showRequestCancelDialog(BuildContext context) {
+    final reasonController = TextEditingController();
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -328,14 +351,31 @@ class AppointmentCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(20.r),
         ),
         title: Text(
-          'Cancel Appointment',
+          'Request Cancellation',
           style: context.styleSemiBold18,
         ),
-        content: Text(
-          'Are you sure you want to cancel your appointment with ${appointment.doctorName}?',
-          style: context.styleRegular14.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-          ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Please provide a reason for cancelling your appointment with ${appointment.doctorName}.',
+              style: context.styleRegular14.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+            SizedBox(height: 16.h),
+            TextField(
+              controller: reasonController,
+              decoration: InputDecoration(
+                hintText: 'Cancellation reason...',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+              ),
+              maxLines: 3,
+            ),
+          ],
         ),
         actions: [
           TextButton(
@@ -349,13 +389,20 @@ class AppointmentCard extends StatelessWidget {
           ),
           TextButton(
             onPressed: () async {
+              final reason = reasonController.text.trim();
+              if (reason.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Please enter a reason')),
+                );
+                return;
+              }
               Navigator.pop(dialogContext);
               final messenger = ScaffoldMessenger.of(context);
-              final result = await context.read<AppointmentsCubit>().cancelAppointment(appointment.id);
+              final result = await context.read<AppointmentsCubit>().requestCancel(appointment.id, reason);
               if (result is Success<void>) {
                 messenger.showSnackBar(
                   const SnackBar(
-                    content: Text('Appointment cancelled successfully'),
+                    content: Text('Cancellation request submitted successfully'),
                     backgroundColor: Colors.green,
                   ),
                 );
@@ -369,9 +416,94 @@ class AppointmentCard extends StatelessWidget {
               }
             },
             child: Text(
-              'Yes, Cancel',
+              'Submit',
               style: context.styleSemiBold14.copyWith(
                 color: context.customColors.error,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showRequestRescheduleDialog(BuildContext context) {
+    final reasonController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20.r),
+        ),
+        title: Text(
+          'Request Reschedule',
+          style: context.styleSemiBold18,
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Please provide a reason for rescheduling your appointment with ${appointment.doctorName}.',
+              style: context.styleRegular14.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+            SizedBox(height: 16.h),
+            TextField(
+              controller: reasonController,
+              decoration: InputDecoration(
+                hintText: 'Reschedule reason...',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+              ),
+              maxLines: 3,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(
+              'Back',
+              style: context.styleMedium14.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () async {
+              final reason = reasonController.text.trim();
+              if (reason.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Please enter a reason')),
+                );
+                return;
+              }
+              Navigator.pop(dialogContext);
+              final messenger = ScaffoldMessenger.of(context);
+              final result = await context.read<AppointmentsCubit>().requestReschedule(appointment.id, reason);
+              if (result is Success<void>) {
+                messenger.showSnackBar(
+                  const SnackBar(
+                    content: Text('Reschedule request submitted successfully'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              } else if (result is FailureResult<void>) {
+                messenger.showSnackBar(
+                  SnackBar(
+                    content: Text(result.failure.message),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+            child: Text(
+              'Submit',
+              style: context.styleSemiBold14.copyWith(
+                color: Theme.of(context).colorScheme.primary,
               ),
             ),
           ),

@@ -206,7 +206,45 @@ class DoctorScheduleView extends StatelessWidget {
               ),
             ],
           ),
-          if (statusIsPending) ...[
+          if (appointment.isRescheduleRequested && appointment.rescheduleApprovedAt == null) ...[
+            SizedBox(height: 16.h),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () async {
+                  final cubit = context.read<DoctorAppointmentsCubit>();
+                  final res = await cubit.approveReschedule(appointment.id);
+                  if (context.mounted) {
+                    if (res is Success) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Reschedule approved successfully'),
+                          backgroundColor: Colors.green,
+                        ),
+                      );
+                    } else if (res is FailureResult<void>) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(res.failure.message),
+                          backgroundColor: colorScheme.error,
+                        ),
+                      );
+                    }
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.r),
+                  ),
+                ),
+                child: Text(
+                  'Approve Reschedule Request',
+                  style: context.styleMedium14.copyWith(color: Colors.white),
+                ),
+              ),
+            ),
+          ] else if (statusIsPending) ...[
             SizedBox(height: 16.h),
             Row(
               children: [

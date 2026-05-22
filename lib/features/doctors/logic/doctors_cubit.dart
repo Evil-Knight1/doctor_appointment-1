@@ -34,11 +34,11 @@ class DoctorsCubit extends Cubit<DoctorsState> {
     }
 
     if (isPagination) {
-      if (_currentPage != null) {
+      if (_currentPage != null && !isClosed) {
         emit(DoctorsPaginationLoading(_currentPage!));
       }
     } else {
-      emit(const DoctorsLoading());
+      if (!isClosed) emit(const DoctorsLoading());
     }
 
     final result = await searchDoctorsUseCase(
@@ -52,6 +52,8 @@ class DoctorsCubit extends Cubit<DoctorsState> {
     );
 
     _isFetching = false;
+
+    if (isClosed) return;
 
     switch (result) {
       case Success():

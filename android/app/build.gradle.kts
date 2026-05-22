@@ -61,7 +61,6 @@ android {
 
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
-    implementation("com.paymob.sdk:Paymob-SDK:1.1.2") // Or use fileTree if manually placed
 }
 
 flutter {
