@@ -31,10 +31,15 @@ class AppointmentModel extends Appointment {
   });
 
   factory AppointmentModel.fromJson(Map<String, dynamic> json) {
-    // Debug: expose raw reschedule fields to identify key name mismatches
-    debugPrint('🔍 [AppointmentModel] JSON keys: ${json.keys.toList()}');
-    debugPrint('🔍 [AppointmentModel] isRescheduleRequested raw: ${json['isRescheduleRequested']}');
-    debugPrint('🔍 [AppointmentModel] rescheduleApprovedAt raw: ${json['rescheduleApprovedAt']}');
+    // Debug: expose raw fields with ID to trace specific appointments
+    final id = json['id'];
+    debugPrint('🔍 [Appointment] ID: $id | isRescheduleRequested: ${json['isRescheduleRequested']} | isCancellationRequested: ${json['isCancellationRequested']}');
+
+    // Robust parsing for booleans in case backend sends strings or ints
+    bool parseBool(dynamic value) {
+      if (value == true || value == 'true' || value == 1) return true;
+      return false;
+    }
 
     // The backend may nest doctor info under a 'doctor' object or use flat keys
     final doctorObj = json['doctor'] as Map<String, dynamic>?;
@@ -99,10 +104,9 @@ class AppointmentModel extends Appointment {
       createdAt:
           DateTime.tryParse(json['createdAt'] as String? ?? '') ??
           DateTime.fromMillisecondsSinceEpoch(0),
-      isCancellationRequested:
-          json['isCancellationRequested'] as bool? ?? false,
+      isCancellationRequested: parseBool(json['isCancellationRequested'] ?? json['is_cancellation_requested']),
       cancellationReason: json['cancellationReason'] as String?,
-      isRescheduleRequested: json['isRescheduleRequested'] as bool? ?? false,
+      isRescheduleRequested: parseBool(json['isRescheduleRequested'] ?? json['is_reschedule_requested']),
       rescheduleReason: json['rescheduleReason'] as String?,
       rescheduleApprovedAt: DateTime.tryParse(
         json['rescheduleApprovedAt'] as String? ?? '',

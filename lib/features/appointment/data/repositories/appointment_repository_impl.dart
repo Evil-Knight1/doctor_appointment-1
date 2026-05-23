@@ -93,6 +93,11 @@ class AppointmentRepositoryImpl implements AppointmentRepository {
           specializationName: doctor.specialization.name,
           doctorProfilePicture: doctor.profilePictureUrl,
           createdAt: a.createdAt,
+          isCancellationRequested: a.isCancellationRequested,
+          cancellationReason: a.cancellationReason,
+          isRescheduleRequested: a.isRescheduleRequested,
+          rescheduleReason: a.rescheduleReason,
+          rescheduleApprovedAt: a.rescheduleApprovedAt,
         );
       }).toList();
 

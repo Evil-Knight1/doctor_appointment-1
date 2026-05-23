@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:doctor_appointment/core/utils/result.dart';
 import 'package:doctor_appointment/core/services/app_cache_service.dart';
@@ -39,8 +40,16 @@ class AppointmentsCubit extends Cubit<AppointmentsState> {
 
     switch (result) {
       case Success():
-        await appCacheService.cacheAppointments(result.data.cast<AppointmentModel>());
+        // Emit first so UI updates instantly even if cache throws
         emit(AppointmentsSuccess(result.data));
+        debugPrint('✅ [AppointmentsCubit] Emitted network data to UI');
+        try {
+          await appCacheService.cacheAppointments(
+            result.data.cast<AppointmentModel>(),
+          );
+        } catch (e) {
+          debugPrint('❌ [AppointmentsCubit] Cache error: $e');
+        }
       case FailureResult():
         if (cachedAppointments.isEmpty) {
           emit(AppointmentsFailure(result.failure.message));
@@ -66,7 +75,10 @@ class AppointmentsCubit extends Cubit<AppointmentsState> {
     return result;
   }
 
-  Future<Result<void>> requestReschedule(int appointmentId, String reason) async {
+  Future<Result<void>> requestReschedule(
+    int appointmentId,
+    String reason,
+  ) async {
     final result = await requestRescheduleUseCase(appointmentId, reason);
     if (result is Success) {
       await loadAppointments();
@@ -74,7 +86,10 @@ class AppointmentsCubit extends Cubit<AppointmentsState> {
     return result;
   }
 
-  Future<Result<void>> selectRescheduleSlot(int appointmentId, int newSlotId) async {
+  Future<Result<void>> selectRescheduleSlot(
+    int appointmentId,
+    int newSlotId,
+  ) async {
     final result = await selectRescheduleSlotUseCase(appointmentId, newSlotId);
     if (result is Success) {
       await loadAppointments();

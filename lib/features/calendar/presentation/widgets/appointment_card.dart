@@ -12,7 +12,6 @@ import 'package:doctor_appointment/features/doctors/domain/entities/doctor.dart'
 import 'package:doctor_appointment/features/doctors/domain/entities/specialization.dart';
 import 'package:doctor_appointment/core/utils/routes.dart';
 
-
 class AppointmentCard extends StatelessWidget {
   final Appointment appointment;
   final bool isCompleted;
@@ -51,10 +50,7 @@ class AppointmentCard extends StatelessWidget {
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _buildDoctorInfo(context),
-                _buildStatusBadge(context),
-              ],
+              children: [_buildDoctorInfo(context), _buildStatusBadge(context)],
             ),
             SizedBox(height: 16.h),
             _buildDateTimeRow(context),
@@ -76,11 +72,11 @@ class AppointmentCard extends StatelessWidget {
     final pictureUrl = appointment.doctorProfilePicture;
     final initials = appointment.doctorName.isNotEmpty
         ? appointment.doctorName
-            .split(' ')
-            .where((w) => w.isNotEmpty)
-            .take(2)
-            .map((w) => w[0].toUpperCase())
-            .join()
+              .split(' ')
+              .where((w) => w.isNotEmpty)
+              .take(2)
+              .map((w) => w[0].toUpperCase())
+              .join()
         : 'Dr';
 
     return Row(
@@ -104,9 +100,8 @@ class AppointmentCard extends StatelessWidget {
                     width: 50.w,
                     height: 50.w,
                     fit: BoxFit.cover,
-                    errorWidget: (_, _, _) => _buildInitialsAvatar(
-                      initials, colorScheme,
-                    ),
+                    errorWidget: (_, _, _) =>
+                        _buildInitialsAvatar(initials, colorScheme),
                   )
                 : _buildInitialsAvatar(initials, colorScheme),
           ),
@@ -179,7 +174,9 @@ class AppointmentCard extends StatelessWidget {
     } else if (appointment.isRescheduleRequested) {
       bgColor = Colors.orange.withValues(alpha: 0.1);
       textColor = Colors.orange;
-      label = appointment.rescheduleApprovedAt != null ? 'Slot Select' : 'Reschedule Pending';
+      label = appointment.rescheduleApprovedAt != null
+          ? 'Slot Select'
+          : 'Reschedule Pending';
     } else {
       bgColor = colorScheme.primary.withValues(alpha: 0.1);
       textColor = colorScheme.primary;
@@ -220,9 +217,7 @@ class AppointmentCard extends StatelessWidget {
           SizedBox(width: 6.w),
           Text(
             _formatDate(appointment.startTime),
-            style: context.styleMedium12.copyWith(
-              color: colorScheme.onSurface,
-            ),
+            style: context.styleMedium12.copyWith(color: colorScheme.onSurface),
           ),
           SizedBox(width: 20.w),
           Icon(
@@ -233,9 +228,7 @@ class AppointmentCard extends StatelessWidget {
           SizedBox(width: 6.w),
           Text(
             _formatTime(appointment.startTime),
-            style: context.styleMedium12.copyWith(
-              color: colorScheme.onSurface,
-            ),
+            style: context.styleMedium12.copyWith(color: colorScheme.onSurface),
           ),
         ],
       ),
@@ -264,7 +257,11 @@ class AppointmentCard extends StatelessWidget {
 
   Widget _buildActions(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final isUpcoming = !isCompleted && !isCancelled && !appointment.isCancellationRequested && !appointment.isRescheduleRequested;
+    final isUpcoming =
+        !isCompleted &&
+        !isCancelled &&
+        !appointment.isCancellationRequested &&
+        !appointment.isRescheduleRequested;
 
     if (!isUpcoming && !isCompleted && !isCancelled) {
       return Center(
@@ -290,14 +287,19 @@ class AppointmentCard extends StatelessWidget {
               }
             },
             style: OutlinedButton.styleFrom(
-              side: BorderSide(color: colorScheme.primary.withValues(alpha: 0.5)),
+              side: BorderSide(
+                color: colorScheme.primary.withValues(alpha: 0.5),
+              ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12.r),
               ),
               padding: EdgeInsets.symmetric(vertical: 12.h),
             ),
             child: Text(
-              isUpcoming ? 'Req. Reschedule' : 'Re-book',
+              !appointment.isRescheduleRequested &&
+                      appointment.rescheduleApprovedAt == null
+                  ? 'Req. Reschedule (${appointment.isRescheduleRequested})'
+                  : 'Pedning',
               style: context.styleSemiBold14.copyWith(
                 color: colorScheme.primary,
                 fontSize: 13.sp,
@@ -350,10 +352,7 @@ class AppointmentCard extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20.r),
         ),
-        title: Text(
-          'Request Cancellation',
-          style: context.styleSemiBold18,
-        ),
+        title: Text('Request Cancellation', style: context.styleSemiBold18),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -398,11 +397,15 @@ class AppointmentCard extends StatelessWidget {
               }
               Navigator.pop(dialogContext);
               final messenger = ScaffoldMessenger.of(context);
-              final result = await context.read<AppointmentsCubit>().requestCancel(appointment.id, reason);
+              final result = await context
+                  .read<AppointmentsCubit>()
+                  .requestCancel(appointment.id, reason);
               if (result is Success<void>) {
                 messenger.showSnackBar(
                   const SnackBar(
-                    content: Text('Cancellation request submitted successfully'),
+                    content: Text(
+                      'Cancellation request submitted successfully',
+                    ),
                     backgroundColor: Colors.green,
                   ),
                 );
@@ -435,10 +438,7 @@ class AppointmentCard extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20.r),
         ),
-        title: Text(
-          'Request Reschedule',
-          style: context.styleSemiBold18,
-        ),
+        title: Text('Request Reschedule', style: context.styleSemiBold18),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -483,7 +483,9 @@ class AppointmentCard extends StatelessWidget {
               }
               Navigator.pop(dialogContext);
               final messenger = ScaffoldMessenger.of(context);
-              final result = await context.read<AppointmentsCubit>().requestReschedule(appointment.id, reason);
+              final result = await context
+                  .read<AppointmentsCubit>()
+                  .requestReschedule(appointment.id, reason);
               if (result is Success<void>) {
                 messenger.showSnackBar(
                   const SnackBar(

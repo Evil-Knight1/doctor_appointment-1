@@ -9,16 +9,22 @@ class SpecializationsCubit extends Cubit<SpecializationsState> {
       : super(const SpecializationsInitial());
 
   Future<void> fetchSpecializations() async {
-    emit(const SpecializationsLoading());
+    if (!isClosed) {
+      emit(const SpecializationsLoading());
+    }
     try {
       final specializations = await getSpecializationsUseCase();
       
       // Use a Set to ensure unique names as requested
       final uniqueNames = specializations.map((s) => s.name).toSet();
       
-      emit(SpecializationsSuccess(specializations, uniqueNames));
+      if (!isClosed) {
+        emit(SpecializationsSuccess(specializations, uniqueNames));
+      }
     } catch (e) {
-      emit(SpecializationsFailure(e.toString()));
+      if (!isClosed) {
+        emit(SpecializationsFailure(e.toString()));
+      }
     }
   }
 }
