@@ -50,11 +50,11 @@ class PaymentCubit extends Cubit<PaymentState> {
     required CreatePaymentSessionUseCase createPaymentSessionUseCase,
     required GetPaymentStatusUseCase getPaymentStatusUseCase,
     required PaymentRepository paymentRepository,
-  })  : _createAppointmentUseCase = createAppointmentUseCase,
-        _createPaymentSessionUseCase = createPaymentSessionUseCase,
-        _getPaymentStatusUseCase = getPaymentStatusUseCase,
-        _paymentRepository = paymentRepository,
-        super(const PaymentInitial());
+  }) : _createAppointmentUseCase = createAppointmentUseCase,
+       _createPaymentSessionUseCase = createPaymentSessionUseCase,
+       _getPaymentStatusUseCase = getPaymentStatusUseCase,
+       _paymentRepository = paymentRepository,
+       super(const PaymentInitial());
 
   // ─── Public API ──────────────────────────────────────────────────────────
 
@@ -85,10 +85,12 @@ class PaymentCubit extends Cubit<PaymentState> {
 
     switch (appointmentResult) {
       case FailureResult():
-        emit(PaymentFailure(
-          message: appointmentResult.failure.message,
-          amount: amount,
-        ));
+        emit(
+          PaymentFailure(
+            message: appointmentResult.failure.message,
+            amount: amount,
+          ),
+        );
         return;
 
       case Success():
@@ -97,16 +99,20 @@ class PaymentCubit extends Cubit<PaymentState> {
 
         // ── Step 2a: Cash at clinic → done immediately ─────────────────────
         if (paymentMethod == 3) {
-          emit(PaymentCashConfirmed(appointmentId: appointment.id, amount: amount));
+          emit(
+            PaymentCashConfirmed(appointmentId: appointment.id, amount: amount),
+          );
           return;
         }
 
         // ── Step 2b: Card / Wallet → request a payment session ────────────
-        emit(PaymentLoading(
-          message: 'Opening payment gateway…',
-          appointmentId: appointment.id,
-          amount: amount,
-        ));
+        emit(
+          PaymentLoading(
+            message: 'Opening payment gateway…',
+            appointmentId: appointment.id,
+            amount: amount,
+          ),
+        );
 
         if (paymentMethod == 4) {
           await FlutterPaymob.instance.payWithCard(
@@ -126,7 +132,7 @@ class PaymentCubit extends Cubit<PaymentState> {
             context: context,
             currency: "EGP",
             amount: amount,
-            number: "01010101010", // Dummy wallet number
+            number: "01025170803",
             onPayment: (response) {
               onWebViewResult(
                 success: response.success,
@@ -154,21 +160,25 @@ class PaymentCubit extends Cubit<PaymentState> {
     if (_activeAppointmentId == null) return;
 
     // Best-effort notification to backend (non-blocking, swallowed on error).
-    unawaited(_paymentRepository.reportPaymentCompletion(
-      appointmentId: _activeAppointmentId!,
-      success: success,
-      providerTransactionId: providerTransactionId,
-      failureReason: failureReason,
-    ));
+    unawaited(
+      _paymentRepository.reportPaymentCompletion(
+        appointmentId: _activeAppointmentId!,
+        success: success,
+        providerTransactionId: providerTransactionId,
+        failureReason: failureReason,
+      ),
+    );
 
     if (success) {
       // Start polling for webhook confirmation.
       startPolling();
     } else {
-      emit(PaymentCancelled(
-        appointmentId: _activeAppointmentId,
-        amount: state.amount,
-      ));
+      emit(
+        PaymentCancelled(
+          appointmentId: _activeAppointmentId,
+          amount: state.amount,
+        ),
+      );
     }
   }
 
@@ -180,11 +190,13 @@ class PaymentCubit extends Cubit<PaymentState> {
     _stopPolling();
     _pollCount = 0;
 
-    emit(PaymentPendingVerification(
-      appointmentId: _activeAppointmentId,
-      amount: state.amount,
-      currency: state.currency,
-    ));
+    emit(
+      PaymentPendingVerification(
+        appointmentId: _activeAppointmentId,
+        amount: state.amount,
+        currency: state.currency,
+      ),
+    );
 
     _pollTimer = Timer.periodic(_pollInterval, (_) => _pollStatus());
   }
@@ -206,12 +218,15 @@ class PaymentCubit extends Cubit<PaymentState> {
         // Transient network error — keep polling unless max attempts reached.
         if (_pollCount >= _maxPollAttempts) {
           _stopPolling();
-          emit(PaymentFailure(
-            message: 'Could not verify payment. Please check your appointment status.',
-            appointmentId: _activeAppointmentId,
-            amount: state.amount,
-            lastKnownStatus: PaymentStatus.unknown,
-          ));
+          emit(
+            PaymentFailure(
+              message:
+                  'Could not verify payment. Please check your appointment status.',
+              appointmentId: _activeAppointmentId,
+              amount: state.amount,
+              lastKnownStatus: PaymentStatus.unknown,
+            ),
+          );
         }
 
       case Success():
@@ -221,9 +236,11 @@ class PaymentCubit extends Cubit<PaymentState> {
 
         // Update poll count in the current pending state.
         if (state is PaymentPendingVerification) {
-          emit((state as PaymentPendingVerification).copyWith(
-            pollCount: _pollCount,
-          ));
+          emit(
+            (state as PaymentPendingVerification).copyWith(
+              pollCount: _pollCount,
+            ),
+          );
         }
 
         if (paymentResult.status.isTerminal) {
@@ -232,29 +249,37 @@ class PaymentCubit extends Cubit<PaymentState> {
           if (paymentResult.status == PaymentStatus.paid) {
             emit(PaymentSuccess(result: paymentResult));
           } else {
-            emit(PaymentFailure(
-              message: paymentResult.failureReason ??
-                  'Payment ${paymentResult.status.name}.',
-              appointmentId: _activeAppointmentId,
-              amount: paymentResult.amount,
-              lastKnownStatus: paymentResult.status,
-            ));
+            emit(
+              PaymentFailure(
+                message:
+                    paymentResult.failureReason ??
+                    'Payment ${paymentResult.status.name}.',
+                appointmentId: _activeAppointmentId,
+                amount: paymentResult.amount,
+                lastKnownStatus: paymentResult.status,
+              ),
+            );
           }
         } else if (_pollCount >= _maxPollAttempts) {
           _stopPolling();
-          emit(PaymentPendingVerification(
-            appointmentId: _activeAppointmentId,
-            amount: paymentResult.amount,
-            pollCount: _pollCount,
-          ));
+          emit(
+            PaymentPendingVerification(
+              appointmentId: _activeAppointmentId,
+              amount: paymentResult.amount,
+              pollCount: _pollCount,
+            ),
+          );
           // Stay in pending — advise user to check later.
-          emit(PaymentFailure(
-            message: 'Verification is taking longer than expected. '
-                'Your payment may still succeed. Check your appointments.',
-            appointmentId: _activeAppointmentId,
-            amount: paymentResult.amount,
-            lastKnownStatus: paymentResult.status,
-          ));
+          emit(
+            PaymentFailure(
+              message:
+                  'Verification is taking longer than expected. '
+                  'Your payment may still succeed. Check your appointments.',
+              appointmentId: _activeAppointmentId,
+              amount: paymentResult.amount,
+              lastKnownStatus: paymentResult.status,
+            ),
+          );
         }
     }
   }

@@ -24,7 +24,8 @@ class AppointmentDetailsView extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final now = DateTime.now();
     final isCancelled = appointment.status == 3;
-    final isCompleted = appointment.status != 3 && appointment.endTime.isBefore(now);
+    final isCompleted =
+        appointment.status != 3 && appointment.endTime.isBefore(now);
 
     return Scaffold(
       backgroundColor: colorScheme.surface,
@@ -42,9 +43,7 @@ class AppointmentDetailsView extends StatelessWidget {
         ),
         title: Text(
           'Appointment Details',
-          style: context.styleSemiBold18.copyWith(
-            color: colorScheme.onSurface,
-          ),
+          style: context.styleSemiBold18.copyWith(color: colorScheme.onSurface),
         ),
       ),
       body: SingleChildScrollView(
@@ -70,7 +69,10 @@ class AppointmentDetailsView extends StatelessWidget {
           child: Container(
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: colorScheme.primary.withValues(alpha: 0.1), width: 4),
+              border: Border.all(
+                color: colorScheme.primary.withValues(alpha: 0.1),
+                width: 4,
+              ),
               boxShadow: [
                 BoxShadow(
                   color: colorScheme.primary.withValues(alpha: 0.1),
@@ -82,9 +84,7 @@ class AppointmentDetailsView extends StatelessWidget {
             child: CircleAvatar(
               radius: 60.r,
               backgroundColor: colorScheme.primaryContainer,
-              child: ClipOval(
-                child: _buildDoctorAvatar(context),
-              ),
+              child: ClipOval(child: _buildDoctorAvatar(context)),
             ),
           ),
         ),
@@ -130,14 +130,20 @@ class AppointmentDetailsView extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoCard(BuildContext context, bool isCancelled, bool isCompleted) {
+  Widget _buildInfoCard(
+    BuildContext context,
+    bool isCancelled,
+    bool isCompleted,
+  ) {
     final colorScheme = Theme.of(context).colorScheme;
     return Container(
       padding: EdgeInsets.all(20.w),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(24.r),
-        border: Border.all(color: Theme.of(context).dividerColor.withValues(alpha: 0.5)),
+        border: Border.all(
+          color: Theme.of(context).dividerColor.withValues(alpha: 0.5),
+        ),
         boxShadow: [
           BoxShadow(
             color: Theme.of(context).shadowColor.withValues(alpha: 0.05),
@@ -151,19 +157,23 @@ class AppointmentDetailsView extends StatelessWidget {
           _buildDetailRow(
             context,
             'Status',
-            isCancelled 
-                ? 'Cancelled' 
-                : (isCompleted 
-                    ? 'Completed' 
-                    : (appointment.isCancellationRequested
-                        ? 'Cancellation Requested'
-                        : (appointment.isRescheduleRequested
-                            ? (appointment.rescheduleApprovedAt != null ? 'Reschedule Approved' : 'Reschedule Requested')
-                            : 'Upcoming'))),
+            isCancelled
+                ? 'Cancelled'
+                : (isCompleted
+                      ? 'Completed'
+                      : (appointment.isCancellationRequested
+                            ? 'Cancellation Requested'
+                            : ((appointment.isRescheduleRequested || appointment.rescheduleApprovedAt != null)
+                                  ? (appointment.rescheduleApprovedAt != null
+                                        ? 'Reschedule Approved'
+                                        : 'Reschedule Requested')
+                                  : 'Upcoming'))),
             icon: Icons.info_outline_rounded,
             valueColor: isCancelled || appointment.isCancellationRequested
                 ? context.customColors.error
-                : (isCompleted ? context.customColors.success : colorScheme.primary),
+                : (isCompleted
+                      ? context.customColors.success
+                      : colorScheme.primary),
           ),
           Divider(height: 24.h),
           _buildDetailRow(
@@ -211,42 +221,32 @@ class AppointmentDetailsView extends StatelessWidget {
     );
   }
 
-  Widget _buildActions(BuildContext context, bool isCancelled, bool isCompleted) {
+  Widget _buildActions(
+    BuildContext context,
+    bool isCancelled,
+    bool isCompleted,
+  ) {
     final colorScheme = Theme.of(context).colorScheme;
-    if (!isCancelled && !isCompleted) {
-      if (appointment.isCancellationRequested) {
-        return Container(
-          padding: EdgeInsets.all(16.w),
-          decoration: BoxDecoration(
-            color: context.customColors.error?.withValues(alpha: 0.1) ?? Colors.red.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(12.r),
-          ),
-          child: Row(
-            children: [
-              Icon(Icons.hourglass_empty_rounded, color: context.customColors.error),
-              SizedBox(width: 12.w),
-              Expanded(
-                child: Text(
-                  'Your cancellation request is pending review.',
-                  style: context.styleMedium14.copyWith(color: context.customColors.error),
-                ),
-              ),
-            ],
-          ),
-        );
-      }
 
-      if (appointment.isRescheduleRequested) {
+    if (!isCancelled && !isCompleted) {
+      // Build the reschedule widget (null if no reschedule state)
+      Widget? rescheduleWidget;
+      if (appointment.isRescheduleRequested ||
+          appointment.rescheduleApprovedAt != null) {
         if (appointment.rescheduleApprovedAt != null) {
-          final expiryTime = appointment.rescheduleApprovedAt!.add(const Duration(hours: 12));
+          final expiryTime = appointment.rescheduleApprovedAt!.add(
+            const Duration(hours: 12),
+          );
           if (DateTime.now().isBefore(expiryTime)) {
-            return CustomButton(
+            rescheduleWidget = CustomButton(
               text: 'Select New Slot',
               onPressed: () {
-                // Here we will navigate to the booking date view but pass an extra flag or appointmentId
                 context.pushNamed(
                   Routes.bookingDateView,
-                  extra: {'doctor': _getDoctorFromAppointment(), 'rescheduleAppointmentId': appointment.id},
+                  extra: {
+                    'doctor': _getDoctorFromAppointment(),
+                    'rescheduleAppointmentId': appointment.id,
+                  },
                 );
               },
               width: double.infinity,
@@ -256,34 +256,71 @@ class AppointmentDetailsView extends StatelessWidget {
               buttonColor: colorScheme.primary,
             );
           } else {
-            return Container(
+            rescheduleWidget = Container(
               padding: EdgeInsets.all(16.w),
               decoration: BoxDecoration(
-                color: context.customColors.error?.withValues(alpha: 0.1) ?? Colors.red.withValues(alpha: 0.1),
+                color:
+                    context.customColors.error?.withValues(alpha: 0.1) ??
+                    Colors.red.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12.r),
               ),
               child: Text(
                 'Reschedule window expired.',
-                style: context.styleMedium14.copyWith(color: context.customColors.error),
+                style: context.styleMedium14.copyWith(
+                  color: context.customColors.error,
+                ),
                 textAlign: TextAlign.center,
               ),
             );
           }
+        } else {
+          // Pending doctor approval
+          rescheduleWidget = Container(
+            padding: EdgeInsets.all(16.w),
+            decoration: BoxDecoration(
+              color: Colors.orange.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12.r),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.access_time_rounded, color: Colors.orange),
+                SizedBox(width: 12.w),
+                Expanded(
+                  child: Text(
+                    'Your reschedule request is pending doctor approval.',
+                    style: context.styleMedium14.copyWith(color: Colors.orange),
+                  ),
+                ),
+              ],
+            ),
+          );
         }
-        return Container(
+      }
+
+      // Build the cancellation widget (null if not requested)
+      Widget? cancellationWidget;
+      if (appointment.isCancellationRequested) {
+        cancellationWidget = Container(
           padding: EdgeInsets.all(16.w),
           decoration: BoxDecoration(
-            color: Colors.orange.withValues(alpha: 0.1),
+            color:
+                context.customColors.error?.withValues(alpha: 0.1) ??
+                Colors.red.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12.r),
           ),
           child: Row(
             children: [
-              const Icon(Icons.access_time_rounded, color: Colors.orange),
+              Icon(
+                Icons.hourglass_empty_rounded,
+                color: context.customColors.error,
+              ),
               SizedBox(width: 12.w),
               Expanded(
                 child: Text(
-                  'Your reschedule request is pending doctor approval.',
-                  style: context.styleMedium14.copyWith(color: Colors.orange),
+                  'Your cancellation request is pending review.',
+                  style: context.styleMedium14.copyWith(
+                    color: context.customColors.error,
+                  ),
                 ),
               ),
             ],
@@ -291,7 +328,22 @@ class AppointmentDetailsView extends StatelessWidget {
         );
       }
 
-      final bool canReschedule = DateTime.now().isBefore(appointment.startTime.subtract(const Duration(hours: 24)));
+      // If either or both requests exist, stack the banners
+      if (rescheduleWidget != null || cancellationWidget != null) {
+        return Column(
+          children: [
+            if (rescheduleWidget != null) rescheduleWidget,
+            if (rescheduleWidget != null && cancellationWidget != null)
+              SizedBox(height: 12.h),
+            if (cancellationWidget != null) cancellationWidget,
+          ],
+        );
+      }
+
+      // No pending requests — show action buttons
+      final bool canReschedule = DateTime.now().isBefore(
+        appointment.startTime.subtract(const Duration(hours: 24)),
+      );
 
       return Column(
         children: [
@@ -309,12 +361,16 @@ class AppointmentDetailsView extends StatelessWidget {
             Container(
               padding: EdgeInsets.all(12.w),
               decoration: BoxDecoration(
-                color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                color: colorScheme.surfaceContainerHighest.withValues(
+                  alpha: 0.5,
+                ),
                 borderRadius: BorderRadius.circular(12.r),
               ),
               child: Text(
                 'Rescheduling is only allowed up to 24 hours before the appointment.',
-                style: context.styleRegular12.copyWith(color: colorScheme.onSurfaceVariant),
+                style: context.styleRegular12.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -371,10 +427,7 @@ class AppointmentDetailsView extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20.r),
         ),
-        title: Text(
-          'Request Cancellation',
-          style: context.styleSemiBold18,
-        ),
+        title: Text('Request Cancellation', style: context.styleSemiBold18),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -420,11 +473,15 @@ class AppointmentDetailsView extends StatelessWidget {
               Navigator.pop(dialogContext);
               final navigator = Navigator.of(context);
               final messenger = ScaffoldMessenger.of(context);
-              final result = await context.read<AppointmentsCubit>().requestCancel(appointment.id, reason);
+              final result = await context
+                  .read<AppointmentsCubit>()
+                  .requestCancel(appointment.id, reason);
               if (result is Success<void>) {
                 messenger.showSnackBar(
                   const SnackBar(
-                    content: Text('Cancellation request submitted successfully'),
+                    content: Text(
+                      'Cancellation request submitted successfully',
+                    ),
                     backgroundColor: Colors.green,
                   ),
                 );
@@ -450,7 +507,6 @@ class AppointmentDetailsView extends StatelessWidget {
     );
   }
 
-
   void _showRequestRescheduleDialog(BuildContext context) {
     final reasonController = TextEditingController();
     showDialog(
@@ -459,10 +515,7 @@ class AppointmentDetailsView extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20.r),
         ),
-        title: Text(
-          'Request Reschedule',
-          style: context.styleSemiBold18,
-        ),
+        title: Text('Request Reschedule', style: context.styleSemiBold18),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -508,7 +561,9 @@ class AppointmentDetailsView extends StatelessWidget {
               Navigator.pop(dialogContext);
               final navigator = Navigator.of(context);
               final messenger = ScaffoldMessenger.of(context);
-              final result = await context.read<AppointmentsCubit>().requestReschedule(appointment.id, reason);
+              final result = await context
+                  .read<AppointmentsCubit>()
+                  .requestReschedule(appointment.id, reason);
               if (result is Success<void>) {
                 messenger.showSnackBar(
                   const SnackBar(

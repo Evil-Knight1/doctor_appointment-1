@@ -9,6 +9,7 @@ class AppConfig {
     required this.paymobApiKey,
     required this.paymobIntegrationId,
     required this.paymobIframeId,
+
   });
 
   void validate() {

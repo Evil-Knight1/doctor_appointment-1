@@ -13,7 +13,7 @@ abstract class AppointmentRepository {
   });
 
   Future<Result<List<Appointment>>> getMyAppointments();
-  
+
   Future<Result<List<SlotModel>>> getDoctorSlots(int doctorId, DateTime date);
   Future<Result<void>> cancelAppointment(int appointmentId);
   Future<Result<void>> requestCancel(int appointmentId, String reason);

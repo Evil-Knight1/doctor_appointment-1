@@ -1,4 +1,5 @@
 import 'package:doctor_appointment/features/appointment/domain/entities/appointment.dart';
+import 'package:flutter/foundation.dart';
 
 class AppointmentModel extends Appointment {
   const AppointmentModel({
@@ -30,34 +31,44 @@ class AppointmentModel extends Appointment {
   });
 
   factory AppointmentModel.fromJson(Map<String, dynamic> json) {
+    // Debug: expose raw reschedule fields to identify key name mismatches
+    debugPrint('🔍 [AppointmentModel] JSON keys: ${json.keys.toList()}');
+    debugPrint('🔍 [AppointmentModel] isRescheduleRequested raw: ${json['isRescheduleRequested']}');
+    debugPrint('🔍 [AppointmentModel] rescheduleApprovedAt raw: ${json['rescheduleApprovedAt']}');
+
     // The backend may nest doctor info under a 'doctor' object or use flat keys
     final doctorObj = json['doctor'] as Map<String, dynamic>?;
 
     // Doctor name: try flat keys first, then nested doctor object
-    final doctorName = json['doctorName'] as String? ??
+    final doctorName =
+        json['doctorName'] as String? ??
         json['doctorFullName'] as String? ??
         doctorObj?['fullName'] as String? ??
         doctorObj?['name'] as String? ??
         '';
 
     // Specialization: may be nested in doctor object or at top level
-    final specializationName = json['specializationName'] as String? ??
+    final specializationName =
+        json['specializationName'] as String? ??
         json['specialization'] as String? ??
         doctorObj?['specializationName'] as String? ??
         doctorObj?['specialization'] as String?;
 
     // Doctor profile picture
-    final doctorProfilePicture = json['doctorProfilePicture'] as String? ??
+    final doctorProfilePicture =
+        json['doctorProfilePicture'] as String? ??
         json['profilePicture'] as String? ??
         doctorObj?['profilePicture'] as String? ??
         doctorObj?['profilePictureUrl'] as String?;
 
     // Patient profile picture
-    final patientProfilePicture = json['patientProfilePicture'] as String? ??
+    final patientProfilePicture =
+        json['patientProfilePicture'] as String? ??
         json['patientProfilePictureUrl'] as String?;
 
     // Patient name
-    final patientNameFinal = json['patientName'] as String? ??
+    final patientNameFinal =
+        json['patientName'] as String? ??
         json['patientFullName'] as String? ??
         '';
 
@@ -69,8 +80,9 @@ class AppointmentModel extends Appointment {
       doctorName: doctorName,
       startTime:
           DateTime.tryParse(json['startTime'] as String? ?? '') ??
-              DateTime.fromMillisecondsSinceEpoch(0),
-      endTime: DateTime.tryParse(json['endTime'] as String? ?? '') ??
+          DateTime.fromMillisecondsSinceEpoch(0),
+      endTime:
+          DateTime.tryParse(json['endTime'] as String? ?? '') ??
           DateTime.fromMillisecondsSinceEpoch(0),
       reason: json['reason'] as String? ?? '',
       status: json['status'] as int? ?? 0,
@@ -78,8 +90,7 @@ class AppointmentModel extends Appointment {
       paymentMethod: json['paymentMethod'] as int?,
       paymentStatus: json['paymentStatus'] as int?,
       paymentTransactionId: json['paymentTransactionId'] as String?,
-      paymentDate:
-          DateTime.tryParse(json['paymentDate'] as String? ?? ''),
+      paymentDate: DateTime.tryParse(json['paymentDate'] as String? ?? ''),
       amount: (json['amount'] as num?)?.toDouble(),
       doctorNotes: json['doctorNotes'] as String?,
       specializationName: specializationName,
@@ -87,12 +98,15 @@ class AppointmentModel extends Appointment {
       patientProfilePicture: patientProfilePicture,
       createdAt:
           DateTime.tryParse(json['createdAt'] as String? ?? '') ??
-              DateTime.fromMillisecondsSinceEpoch(0),
-      isCancellationRequested: json['isCancellationRequested'] as bool? ?? false,
+          DateTime.fromMillisecondsSinceEpoch(0),
+      isCancellationRequested:
+          json['isCancellationRequested'] as bool? ?? false,
       cancellationReason: json['cancellationReason'] as String?,
       isRescheduleRequested: json['isRescheduleRequested'] as bool? ?? false,
       rescheduleReason: json['rescheduleReason'] as String?,
-      rescheduleApprovedAt: DateTime.tryParse(json['rescheduleApprovedAt'] as String? ?? ''),
+      rescheduleApprovedAt: DateTime.tryParse(
+        json['rescheduleApprovedAt'] as String? ?? '',
+      ),
     );
   }
 
@@ -110,19 +124,23 @@ class AppointmentModel extends Appointment {
       'isPaid': isPaid,
       if (paymentMethod != null) 'paymentMethod': paymentMethod,
       if (paymentStatus != null) 'paymentStatus': paymentStatus,
-      if (paymentTransactionId != null) 'paymentTransactionId': paymentTransactionId,
+      if (paymentTransactionId != null)
+        'paymentTransactionId': paymentTransactionId,
       if (paymentDate != null) 'paymentDate': paymentDate!.toIso8601String(),
       if (amount != null) 'amount': amount,
       if (doctorNotes != null) 'doctorNotes': doctorNotes,
       if (specializationName != null) 'specializationName': specializationName,
-      if (doctorProfilePicture != null) 'doctorProfilePicture': doctorProfilePicture,
-      if (patientProfilePicture != null) 'patientProfilePicture': patientProfilePicture,
+      if (doctorProfilePicture != null)
+        'doctorProfilePicture': doctorProfilePicture,
+      if (patientProfilePicture != null)
+        'patientProfilePicture': patientProfilePicture,
       'createdAt': createdAt.toIso8601String(),
       'isCancellationRequested': isCancellationRequested,
       if (cancellationReason != null) 'cancellationReason': cancellationReason,
       'isRescheduleRequested': isRescheduleRequested,
       if (rescheduleReason != null) 'rescheduleReason': rescheduleReason,
-      if (rescheduleApprovedAt != null) 'rescheduleApprovedAt': rescheduleApprovedAt!.toIso8601String(),
+      if (rescheduleApprovedAt != null)
+        'rescheduleApprovedAt': rescheduleApprovedAt!.toIso8601String(),
     };
   }
 }
