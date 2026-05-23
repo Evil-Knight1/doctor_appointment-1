@@ -296,10 +296,7 @@ class AppointmentCard extends StatelessWidget {
               padding: EdgeInsets.symmetric(vertical: 12.h),
             ),
             child: Text(
-              !appointment.isRescheduleRequested &&
-                      appointment.rescheduleApprovedAt == null
-                  ? 'Req. Reschedule (${appointment.isRescheduleRequested})'
-                  : 'Pedning',
+              isUpcoming ? 'Req. Reschedule' : 'Re-book',
               style: context.styleSemiBold14.copyWith(
                 color: colorScheme.primary,
                 fontSize: 13.sp,

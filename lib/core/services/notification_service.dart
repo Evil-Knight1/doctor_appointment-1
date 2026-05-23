@@ -131,6 +131,9 @@ class NotificationService {
     }
 
     final payloadMap = Map<String, dynamic>.from(message.data);
+    final notificationId = message.messageId?.hashCode ?? message.hashCode;
+    
+    payloadMap['notificationId'] = notificationId;
     payloadMap['title'] ??= title;
     payloadMap['message'] ??= body;
     payloadMap['relatedEntityId'] =
@@ -142,7 +145,7 @@ class NotificationService {
     print('[FCM] Parsed notification type: $notificationType');
 
     await showNotification(
-      id: message.messageId?.hashCode ?? message.hashCode,
+      id: notificationId,
       title: title ?? 'New Notification',
       body: body ?? '',
       payload: jsonEncode(payloadMap),
@@ -294,30 +297,37 @@ class NotificationService {
         case _replyActionId:
           final replyText = response.input?.trim();
           _log.i('[Notification] Reply action triggered. Text: "$replyText"');
-          if (replyText != null && replyText.isNotEmpty) {
-            await _sendQuickReply(data, replyText);
-          } else {
-            _log.w(
-              '[Notification] Reply action had empty input — skipping send.',
-            );
-          }
-          await _markAsSeenFromPayload(data);
-          if (response.id != null) {
-            await _flutterLocalNotificationsPlugin.cancel(id: response.id!);
-            _log.d(
-              '[Notification] Dismissed tray notification id=${response.id}.',
-            );
+          
+          try {
+            if (replyText != null && replyText.isNotEmpty) {
+              await _sendQuickReply(data, replyText);
+            } else {
+              _log.w('[Notification] Reply action had empty input — skipping send.');
+            }
+            await _markAsSeenFromPayload(data);
+          } catch (e) {
+            _log.e('[Notification] Failed to process quick reply or mark as seen: $e');
+          } finally {
+            final notifId = response.id ?? _parseInt(data['notificationId'] ?? data['id']);
+            if (notifId != null) {
+              await _flutterLocalNotificationsPlugin.cancel(id: notifId);
+              _log.d('[Notification] Dismissed tray notification id=$notifId.');
+            }
           }
           break;
 
         case _seenActionId:
           _log.i('[Notification] Seen action triggered.');
-          await _markAsSeenFromPayload(data);
-          if (response.id != null) {
-            await _flutterLocalNotificationsPlugin.cancel(id: response.id!);
-            _log.d(
-              '[Notification] Dismissed tray notification id=${response.id}.',
-            );
+          try {
+            await _markAsSeenFromPayload(data);
+          } catch (e) {
+            _log.e('[Notification] Failed to mark as seen: $e');
+          } finally {
+            final seenNotifId = response.id ?? _parseInt(data['notificationId'] ?? data['id']);
+            if (seenNotifId != null) {
+              await _flutterLocalNotificationsPlugin.cancel(id: seenNotifId);
+              _log.d('[Notification] Dismissed tray notification id=$seenNotifId.');
+            }
           }
           break;
 

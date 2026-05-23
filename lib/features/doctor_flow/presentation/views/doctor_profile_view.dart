@@ -7,6 +7,9 @@ import 'package:doctor_appointment/features/doctor_flow/logic/doctor_availabilit
 import 'package:doctor_appointment/features/doctor_flow/presentation/views/doctor_availability_view.dart';
 import 'package:doctor_appointment/features/profile/presentation/widgets/profile_menu_item.dart';
 import 'package:doctor_appointment/core/services/shared_preferences_helper.dart';
+import 'package:doctor_appointment/core/services/app_cache_service.dart';
+import 'package:doctor_appointment/core/services/chat_cache_service.dart';
+import 'package:doctor_appointment/core/services/service_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -218,6 +221,8 @@ class _DoctorProfileViewState extends State<DoctorProfileView> {
           TextButton(
             onPressed: () async {
               await SharedPreferencesHelper.clearAll();
+              await getIt<AppCacheService>().clearAll();
+              await getIt<ChatCacheService>().clearAll();
               if (context.mounted) {
                 context.go(AppRouter.kLoginView);
               }

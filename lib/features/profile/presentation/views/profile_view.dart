@@ -5,6 +5,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:doctor_appointment/core/utils/go_router.dart';
 import 'package:doctor_appointment/core/services/shared_preferences_helper.dart';
+import 'package:doctor_appointment/core/services/app_cache_service.dart';
+import 'package:doctor_appointment/core/services/chat_cache_service.dart';
+import 'package:doctor_appointment/core/services/service_locator.dart';
 import 'package:doctor_appointment/core/logic/theme_cubit.dart';
 import 'package:doctor_appointment/core/logic/locale_cubit.dart';
 import 'package:doctor_appointment/features/profile/logic/profile_cubit.dart';
@@ -401,6 +404,8 @@ class _ProfileViewState extends State<ProfileView> {
           TextButton(
             onPressed: () async {
               await SharedPreferencesHelper.clearAll();
+              await getIt<AppCacheService>().clearAll();
+              await getIt<ChatCacheService>().clearAll();
               if (context.mounted) {
                 context.go(AppRouter.kLoginView);
               }
