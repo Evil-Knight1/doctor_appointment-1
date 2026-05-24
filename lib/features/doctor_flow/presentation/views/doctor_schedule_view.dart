@@ -1,4 +1,5 @@
 import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
+import 'package:doctor_appointment/core/utils/go_router.dart';
 
 import 'package:doctor_appointment/features/appointment/domain/entities/appointment.dart';
 import 'package:doctor_appointment/features/doctor_flow/logic/doctor_appointments_cubit.dart';
@@ -7,6 +8,7 @@ import 'package:doctor_appointment/core/utils/result.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -49,7 +51,9 @@ class DoctorScheduleView extends StatelessWidget {
             return Center(
               child: Text(
                 'No appointments scheduled yet.',
-                style: context.styleMedium14.copyWith(color: colorScheme.onSurfaceVariant),
+                style: context.styleMedium14.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
               ),
             );
           }
@@ -115,214 +119,254 @@ class DoctorScheduleView extends StatelessWidget {
         ? colorScheme.error
         : (customColors.warning ?? Colors.orange);
 
-    return Container(
-      padding: EdgeInsets.all(16.w),
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: colorScheme.outlineVariant),
-        boxShadow: [
-          BoxShadow(
-            color: colorScheme.shadow.withValues(alpha: 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              CircleAvatar(
-                radius: 20.r,
-                backgroundColor: colorScheme.secondaryContainer,
-                backgroundImage: appointment.patientProfilePicture != null
-                    ? CachedNetworkImageProvider(
-                        ImageUrlHelper.getFullUrl(appointment.patientProfilePicture!),
-                      )
-                    : null,
-                child: appointment.patientProfilePicture == null
-                    ? Icon(
-                        Icons.person,
-                        color: colorScheme.onSecondaryContainer,
-                      )
-                    : null,
-              ),
-              SizedBox(width: 12.w),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      appointment.patientName,
-                      style: context.styleSemiBold16.copyWith(color: colorScheme.onSurface),
-                    ),
-                    SizedBox(height: 2.h),
-                    Text(
-                      appointment.reason,
-                      style: context.styleRegular12.copyWith(color: colorScheme.onSurfaceVariant),
-                    ),
-                  ],
-                ),
-              ),
-              if (!statusIsPending)
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                  decoration: BoxDecoration(
-                    color: statusColor.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8.r),
-                  ),
-                  child: Text(
-                    statusText,
-                    style: context.styleMedium14.copyWith(color: statusColor, fontSize: 12.sp),
-                  ),
-                ),
-            ],
-          ),
-          SizedBox(height: 16.h),
-          Row(
-            children: [
-              Icon(
-                Icons.calendar_today_rounded,
-                size: 16.sp,
-                color: colorScheme.primary,
-              ),
-              SizedBox(width: 6.w),
-              Text(
-                DateFormat('MMM dd, yyyy').format(appointment.startTime),
-                style: context.styleMedium14.copyWith(color: colorScheme.onSurface),
-              ),
-              SizedBox(width: 16.w),
-              Icon(
-                Icons.access_time_rounded,
-                size: 16.sp,
-                color: colorScheme.primary,
-              ),
-              SizedBox(width: 6.w),
-              Text(
-                DateFormat('hh:mm a').format(appointment.startTime),
-                style: context.styleMedium14.copyWith(color: colorScheme.onSurface),
-              ),
-            ],
-          ),
-          if (appointment.isRescheduleRequested && appointment.rescheduleApprovedAt == null) ...[
-            SizedBox(height: 16.h),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () async {
-                  final cubit = context.read<DoctorAppointmentsCubit>();
-                  final res = await cubit.approveReschedule(appointment.id);
-                  if (context.mounted) {
-                    if (res is Success) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Reschedule approved successfully'),
-                          backgroundColor: Colors.green,
-                        ),
-                      );
-                    } else if (res is FailureResult<void>) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(res.failure.message),
-                          backgroundColor: colorScheme.error,
-                        ),
-                      );
-                    }
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.r),
-                  ),
-                ),
-                child: Text(
-                  'Approve Reschedule Request',
-                  style: context.styleMedium14.copyWith(color: Colors.white),
-                ),
-              ),
+    return InkWell(
+      onTap: () {
+        context.push(
+          AppRouter.kAppointmentDetailsView,
+          extra: {'appointment': appointment, 'isDoctorFlow': true},
+        );
+      },
+      borderRadius: BorderRadius.circular(16.r),
+      child: Container(
+        padding: EdgeInsets.all(16.w),
+        decoration: BoxDecoration(
+          color: colorScheme.surface,
+          borderRadius: BorderRadius.circular(16.r),
+          border: Border.all(color: colorScheme.outlineVariant),
+          boxShadow: [
+            BoxShadow(
+              color: colorScheme.shadow.withValues(alpha: 0.04),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
             ),
-          ] else if (statusIsPending) ...[
-            SizedBox(height: 16.h),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
             Row(
               children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () async {
-                      final cubit = context.read<DoctorAppointmentsCubit>();
-                      final res = await cubit.updateStatus(appointment.id, 2); // 2 = Rejected
-                      if (context.mounted) {
-                        if (res is Success) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Appointment declined successfully'),
-                              backgroundColor: Colors.green,
-                            ),
-                          );
-                        } else if (res is FailureResult<Appointment>) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(res.failure.message),
-                              backgroundColor: colorScheme.error,
-                            ),
-                          );
-                        }
-                      }
-                    },
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: colorScheme.error),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.r),
-                      ),
-                    ),
-                    child: Text(
-                      'Decline',
-                      style: context.styleMedium14.copyWith(color: colorScheme.error),
-                    ),
-                  ),
+                CircleAvatar(
+                  radius: 20.r,
+                  backgroundColor: colorScheme.secondaryContainer,
+                  backgroundImage: appointment.patientProfilePicture != null
+                      ? CachedNetworkImageProvider(
+                          ImageUrlHelper.getFullUrl(
+                            appointment.patientProfilePicture!,
+                          ),
+                        )
+                      : null,
+                  child: appointment.patientProfilePicture == null
+                      ? Icon(
+                          Icons.person,
+                          color: colorScheme.onSecondaryContainer,
+                        )
+                      : null,
                 ),
                 SizedBox(width: 12.w),
                 Expanded(
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      final cubit = context.read<DoctorAppointmentsCubit>();
-                      final res = await cubit.updateStatus(appointment.id, 1); // 1 = Approved
-                      if (context.mounted) {
-                        if (res is Success) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Appointment accepted successfully'),
-                              backgroundColor: Colors.green,
-                            ),
-                          );
-                        } else if (res is FailureResult<Appointment>) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(res.failure.message),
-                              backgroundColor: colorScheme.error,
-                            ),
-                          );
-                        }
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: colorScheme.primary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.r),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        appointment.patientName,
+                        style: context.styleSemiBold16.copyWith(
+                          color: colorScheme.onSurface,
+                        ),
                       ),
+                      SizedBox(height: 2.h),
+                      Text(
+                        appointment.reason,
+                        style: context.styleRegular12.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (!statusIsPending)
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 8.w,
+                      vertical: 4.h,
+                    ),
+                    decoration: BoxDecoration(
+                      color: statusColor.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8.r),
                     ),
                     child: Text(
-                      'Accept',
-                      style: context.styleMedium14.copyWith(color: colorScheme.onPrimary),
+                      statusText,
+                      style: context.styleMedium14.copyWith(
+                        color: statusColor,
+                        fontSize: 12.sp,
+                      ),
                     ),
+                  ),
+              ],
+            ),
+            SizedBox(height: 16.h),
+            Row(
+              children: [
+                Icon(
+                  Icons.calendar_today_rounded,
+                  size: 16.sp,
+                  color: colorScheme.primary,
+                ),
+                SizedBox(width: 6.w),
+                Text(
+                  DateFormat('MMM dd, yyyy').format(appointment.startTime),
+                  style: context.styleMedium14.copyWith(
+                    color: colorScheme.onSurface,
+                  ),
+                ),
+                SizedBox(width: 16.w),
+                Icon(
+                  Icons.access_time_rounded,
+                  size: 16.sp,
+                  color: colorScheme.primary,
+                ),
+                SizedBox(width: 6.w),
+                Text(
+                  DateFormat('hh:mm a').format(appointment.startTime),
+                  style: context.styleMedium14.copyWith(
+                    color: colorScheme.onSurface,
                   ),
                 ),
               ],
             ),
+            if (appointment.isRescheduleRequested &&
+                appointment.rescheduleApprovedAt == null) ...[
+              SizedBox(height: 16.h),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    final cubit = context.read<DoctorAppointmentsCubit>();
+                    final res = await cubit.approveReschedule(appointment.id);
+                    if (context.mounted) {
+                      if (res is Success) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Reschedule approved successfully'),
+                            backgroundColor: Colors.green,
+                          ),
+                        );
+                      } else if (res is FailureResult<void>) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(res.failure.message),
+                            backgroundColor: colorScheme.error,
+                          ),
+                        );
+                      }
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.r),
+                    ),
+                  ),
+                  child: Text(
+                    'Approve Reschedule Request',
+                    style: context.styleMedium14.copyWith(color: Colors.white),
+                  ),
+                ),
+              ),
+            ] else if (statusIsPending) ...[
+              SizedBox(height: 16.h),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () async {
+                        final cubit = context.read<DoctorAppointmentsCubit>();
+                        final res = await cubit.updateStatus(
+                          appointment.id,
+                          2,
+                        ); // 2 = Rejected
+                        if (context.mounted) {
+                          if (res is Success) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Appointment declined successfully',
+                                ),
+                                backgroundColor: Colors.green,
+                              ),
+                            );
+                          } else if (res is FailureResult<Appointment>) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(res.failure.message),
+                                backgroundColor: colorScheme.error,
+                              ),
+                            );
+                          }
+                        }
+                      },
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: colorScheme.error),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.r),
+                        ),
+                      ),
+                      child: Text(
+                        'Decline',
+                        style: context.styleMedium14.copyWith(
+                          color: colorScheme.error,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 12.w),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        final cubit = context.read<DoctorAppointmentsCubit>();
+                        final res = await cubit.updateStatus(
+                          appointment.id,
+                          1,
+                        ); // 1 = Approved
+                        if (context.mounted) {
+                          if (res is Success) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Appointment accepted successfully',
+                                ),
+                                backgroundColor: Colors.green,
+                              ),
+                            );
+                          } else if (res is FailureResult<Appointment>) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(res.failure.message),
+                                backgroundColor: colorScheme.error,
+                              ),
+                            );
+                          }
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: colorScheme.primary,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.r),
+                        ),
+                      ),
+                      child: Text(
+                        'Accept',
+                        style: context.styleMedium14.copyWith(
+                          color: colorScheme.onPrimary,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }

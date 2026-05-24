@@ -16,6 +16,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:doctor_appointment/core/utils/image_url_helper.dart';
 
 class DoctorProfileView extends StatefulWidget {
   const DoctorProfileView({super.key});
@@ -72,11 +74,18 @@ class _DoctorProfileViewState extends State<DoctorProfileView> {
                     CircleAvatar(
                       radius: 40.r,
                       backgroundColor: colorScheme.primaryContainer,
-                      child: Icon(
-                        Icons.person,
-                        size: 40.sp,
-                        color: colorScheme.primary,
-                      ),
+                      backgroundImage: doctor?.profilePictureUrl != null
+                          ? CachedNetworkImageProvider(
+                              ImageUrlHelper.getFullUrl(doctor!.profilePictureUrl!),
+                            )
+                          : null,
+                      child: doctor?.profilePictureUrl == null
+                          ? Icon(
+                              Icons.person,
+                              size: 40.sp,
+                              color: colorScheme.primary,
+                            )
+                          : null,
                     ),
                     SizedBox(height: 16.h),
                     Text(
@@ -149,6 +158,20 @@ class _DoctorProfileViewState extends State<DoctorProfileView> {
                           );
                         }
                       },
+                    ),
+                    SizedBox(height: 12.h),
+                    ProfileMenuItem(
+                      icon: Icons.language_rounded,
+                      title: l10n.language,
+                      subtitle: l10n.english,
+                      onTap: () {},
+                    ),
+                    SizedBox(height: 12.h),
+                    ProfileMenuItem(
+                      icon: Icons.dark_mode_outlined,
+                      title: l10n.appearance,
+                      subtitle: l10n.systemDefault,
+                      onTap: () {},
                     ),
                     SizedBox(height: 32.h),
                     GestureDetector(

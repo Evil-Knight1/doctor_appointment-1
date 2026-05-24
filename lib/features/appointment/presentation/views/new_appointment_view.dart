@@ -218,30 +218,30 @@ class _NewAppointmentViewState extends State<NewAppointmentView> {
                         },
                       ),
                       SizedBox(height: 24.h),
-                      _sectionTitle('Consultation Type', colorScheme),
-                      SizedBox(height: 12.h),
+                      _sectionTitle('Consultation Type', colorScheme, Icons.medical_services_outlined),
+                      SizedBox(height: 16.h),
                       ConsultationTypeWidget(
                         selected: _selectedConsultation,
                         onSelected: (t) =>
                             setState(() => _selectedConsultation = t),
                       ),
-                      SizedBox(height: 24.h),
-                      _sectionTitle('Available Slots', colorScheme),
-                      SizedBox(height: 12.h),
+                      SizedBox(height: 32.h),
+                      _sectionTitle('Available Slots', colorScheme, Icons.access_time_rounded),
+                      SizedBox(height: 16.h),
                       AvailableTimeWidget(
                         slots: _slotsForSelectedDate,
                         selectedSlot: _selectedSlot,
                         onSlotSelected: (s) =>
                             setState(() => _selectedSlot = s),
                       ),
-                      SizedBox(height: 24.h),
-                      _sectionTitle('Consultation Fees', colorScheme),
-                      SizedBox(height: 12.h),
+                      SizedBox(height: 32.h),
+                      _sectionTitle('Consultation Fees', colorScheme, Icons.payments_outlined),
+                      SizedBox(height: 16.h),
                       ConsultationFeesWidget(
                         fee: widget.doctor.doctor.consultationFee ?? 0.0,
                         selectedType: _selectedConsultation,
                       ),
-                      SizedBox(height: 120.h),
+                      SizedBox(height: 140.h),
                     ],
                   ),
                 ),
@@ -254,12 +254,18 @@ class _NewAppointmentViewState extends State<NewAppointmentView> {
     );
   }
 
-  Widget _sectionTitle(String title, ColorScheme colorScheme) => Text(
-    title,
-    style: context.styleSemiBold22.copyWith(
-      fontSize: 15.sp,
-      color: colorScheme.onSurface,
-    ),
+  Widget _sectionTitle(String title, ColorScheme colorScheme, IconData icon) => Row(
+    children: [
+      Icon(icon, size: 20.sp, color: colorScheme.primary),
+      SizedBox(width: 8.w),
+      Text(
+        title,
+        style: context.styleSemiBold22.copyWith(
+          fontSize: 16.sp,
+          color: colorScheme.onSurface,
+        ),
+      ),
+    ],
   );
 
   Widget _buildBottomButton(BuildContext context) {
@@ -269,8 +275,18 @@ class _NewAppointmentViewState extends State<NewAppointmentView> {
       left: 0,
       right: 0,
       child: Container(
-        padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 32.h),
-        color: colorScheme.surface,
+        padding: EdgeInsets.fromLTRB(20.w, 16.h, 20.w, 32.h),
+        decoration: BoxDecoration(
+          color: colorScheme.surface,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
+          boxShadow: [
+            BoxShadow(
+              color: colorScheme.shadow.withValues(alpha: 0.08),
+              blurRadius: 16,
+              offset: const Offset(0, -4),
+            ),
+          ],
+        ),
         child: ElevatedButton(
           onPressed: _selectedSlot == null
               ? null

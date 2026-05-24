@@ -266,10 +266,23 @@ abstract class AppRouter {
         name: Routes.appointmentDetailsView,
         path: kAppointmentDetailsView,
         builder: (context, state) {
-          final appointment = state.extra as Appointment;
+          Appointment appointment;
+          bool isDoctorFlow = false;
+
+          if (state.extra is Map<String, dynamic>) {
+            final map = state.extra as Map<String, dynamic>;
+            appointment = map['appointment'] as Appointment;
+            isDoctorFlow = map['isDoctorFlow'] as bool? ?? false;
+          } else {
+            appointment = state.extra as Appointment;
+          }
+
           return BlocProvider(
             create: (context) => getIt<AppointmentsCubit>(),
-            child: AppointmentDetailsView(appointment: appointment),
+            child: AppointmentDetailsView(
+              appointment: appointment,
+              isDoctorFlow: isDoctorFlow,
+            ),
           );
         },
       ),

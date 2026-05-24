@@ -86,7 +86,10 @@ class PatientAppointmentHistoryView extends StatelessWidget {
 
     return InkWell(
       onTap: () {
-        context.push(AppRouter.kAppointmentDetailsView, extra: appointment);
+        context.push(AppRouter.kAppointmentDetailsView, extra: {
+          'appointment': appointment,
+          'isDoctorFlow': true,
+        });
       },
       borderRadius: BorderRadius.circular(16.r),
       child: Container(

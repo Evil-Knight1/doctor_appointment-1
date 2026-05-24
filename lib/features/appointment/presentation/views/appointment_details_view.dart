@@ -17,8 +17,13 @@ import 'package:doctor_appointment/core/utils/routes.dart';
 
 class AppointmentDetailsView extends StatelessWidget {
   final Appointment appointment;
+  final bool isDoctorFlow;
 
-  const AppointmentDetailsView({super.key, required this.appointment});
+  const AppointmentDetailsView({
+    super.key, 
+    required this.appointment,
+    this.isDoctorFlow = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +57,7 @@ class AppointmentDetailsView extends StatelessWidget {
         padding: EdgeInsets.all(24.w),
         child: Column(
           children: [
-            _buildDoctorHeader(context),
+            _buildHeader(context),
             SizedBox(height: 32.h),
             _buildInfoCard(context, isCancelled, isCompleted),
             SizedBox(height: 40.h),
@@ -63,9 +68,12 @@ class AppointmentDetailsView extends StatelessWidget {
     );
   }
 
-  Widget _buildDoctorHeader(BuildContext context) {
+  Widget _buildHeader(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
+    final name = isDoctorFlow ? appointment.patientName : appointment.doctorName;
+    final subtitle = isDoctorFlow ? 'Patient' : l10n.doctor;
+
     return Column(
       children: [
         Center(
@@ -87,18 +95,18 @@ class AppointmentDetailsView extends StatelessWidget {
             child: CircleAvatar(
               radius: 60.r,
               backgroundColor: colorScheme.primaryContainer,
-              child: ClipOval(child: _buildDoctorAvatar(context)),
+              child: ClipOval(child: _buildAvatar(context)),
             ),
           ),
         ),
         SizedBox(height: 20.h),
         Text(
-          appointment.doctorName,
+          name,
           style: context.styleSemiBold22.copyWith(fontSize: 20.sp),
         ),
         SizedBox(height: 4.h),
         Text(
-          l10n.doctor,
+          subtitle,
           style: context.styleMedium14.copyWith(
             color: colorScheme.onSurfaceVariant,
           ),
@@ -107,8 +115,8 @@ class AppointmentDetailsView extends StatelessWidget {
     );
   }
 
-  Widget _buildDoctorAvatar(BuildContext context) {
-    final profilePicture = appointment.doctorProfilePicture;
+  Widget _buildAvatar(BuildContext context) {
+    final profilePicture = isDoctorFlow ? appointment.patientProfilePicture : appointment.doctorProfilePicture;
     if (profilePicture != null && profilePicture.trim().isNotEmpty) {
       return CachedNetworkImage(
         imageUrl: ImageUrlHelper.getFullUrl(profilePicture),
@@ -116,7 +124,7 @@ class AppointmentDetailsView extends StatelessWidget {
         fit: BoxFit.cover,
         width: 120.r,
         height: 120.r,
-        errorWidget: (_, _, _) => Image.asset(
+        errorWidget: (_, _, _) => isDoctorFlow ? Icon(Icons.person, size: 60.r) : Image.asset(
           _getImageAsset(),
           fit: BoxFit.cover,
           width: 120.r,
@@ -125,7 +133,7 @@ class AppointmentDetailsView extends StatelessWidget {
       );
     }
 
-    return Image.asset(
+    return isDoctorFlow ? Icon(Icons.person, size: 60.r) : Image.asset(
       _getImageAsset(),
       fit: BoxFit.cover,
       width: 120.r,
