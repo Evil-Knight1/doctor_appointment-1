@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:doctor_appointment/core/errors/exceptions.dart';
 import 'package:doctor_appointment/core/services/api_service.dart';
 import 'package:doctor_appointment/features/auth/data/models/auth_response_model.dart';
+import 'package:doctor_appointment/features/auth/data/models/availability_check_model.dart';
 
 abstract class AuthRemoteDataSource {
   Future<AuthResponseModel> login({
@@ -47,12 +48,17 @@ abstract class AuthRemoteDataSource {
 
   Future<void> forgotPassword({required String email});
   
-  Future<void> verifyOtp({required String email, required String otp});
+  Future<String> verifyOtp({required String email, required String otp});
   
   Future<void> resetPassword({
     required String email,
     required String token,
     required String newPassword,
+  });
+
+  Future<AvailabilityCheckModel> checkAvailability({
+    String? email,
+    String? phone,
   });
 }
 
@@ -203,16 +209,17 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<void> verifyOtp({required String email, required String otp}) async {
+  Future<String> verifyOtp({required String email, required String otp}) async {
     final response = await apiService.post(
-      '/api/Auth/verify-email',
-      data: {'email': email, 'token': otp},
+      '/api/Auth/verify-otp',
+      data: {'email': email, 'code': otp},
     );
     if (response['success'] != true) {
       final fieldErrors = _extractFieldErrors(response);
       final message = _extractMessage(response, fieldErrors);
       throw ApiException(message, fieldErrors: fieldErrors);
     }
+    return response['data'] as String;
   }
 
   @override
@@ -230,6 +237,35 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final message = _extractMessage(response, fieldErrors);
       throw ApiException(message, fieldErrors: fieldErrors);
     }
+  }
+
+  @override
+  Future<AvailabilityCheckModel> checkAvailability({
+    String? email,
+    String? phone,
+  }) async {
+    final queryParams = <String, dynamic>{};
+    if (email != null && email.isNotEmpty) queryParams['email'] = email;
+    if (phone != null && phone.isNotEmpty) queryParams['phone'] = phone;
+
+    final response = await apiService.get(
+      '/api/Auth/availability',
+      queryParameters: queryParams,
+    );
+
+    final success = response['success'] == true || response['isSuccess'] == true;
+    if (!success) {
+      final fieldErrors = _extractFieldErrors(response);
+      final message = _extractMessage(response, fieldErrors);
+      throw ApiException(message, fieldErrors: fieldErrors);
+    }
+
+    final data = response['data'];
+    if (data is Map<String, dynamic>) {
+      return AvailabilityCheckModel.fromJson(data);
+    }
+
+    throw const ApiException('Unexpected response payload');
   }
 
   AuthResponseModel _parseAuthResponse(Map<String, dynamic> json) {

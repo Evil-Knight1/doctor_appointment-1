@@ -8,39 +8,45 @@ class ForgotPasswordCubit extends Cubit<ForgotPasswordState> {
   final AuthRepository authRepository;
 
   ForgotPasswordCubit({required this.authRepository})
-      : super(const ForgotPasswordInitial());
+    : super(const ForgotPasswordInitial());
 
   Future<void> forgotPassword(String email) async {
     emit(const ForgotPasswordLoading());
     final result = await authRepository.forgotPassword(email: email);
-    
+
     switch (result) {
       case Success():
-        emit(const ForgotPasswordSuccess('An OTP has been sent to your email.'));
+        emit(
+          const ForgotPasswordSuccess('An OTP has been sent to your email.'),
+        );
       case FailureResult():
-        emit(ForgotPasswordFailure(
-          result.failure.message,
-          fieldErrors: result.failure is ServerFailure
-              ? (result.failure as ServerFailure).fieldErrors
-              : {},
-        ));
+        emit(
+          ForgotPasswordFailure(
+            result.failure.message,
+            fieldErrors: result.failure is ServerFailure
+                ? (result.failure as ServerFailure).fieldErrors
+                : {},
+          ),
+        );
     }
   }
 
   Future<void> verifyOtp(String email, String otp) async {
     emit(const ForgotPasswordLoading());
     final result = await authRepository.verifyOtp(email: email, otp: otp);
-    
+
     switch (result) {
-      case Success():
-        emit(OtpVerifiedSuccess(otp));
+      case Success(data: final token):
+        emit(OtpVerifiedSuccess(token));
       case FailureResult():
-        emit(ForgotPasswordFailure(
-          result.failure.message,
-          fieldErrors: result.failure is ServerFailure
-              ? (result.failure as ServerFailure).fieldErrors
-              : {},
-        ));
+        emit(
+          ForgotPasswordFailure(
+            result.failure.message,
+            fieldErrors: result.failure is ServerFailure
+                ? (result.failure as ServerFailure).fieldErrors
+                : {},
+          ),
+        );
     }
   }
 
@@ -55,17 +61,19 @@ class ForgotPasswordCubit extends Cubit<ForgotPasswordState> {
       token: token,
       newPassword: newPassword,
     );
-    
+
     switch (result) {
       case Success():
         emit(const PasswordResetSuccess());
       case FailureResult():
-        emit(ForgotPasswordFailure(
-          result.failure.message,
-          fieldErrors: result.failure is ServerFailure
-              ? (result.failure as ServerFailure).fieldErrors
-              : {},
-        ));
+        emit(
+          ForgotPasswordFailure(
+            result.failure.message,
+            fieldErrors: result.failure is ServerFailure
+                ? (result.failure as ServerFailure).fieldErrors
+                : {},
+          ),
+        );
     }
   }
 }

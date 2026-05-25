@@ -27,6 +27,7 @@ import 'package:doctor_appointment/features/auth/domain/usecases/get_cached_sess
 import 'package:doctor_appointment/features/auth/domain/usecases/register_patient_usecase.dart';
 import 'package:doctor_appointment/features/auth/domain/usecases/register_doctor_usecase.dart';
 import 'package:doctor_appointment/features/auth/domain/usecases/refresh_token_usecase.dart';
+import 'package:doctor_appointment/features/auth/domain/usecases/check_availability_usecase.dart';
 import 'package:doctor_appointment/features/auth/logic/auth_cubit.dart';
 import 'package:doctor_appointment/features/auth/logic/forgot_password_cubit.dart';
 import 'package:doctor_appointment/features/doctors/data/datasources/doctors_remote_data_source.dart';
@@ -187,12 +188,16 @@ void setupServiceLocator() {
   getIt.registerLazySingleton(
     () => UpdateFcmTokenUseCase(getIt<AuthRepository>()),
   );
+  getIt.registerLazySingleton(
+    () => CheckAvailabilityUseCase(getIt<AuthRepository>()),
+  );
   getIt.registerFactory(
     () => AuthCubit(
       loginUseCase: getIt<LoginUseCase>(),
       registerPatientUseCase: getIt<RegisterPatientUseCase>(),
       registerDoctorUseCase: getIt<RegisterDoctorUseCase>(),
       updateFcmTokenUseCase: getIt<UpdateFcmTokenUseCase>(),
+      checkAvailabilityUseCase: getIt<CheckAvailabilityUseCase>(),
     ),
   );
   getIt.registerFactory(

@@ -1,5 +1,6 @@
 import 'package:doctor_appointment/core/utils/result.dart';
 import 'package:doctor_appointment/features/auth/domain/entities/auth_response.dart';
+import 'package:doctor_appointment/features/auth/data/models/availability_check_model.dart';
 
 abstract class AuthRepository {
   Future<Result<AuthResponse>> login({
@@ -47,11 +48,16 @@ abstract class AuthRepository {
 
   Future<Result<void>> forgotPassword({required String email});
   
-  Future<Result<void>> verifyOtp({required String email, required String otp});
+  Future<Result<String>> verifyOtp({required String email, required String otp});
   
   Future<Result<void>> resetPassword({
     required String email,
     required String token,
     required String newPassword,
+  });
+
+  Future<Result<AvailabilityCheckModel>> checkAvailability({
+    String? email,
+    String? phone,
   });
 }

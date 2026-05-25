@@ -4,6 +4,7 @@ import 'package:doctor_appointment/core/errors/failures.dart';
 import 'package:doctor_appointment/core/utils/result.dart';
 import 'package:doctor_appointment/features/auth/data/datasources/auth_local_data_source.dart';
 import 'package:doctor_appointment/features/auth/data/datasources/auth_remote_data_source.dart';
+import 'package:doctor_appointment/features/auth/data/models/availability_check_model.dart';
 import 'package:doctor_appointment/features/auth/domain/entities/auth_response.dart';
 import 'package:doctor_appointment/features/auth/domain/repositories/auth_repository.dart';
 
@@ -242,13 +243,13 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Result<void>> verifyOtp({
+  Future<Result<String>> verifyOtp({
     required String email,
     required String otp,
   }) async {
     try {
-      await remoteDataSource.verifyOtp(email: email, otp: otp);
-      return Result.success(null);
+      final token = await remoteDataSource.verifyOtp(email: email, otp: otp);
+      return Result.success(token);
     } on ApiException catch (exception) {
       return Result.failure(
         ServerFailure(
@@ -277,6 +278,32 @@ class AuthRepositoryImpl implements AuthRepository {
         newPassword: newPassword,
       );
       return Result.success(null);
+    } on ApiException catch (exception) {
+      return Result.failure(
+        ServerFailure(
+          exception.message,
+          statusCode: exception.statusCode,
+          fieldErrors: exception.fieldErrors,
+        ),
+      );
+    } on DioException catch (exception) {
+      return Result.failure(_mapDioFailure(exception));
+    } catch (e) {
+      return Result.failure(UnknownFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Result<AvailabilityCheckModel>> checkAvailability({
+    String? email,
+    String? phone,
+  }) async {
+    try {
+      final result = await remoteDataSource.checkAvailability(
+        email: email,
+        phone: phone,
+      );
+      return Result.success(result);
     } on ApiException catch (exception) {
       return Result.failure(
         ServerFailure(

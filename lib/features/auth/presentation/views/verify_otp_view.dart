@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pinput/pinput.dart';
 
 class VerifyOtpView extends StatefulWidget {
   final String email;
@@ -83,10 +84,46 @@ class _VerifyOtpViewState extends State<VerifyOtpView> {
                       style: context.styleRegular14,
                     ),
                     SizedBox(height: 36.h),
-                    CustomTextFormField(
-                      hintText: 'OTP Code',
-                      textInputType: TextInputType.number,
-                      controller: _otpController,
+                    Align(
+                      alignment: Alignment.center,
+                      child: Pinput(
+                        controller: _otpController,
+                        length: 6,
+                        defaultPinTheme: PinTheme(
+                          width: 50.w,
+                          height: 56.h,
+                          textStyle: context.styleBold32.copyWith(
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: Theme.of(context).colorScheme.outline,
+                            ),
+                            borderRadius: BorderRadius.circular(12.r),
+                          ),
+                        ),
+                        focusedPinTheme: PinTheme(
+                          width: 50.w,
+                          height: 56.h,
+                          textStyle: context.styleBold32.copyWith(
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: Theme.of(context).colorScheme.primary,
+                              width: 2,
+                            ),
+                            borderRadius: BorderRadius.circular(12.r),
+                          ),
+                        ),
+                        onCompleted: (pin) {
+                          if (_formKey.currentState?.validate() != true) return;
+                          context.read<ForgotPasswordCubit>().verifyOtp(
+                                widget.email,
+                                pin,
+                              );
+                        },
+                      ),
                     ),
                     SizedBox(height: 32.h),
                     Align(

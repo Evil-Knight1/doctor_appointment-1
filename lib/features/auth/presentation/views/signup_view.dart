@@ -87,6 +87,12 @@ class _SignUpViewState extends State<SignUpView> {
         );
         return;
       }
+      // Check whether email & phone are already in use before advancing.
+      context.read<AuthCubit>().checkAvailability(
+        email: _emailController.text.trim(),
+        phone: _phoneController.value.international,
+      );
+      return; // Wait for AvailabilityChecked state in BlocConsumer listener
     }
     setState(() {
       _currentPage++;
@@ -143,9 +149,50 @@ class _SignUpViewState extends State<SignUpView> {
         if (state is AuthSuccess) {
           context.go(state.targetRoute);
         }
+        if (state is AvailabilityChecked) {
+          final result = state.result;
+          final errors = <String, String>{};
+          if (!result.isEmailAvailable) {
+            errors['email'] = 'This email is already in use';
+          }
+          if (!result.isPhoneAvailable) {
+            errors['phone'] = 'This phone number is already in use';
+          }
+          if (errors.isNotEmpty) {
+            setState(() => _fieldErrors = errors);
+            _formKey.currentState?.validate();
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(errors.values.first),
+                backgroundColor: theme.colorScheme.error,
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+              ),
+            );
+          } else {
+            setState(() {
+              _fieldErrors = {};
+              _currentPage++;
+            });
+          }
+        }
+        if (state is AvailabilityCheckFailed) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: theme.colorScheme.error,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.r),
+              ),
+            ),
+          );
+        }
       },
       builder: (context, state) {
-        final isLoading = state is AuthLoading;
+        final isLoading = state is AuthLoading || state is AvailabilityChecking;
         final theme = Theme.of(context);
         return Scaffold(
           backgroundColor: theme.scaffoldBackgroundColor,

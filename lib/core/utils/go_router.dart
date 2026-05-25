@@ -70,6 +70,8 @@ import 'package:doctor_appointment/features/chat/ui/screens/chat_screen.dart';
 
 abstract class AppRouter {
   static const kLoginView = '/loginView';
+  static const kOtpVerificationView = '/otpVerificationView';
+  static const kResetPasswordView = '/resetPasswordView';
   static const kUserSelectionView = '/userSelectionView';
   static const kOnBoardingView = '/onBoardingView';
   static const kHomeView = '/homeView';
@@ -98,7 +100,6 @@ abstract class AppRouter {
   static const kDoctorSignUpView = '/doctorSignUpView';
   static const kForgotPasswordView = '/forgotPasswordView';
   static const kVerifyOtpView = '/verifyOtpView';
-  static const kResetPasswordView = '/resetPasswordView';
   static const kConversationsView = '/conversationsView';
   static const kChatView = '/chat/:userId';
 
@@ -206,6 +207,7 @@ abstract class AppRouter {
           );
         },
       ),
+
       GoRoute(
         name: Routes.chatHistoryView,
         path: kChatHistoryView,
@@ -302,11 +304,10 @@ abstract class AppRouter {
               create: (context) => getIt<DoctorProfileCubit>()..fetchProfile(),
             ),
             BlocProvider(
-              create: (context) => getIt<DoctorRevenueCubit>()..fetchRevenueData(),
+              create: (context) =>
+                  getIt<DoctorRevenueCubit>()..fetchRevenueData(),
             ),
-            BlocProvider(
-              create: (context) => getIt<DoctorAvailabilityCubit>(),
-            ),
+            BlocProvider(create: (context) => getIt<DoctorAvailabilityCubit>()),
           ],
           child: const DoctorRoot(),
         ),
@@ -341,6 +342,13 @@ abstract class AppRouter {
             child: VerifyOtpView(email: email),
           );
         },
+      ),
+      GoRoute(
+        path: kOtpVerificationView,
+        builder: (context, state) => BlocProvider(
+          create: (context) => getIt<ForgotPasswordCubit>(),
+          child: VerifyOtpView(email: state.extra as String),
+        ),
       ),
       GoRoute(
         path: kResetPasswordView,
@@ -449,7 +457,10 @@ abstract class AppRouter {
 
           return BlocProvider(
             create: (context) => getIt<DoctorSlotsCubit>(),
-            child: BookingDateView(doctor: doctor, rescheduleAppointmentId: rescheduleAppointmentId),
+            child: BookingDateView(
+              doctor: doctor,
+              rescheduleAppointmentId: rescheduleAppointmentId,
+            ),
           );
         },
       ),

@@ -10,18 +10,21 @@ import 'package:doctor_appointment/features/auth/domain/usecases/register_doctor
 import 'package:doctor_appointment/features/auth/logic/auth_state.dart';
 import 'package:doctor_appointment/features/auth/domain/usecases/update_fcm_token_usecase.dart';
 import 'package:doctor_appointment/core/services/notification_service.dart';
+import 'package:doctor_appointment/features/auth/domain/usecases/check_availability_usecase.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   final LoginUseCase loginUseCase;
   final RegisterPatientUseCase registerPatientUseCase;
   final RegisterDoctorUseCase registerDoctorUseCase;
   final UpdateFcmTokenUseCase updateFcmTokenUseCase;
+  final CheckAvailabilityUseCase checkAvailabilityUseCase;
 
   AuthCubit({
     required this.loginUseCase,
     required this.registerPatientUseCase,
     required this.registerDoctorUseCase,
     required this.updateFcmTokenUseCase,
+    required this.checkAvailabilityUseCase,
   }) : super(const AuthInitial());
 
   Future<void> login({
@@ -163,6 +166,20 @@ class AuthCubit extends Cubit<AuthState> {
     final fcmToken = await NotificationService().getFcmToken();
     if (fcmToken != null) {
       await updateFcmTokenUseCase(fcmToken);
+    }
+  }
+
+  /// Checks whether [email] and/or [phone] are already registered.
+  /// Emits [AvailabilityChecking] → [AvailabilityChecked] on success,
+  /// or [AvailabilityCheckFailed] on error.
+  Future<void> checkAvailability({String? email, String? phone}) async {
+    emit(const AvailabilityChecking());
+    final result = await checkAvailabilityUseCase(email: email, phone: phone);
+    switch (result) {
+      case Success():
+        emit(AvailabilityChecked(result.data));
+      case FailureResult():
+        emit(AvailabilityCheckFailed(result.failure.message));
     }
   }
 }

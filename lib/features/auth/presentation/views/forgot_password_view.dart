@@ -20,7 +20,7 @@ class ForgotPasswordView extends StatefulWidget {
 class _ForgotPasswordViewState extends State<ForgotPasswordView> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
-  
+
   Map<String, String> _fieldErrors = {};
 
   String? _getServerError(String key) => _fieldErrors[key.toLowerCase()];
@@ -40,22 +40,18 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
             _fieldErrors = state.fieldErrors;
           });
           if (state.fieldErrors.isEmpty) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.message)));
           }
         }
         if (state is ForgotPasswordSuccess) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
-          );
-          // Skip OTP and go directly to Reset Password
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.message)));
           context.push(
-            AppRouter.kResetPasswordView,
-            extra: {
-              'email': _emailController.text.trim(),
-              'token': 'dummy-token-bypass-otp',
-            },
+            AppRouter.kOtpVerificationView,
+            extra: _emailController.text.trim(),
           );
         }
       },
@@ -83,10 +79,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(height: 20.h),
-                    Text(
-                      'Forgot Password',
-                      style: context.styleBold32,
-                    ),
+                    Text('Forgot Password', style: context.styleBold32),
                     SizedBox(height: 8.h),
                     Text(
                       'Enter your email address to receive a verification code.',
@@ -113,7 +106,9 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                                 if (_formKey.currentState?.validate() != true) {
                                   return;
                                 }
-                                context.read<ForgotPasswordCubit>().forgotPassword(
+                                context
+                                    .read<ForgotPasswordCubit>()
+                                    .forgotPassword(
                                       _emailController.text.trim(),
                                     );
                               },

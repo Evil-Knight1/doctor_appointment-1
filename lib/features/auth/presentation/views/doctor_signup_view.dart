@@ -75,6 +75,12 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
         _showErrorSnackBar('Passwords do not match');
         return;
       }
+      // Check whether email & phone are already in use before advancing.
+      context.read<AuthCubit>().checkAvailability(
+        email: _emailController.text.trim(),
+        phone: _phoneController.value.international,
+      );
+      return; // Wait for AvailabilityChecked state in BlocListener
     }
 
     if (_currentStep < 2) {
@@ -208,7 +214,9 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
               onPressed: () => Navigator.pop(context),
               child: Text(
                 'Got it',
-                style: context.styleSemiBold16.copyWith(color: theme.colorScheme.primary),
+                style: context.styleSemiBold16.copyWith(
+                  color: theme.colorScheme.primary,
+                ),
               ),
             ),
           ],
@@ -225,7 +233,9 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
         children: [
           Text(
             title,
-            style: context.styleSemiBold14.copyWith(color: Theme.of(context).colorScheme.primary),
+            style: context.styleSemiBold14.copyWith(
+              color: Theme.of(context).colorScheme.primary,
+            ),
           ),
           SizedBox(height: 4.h),
           Text(description, style: context.styleRegular14),
@@ -251,7 +261,7 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
   Widget build(BuildContext context) {
     return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) {
-        if (state is AuthLoading) {
+        if (state is AuthLoading || state is AvailabilityChecking) {
           setState(() {
             _isSubmitting = true;
             _fieldErrors = {};
@@ -271,6 +281,35 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
           if (state.fieldErrors.isEmpty) {
             _showErrorSnackBar(state.message);
           }
+        } else if (state is AvailabilityChecked) {
+          final result = state.result;
+          final errors = <String, String>{};
+          if (!result.isEmailAvailable) {
+            errors['email'] = 'This email is already in use';
+          }
+          if (!result.isPhoneAvailable) {
+            errors['phone'] = 'This phone number is already in use';
+          }
+          if (errors.isNotEmpty) {
+            setState(() {
+              _isSubmitting = false;
+              _fieldErrors = errors;
+            });
+            _showErrorSnackBar(errors.values.first);
+          } else {
+            setState(() {
+              _isSubmitting = false;
+              _currentStep++;
+            });
+            _pageController.animateToPage(
+              _currentStep,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+            );
+          }
+        } else if (state is AvailabilityCheckFailed) {
+          setState(() => _isSubmitting = false);
+          _showErrorSnackBar(state.message);
         }
       },
       child: Scaffold(
@@ -302,7 +341,9 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
                               ).createShader(bounds),
                               child: Text(
                                 'Doctor Registration',
-                                style: context.styleSemiBold16.copyWith(color: Colors.white),
+                                style: context.styleSemiBold16.copyWith(
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                             SizedBox(height: 2.h),
@@ -398,7 +439,9 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
           SizedBox(height: 8.h),
           Text(
             'Enter your email, password and phone to get started.',
-            style: context.styleRegular14.copyWith(color: Theme.of(context).textTheme.bodyMedium?.color),
+            style: context.styleRegular14.copyWith(
+              color: Theme.of(context).textTheme.bodyMedium?.color,
+            ),
           ),
           SizedBox(height: 24.h),
           DoctorSignUpForm(
@@ -456,7 +499,9 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
           SizedBox(height: 8.h),
           Text(
             'Tell us more about your professional background.',
-            style: context.styleRegular14.copyWith(color: Theme.of(context).textTheme.bodyMedium?.color),
+            style: context.styleRegular14.copyWith(
+              color: Theme.of(context).textTheme.bodyMedium?.color,
+            ),
           ),
           SizedBox(height: 24.h),
           DoctorSignUpForm(
@@ -514,7 +559,9 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
           SizedBox(height: 8.h),
           Text(
             'Provide details about your practice location.',
-            style: context.styleRegular14.copyWith(color: Theme.of(context).textTheme.bodyMedium?.color),
+            style: context.styleRegular14.copyWith(
+              color: Theme.of(context).textTheme.bodyMedium?.color,
+            ),
           ),
           SizedBox(height: 24.h),
           DoctorSignUpForm(
