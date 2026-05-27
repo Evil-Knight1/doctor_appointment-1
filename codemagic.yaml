@@ -1,0 +1,93 @@
+workflows:
+  android-workflow:
+    name: Android Workflow
+
+    environment:
+      flutter: stable
+
+      vars:
+        PACKAGE_NAME: "com.example.medlink"
+
+      groups:
+        - firebase
+
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: "*"
+          include: true
+          source: true
+
+    scripts:
+      - name: Restore Android Firebase Config
+        script: |
+          echo "$GOOGLE_SERVICES_JSON" | base64 -d > android/app/google-services.json
+
+      - name: Get Flutter Packages
+        script: |
+          flutter pub get
+
+      - name: Analyze Project
+        script: |
+          flutter analyze
+
+      - name: Build Android APK
+        script: |
+          flutter build apk --release
+
+      - name: Build Android App Bundle
+        script: |
+          flutter build appbundle --release
+
+    artifacts:
+      - build/**/outputs/**/*.apk
+      - build/**/outputs/**/*.aab
+
+  ios-workflow:
+    name: iOS Workflow
+
+    instance_type: mac_mini_m2
+
+    environment:
+      flutter: stable
+      xcode: latest
+
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.example.medlink
+
+      groups:
+        - firebase
+
+    integrations:
+      app_store_connect: codemagic
+
+    scripts:
+      - name: Restore Android Firebase Config
+        script: |
+          echo "$GOOGLE_SERVICES_JSON" | base64 -d > android/app/google-services.json
+
+      - name: Restore iOS Firebase Config
+        script: |
+          echo "$IOS_GOOGLE_SERVICES_JSON" | base64 -d > ios/Runner/GoogleService-Info.plist
+
+      - name: Install Flutter Packages
+        script: |
+          flutter pub get
+
+      - name: Install CocoaPods
+        script: |
+          cd ios && pod install
+
+      - name: Build IPA
+        script: |
+          flutter build ipa --release
+
+    artifacts:
+      - build/ios/ipa/*.ipa
+
+    publishing:
+      email:
+        recipients:
+          - your_email@example.com

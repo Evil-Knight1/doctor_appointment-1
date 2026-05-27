@@ -48,3 +48,8 @@ project.md
 analyze.txt
 analyze_out.txt
 test_api.dart
+
+#google firebase settings
+google-services.json
+/ios/Runner/GoogleService-Info.plist
+firebase.txt
