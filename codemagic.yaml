@@ -82,15 +82,16 @@ workflows:
       - name: Restore IOS Firebase Config
         script: |
           echo "$IOS_GOOGLE_SERVICES_JSON" | base64 -d > ios/Runner/GoogleService-Info.plist
-
+      - name: Clean iOS SPM state
+        script: |
+          rm -rf ios/Runner.xcodeproj/project.xcworkspace/xcshareddata/swiftpm
+          rm -rf ios/Package.resolved || true
       - name: Install Flutter Packages
         script: |
           flutter pub get
-
       - name: Install CocoaPods
         script: |
           cd ios && pod install
-
       - name: Build IPA
         script: |
           flutter build ipa --release
