@@ -22,7 +22,6 @@ workflows:
     cache:
       cache_paths:
         - ~/.pub-cache
-        - ios/Pods
         - .dart_tool
         - build
 
@@ -50,6 +49,14 @@ workflows:
     name: iOS Workflow
 
     instance_type: mac_mini_m2
+
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: "*"
+          include: true
+          source: true
 
     environment:
       flutter: stable
