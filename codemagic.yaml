@@ -34,7 +34,7 @@ workflows:
 
       - name: Build Android APK
         script: |
-          flutter build apk --release
+          flutter build apk --release --flavor production
 
       - name: Build Android App Bundle
         script: |
@@ -82,7 +82,7 @@ workflows:
 
       - name: Build IPA
         script: |
-          flutter build ipa --release
+          flutter build ipa --release --flavor production
 
     artifacts:
       - build/ios/ipa/*.ipa
