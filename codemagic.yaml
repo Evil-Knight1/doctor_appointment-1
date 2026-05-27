@@ -19,6 +19,13 @@ workflows:
           include: true
           source: true
 
+    cache:
+      cache_paths:
+        - ~/.pub-cache
+        - ios/Pods
+        - .dart_tool
+        - build
+
     scripts:
       - name: Restore Android Firebase Config
         script: |
@@ -36,13 +43,8 @@ workflows:
         script: |
           flutter build apk --release --flavor production
 
-      - name: Build Android App Bundle
-        script: |
-          flutter build appbundle --release
-
     artifacts:
       - build/**/outputs/**/*.apk
-      - build/**/outputs/**/*.aab
 
   ios-workflow:
     name: iOS Workflow
@@ -63,12 +65,14 @@ workflows:
     integrations:
       app_store_connect: codemagic
 
+    cache:
+      cache_paths:
+        - ~/.pub-cache
+        - ios/Pods
+        - .dart_tool
+        - build
     scripts:
-      - name: Restore Android Firebase Config
-        script: |
-          echo "$GOOGLE_SERVICES_JSON" | base64 -d > android/app/google-services.json
-
-      - name: Restore iOS Firebase Config
+      - name: Restore IOS Firebase Config
         script: |
           echo "$IOS_GOOGLE_SERVICES_JSON" | base64 -d > ios/Runner/GoogleService-Info.plist
 
