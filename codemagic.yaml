@@ -69,8 +69,8 @@ workflows:
       groups:
         - firebase
 
-    integrations:
-      app_store_connect: codemagic
+    # integrations:
+    #   app_store_connect: codemagic
 
     cache:
       cache_paths:
