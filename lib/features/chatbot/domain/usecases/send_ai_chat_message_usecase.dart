@@ -7,7 +7,21 @@ class SendAIChatMessageUseCase {
 
   SendAIChatMessageUseCase(this.repository);
 
-  Future<Result<AIChatResponse>> call(String sessionId, String message) {
-    return repository.sendMessage(sessionId, message);
+  Future<Result<AIChatResponse>> call({
+    required String sessionId,
+    required String message,
+    String? type,
+    Map<String, dynamic>? metadata,
+    Map<String, dynamic>? medicalContext,
+    Map<String, dynamic>? toolResult,
+  }) {
+    return repository.sendMessage(
+      sessionId: sessionId,
+      message: message,
+      type: type,
+      metadata: metadata,
+      medicalContext: medicalContext,
+      toolResult: toolResult,
+    );
   }
 }

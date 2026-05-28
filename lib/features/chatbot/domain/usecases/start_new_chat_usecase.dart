@@ -1,4 +1,5 @@
 import 'package:doctor_appointment/core/utils/result.dart';
+import 'package:doctor_appointment/features/chatbot/domain/entities/ai_chat_entity.dart';
 import 'package:doctor_appointment/features/chatbot/domain/repositories/ai_chat_repository.dart';
 
 class StartNewChatUseCase {
@@ -6,7 +7,7 @@ class StartNewChatUseCase {
 
   StartNewChatUseCase(this.repository);
 
-  Future<Result<String>> call() {
+  Future<Result<NewChatResponse>> call() {
     return repository.startNewChat();
   }
 }

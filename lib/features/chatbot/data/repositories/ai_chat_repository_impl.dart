@@ -11,10 +11,10 @@ class AIChatRepositoryImpl implements AIChatRepository {
   AIChatRepositoryImpl(this._remoteDataSource);
 
   @override
-  Future<Result<String>> startNewChat() async {
+  Future<Result<NewChatResponse>> startNewChat() async {
     try {
-      final sessionId = await _remoteDataSource.startNewChat();
-      return Result.success(sessionId);
+      final response = await _remoteDataSource.startNewChat();
+      return Result.success(response);
     } catch (e) {
       return Result.failure(ServerFailure(e.toString()));
     }
@@ -31,9 +31,23 @@ class AIChatRepositoryImpl implements AIChatRepository {
   }
 
   @override
-  Future<Result<AIChatResponse>> sendMessage(String sessionId, String message) async {
+  Future<Result<AIChatResponse>> sendMessage({
+    required String sessionId,
+    required String message,
+    String? type,
+    Map<String, dynamic>? metadata,
+    Map<String, dynamic>? medicalContext,
+    Map<String, dynamic>? toolResult,
+  }) async {
     try {
-      final request = AIChatRequestModel(sessionId: sessionId, message: message);
+      final request = AIChatRequestModel(
+        sessionId: sessionId,
+        message: message,
+        type: type,
+        metadata: metadata,
+        medicalContext: medicalContext,
+        toolResult: toolResult,
+      );
       final response = await _remoteDataSource.sendMessage(request);
       return Result.success(response);
     } catch (e) {

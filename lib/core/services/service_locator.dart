@@ -432,6 +432,8 @@ void setupServiceLocator() {
       startNewChatUseCase: getIt<StartNewChatUseCase>(),
       getAIChatHistoryUseCase: getIt<GetAIChatHistoryUseCase>(),
       sendAIChatMessageUseCase: getIt<SendAIChatMessageUseCase>(),
+      searchDoctorsUseCase: getIt<SearchDoctorsUseCase>(),
+      getSpecializationsUseCase: getIt<GetSpecializationsUseCase>(),
     ),
   );
 

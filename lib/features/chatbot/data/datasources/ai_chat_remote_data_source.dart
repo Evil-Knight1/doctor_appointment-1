@@ -3,7 +3,7 @@ import 'package:doctor_appointment/features/chatbot/data/models/ai_chat_models.d
 import 'package:dio/dio.dart';
 
 abstract class AIChatRemoteDataSource {
-  Future<String> startNewChat();
+  Future<NewChatResponseModel> startNewChat();
   Future<List<String>> getUserChats();
   Future<AIChatResponseModel> sendMessage(AIChatRequestModel request);
   Future<List<AIChatHistoryModel>> getHistory(String sessionId);
@@ -15,9 +15,9 @@ class AIChatRemoteDataSourceImpl implements AIChatRemoteDataSource {
   AIChatRemoteDataSourceImpl(this._apiService);
 
   @override
-  Future<String> startNewChat() async {
+  Future<NewChatResponseModel> startNewChat() async {
     final response = await _apiService.post('/api/AIChat/new-chat');
-    return response['data'] as String;
+    return NewChatResponseModel.fromJson(response['data']);
   }
 
   @override
