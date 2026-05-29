@@ -367,4 +367,74 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get rescheduleSubmittedSuccessfully =>
       'Reschedule request submitted successfully';
+
+  @override
+  String get limitReached => 'Limit Reached';
+
+  @override
+  String get limitReachedMessage =>
+      'You have reached the daily limit of messages';
+
+  @override
+  String rateYourDoctor(Object doctorName) {
+    return 'How was your visit with $doctorName?';
+  }
+
+  @override
+  String get rateYourVisit => 'Rate Your Visit';
+
+  @override
+  String get skip => 'Skip';
+
+  @override
+  String get selectRating => 'Please select a rating';
+
+  @override
+  String get submitRating => 'Submit Rating';
+
+  @override
+  String get ratingSubmitted => 'Rating submitted successfully';
+
+  @override
+  String get ratingUpdated => 'Rating updated successfully';
+
+  @override
+  String get errorSubmittingRating => 'Error submitting rating';
+
+  @override
+  String get feedbackOptional => 'Feedback is optional';
+
+  @override
+  String get tellUsMore => 'Tell us more...';
+
+  @override
+  String get rateExperience => 'Rate Your Experience';
+
+  @override
+  String get skipAndRateLater => 'Skip & Rate Later';
+
+  @override
+  String get weValueYourFeedback => 'We value your feedback';
+
+  @override
+  String get feedbackHelpsUsImprove =>
+      'Your feedback helps us improve our service.';
+
+  @override
+  String get aiAssistant => 'AI Assistant';
+
+  @override
+  String get connecting => 'Connecting...';
+
+  @override
+  String get typing => 'typing...';
+
+  @override
+  String get online => 'online';
+
+  @override
+  String get waitingForAi => 'waiting for AI...';
+
+  @override
+  String get typeYourMessage => 'type your message...';
 }

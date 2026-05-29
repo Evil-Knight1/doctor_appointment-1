@@ -128,5 +128,27 @@
     }
   },
   "rescheduleReasonHint": "Reschedule reason...",
-  "rescheduleSubmittedSuccessfully": "Reschedule request submitted successfully"
+  "rescheduleSubmittedSuccessfully": "Reschedule request submitted successfully",
+  "limitReached": "Limit Reached",
+  "limitReachedMessage": "You have reached the daily limit of messages",
+  "rateYourDoctor": "How was your visit with {doctorName}?",
+  "rateYourVisit": "Rate Your Visit",
+  "skip": "Skip",
+  "selectRating": "Please select a rating",
+  "submitRating": "Submit Rating",
+  "ratingSubmitted": "Rating submitted successfully",
+  "ratingUpdated": "Rating updated successfully",
+  "errorSubmittingRating": "Error submitting rating",
+  "feedbackOptional": "Feedback is optional",
+  "tellUsMore": "Tell us more...",
+  "rateExperience": "Rate Your Experience",
+  "skipAndRateLater": "Skip & Rate Later",
+  "weValueYourFeedback": "We value your feedback",
+  "feedbackHelpsUsImprove": "Your feedback helps us improve our service.",
+  "aiAssistant": "AI Assistant",
+  "connecting": "Connecting...",
+  "typing": "typing...",
+  "online": "online",
+  "waitingForAi": "waiting for AI...",
+  "typeYourMessage": "type your message..."
 }

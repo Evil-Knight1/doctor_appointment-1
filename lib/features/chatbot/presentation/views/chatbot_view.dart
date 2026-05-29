@@ -1,11 +1,17 @@
+import 'package:doctor_appointment/core/widgets/glass_alert_error.dart';
+import 'package:doctor_appointment/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+
 import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
 
-import 'package:doctor_appointment/features/chatbot/logic/chat_cubit.dart';
 import 'package:doctor_appointment/features/chatbot/domain/entities/ai_chat_entity.dart';
+import 'package:doctor_appointment/features/chatbot/logic/chat_cubit.dart';
+
+import 'package:doctor_appointment/features/chatbot/presentation/widgets/chatbot_checkbox_selector.dart';
+import 'package:doctor_appointment/features/chatbot/presentation/widgets/chatbot_radio_selector.dart';
 
 class ChatbotView extends StatefulWidget {
   const ChatbotView({super.key});
@@ -19,8 +25,14 @@ class _ChatbotViewState extends State<ChatbotView> {
   final ScrollController _scrollController = ScrollController();
 
   bool _showTextInputFallback = false;
+
   final List<String> _selectedCheckboxes = [];
   String? _selectedRadio;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -39,19 +51,24 @@ class _ChatbotViewState extends State<ChatbotView> {
     }
   }
 
+  void _resetSelections() {
+    _selectedCheckboxes.clear();
+    _selectedRadio = null;
+    _showTextInputFallback = false;
+  }
+
   void _sendMessage([String? optionalText]) {
     final text = optionalText ?? _messageController.text.trim();
-    if (text.isNotEmpty) {
-      context.read<ChatCubit>().sendMessage(text);
-      _messageController.clear();
-      setState(() {
-        _showTextInputFallback = false;
-        _selectedCheckboxes.clear();
-        _selectedRadio = null;
-      });
-      // Wait a bit for the optimistic message to render before scrolling
-      Future.delayed(const Duration(milliseconds: 100), _scrollToBottom);
-    }
+
+    if (text.isEmpty) return;
+
+    context.read<ChatCubit>().sendMessage(text);
+
+    _messageController.clear();
+
+    setState(_resetSelections);
+
+    Future.delayed(const Duration(milliseconds: 100), _scrollToBottom);
   }
 
   Color _getRiskColor(String? riskLevel) {
@@ -71,12 +88,15 @@ class _ChatbotViewState extends State<ChatbotView> {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations _appLocalizations = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 1,
         titleSpacing: 0,
+
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios_new_rounded,
@@ -85,6 +105,7 @@ class _ChatbotViewState extends State<ChatbotView> {
           ),
           onPressed: () => context.pop(),
         ),
+
         title: Row(
           children: [
             CircleAvatar(
@@ -95,31 +116,39 @@ class _ChatbotViewState extends State<ChatbotView> {
                 size: 20.sp,
               ),
             ),
+
             SizedBox(width: 10.w),
+
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('AI Assistant', style: context.styleSemiBold16),
+                Text(
+                  _appLocalizations.aiAssistant,
+                  style: context.styleSemiBold16,
+                ),
+
                 BlocBuilder<ChatCubit, ChatState>(
                   builder: (context, state) {
                     if (state.status == ChatStatus.loading) {
                       return Text(
-                        'Connecting...',
+                        _appLocalizations.connecting,
                         style: context.styleRegular12.copyWith(
                           color: Colors.orange,
                         ),
                       );
                     }
+
                     if (state.status == ChatStatus.sending) {
                       return Text(
-                        'Typing...',
+                        _appLocalizations.typing,
                         style: context.styleRegular12.copyWith(
                           color: Theme.of(context).colorScheme.primary,
                         ),
                       );
                     }
+
                     return Text(
-                      'Online',
+                      _appLocalizations.online,
                       style: context.styleRegular12.copyWith(
                         color: Theme.of(context).colorScheme.primary,
                       ),
@@ -131,6 +160,7 @@ class _ChatbotViewState extends State<ChatbotView> {
           ],
         ),
       ),
+
       body: BlocConsumer<ChatCubit, ChatState>(
         listener: (context, state) {
           if (state.status == ChatStatus.error && state.errorMessage != null) {
@@ -138,34 +168,34 @@ class _ChatbotViewState extends State<ChatbotView> {
               SnackBar(
                 content: Text(state.errorMessage!),
                 backgroundColor: Theme.of(context).colorScheme.error,
-                duration: const Duration(seconds: 4),
               ),
             );
-          } else if (state.status == ChatStatus.ready ||
-              state.status == ChatStatus.limitReached) {
+          }
+          if (state.status == ChatStatus.limitReached) {
+            GlassAlert.show(
+              context,
+              title: _appLocalizations.limitReached,
+              message: _appLocalizations.limitReachedMessage,
+              icon: Icons.warning_rounded,
+              iconColor: Colors.orange,
+              duration: const Duration(seconds: 4),
+            );
+          }
+
+          if (state.status == ChatStatus.ready) {
             Future.delayed(const Duration(milliseconds: 100), _scrollToBottom);
           }
         },
+
         builder: (context, state) {
-          final isLimitReached = state.status == ChatStatus.limitReached;
           final isSending =
               state.status == ChatStatus.sending ||
               state.status == ChatStatus.loading;
 
+          final isLimitReached = state.status == ChatStatus.limitReached;
+
           return Column(
             children: [
-              if (isLimitReached && state.errorMessage != null)
-                Container(
-                  padding: EdgeInsets.all(12.w),
-                  color: Theme.of(context).colorScheme.errorContainer,
-                  width: double.infinity,
-                  child: Text(
-                    state.errorMessage!,
-                    style: context.styleRegular14.copyWith(
-                      color: Theme.of(context).colorScheme.onErrorContainer,
-                    ),
-                  ),
-                ),
               Expanded(
                 child:
                     state.status == ChatStatus.loading && state.messages.isEmpty
@@ -173,22 +203,20 @@ class _ChatbotViewState extends State<ChatbotView> {
                     : ListView.separated(
                         controller: _scrollController,
                         padding: EdgeInsets.all(20.w),
+
                         itemCount:
                             state.messages.length +
-                            (state.status == ChatStatus.sending ? 1 : 0) +
-                            (state.currentStructuredReport != null && !isSending
-                                ? 1
-                                : 0),
-                        separatorBuilder: (context, index) =>
-                            SizedBox(height: 16.h),
+                            (state.status == ChatStatus.sending ? 1 : 0),
+
+                        separatorBuilder: (_, _) => SizedBox(height: 16.h),
+
                         itemBuilder: (context, index) {
                           if (index < state.messages.length) {
                             final message = state.messages[index];
-                            // The final AI message has the risk level of current state,
-                            // older ones don't, since we don't store riskLevel in AIChatMessage.
-                            // So we only color the very last one if it matches.
+
                             final isLastMessage =
                                 index == state.messages.length - 1;
+
                             final riskColor = isLastMessage
                                 ? _getRiskColor(state.currentRiskLevel)
                                 : Colors.transparent;
@@ -201,8 +229,10 @@ class _ChatbotViewState extends State<ChatbotView> {
                                     context,
                                     message.userMessage,
                                   ),
+
                                   SizedBox(height: 16.h),
                                 ],
+
                                 if (message.aiMessage.isNotEmpty)
                                   _buildBotMessage(
                                     context,
@@ -211,60 +241,28 @@ class _ChatbotViewState extends State<ChatbotView> {
                                   ),
                               ],
                             );
-                          } else if (index == state.messages.length &&
-                              state.status == ChatStatus.sending) {
-                            // Sending state
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                if (state.pendingUserMessage != null &&
-                                    state.pendingUserMessage!.isNotEmpty) ...[
-                                  _buildUserMessage(
-                                    context,
-                                    state.pendingUserMessage!,
-                                  ),
-                                  SizedBox(height: 16.h),
-                                ],
-                                Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Container(
-                                    padding: EdgeInsets.all(12.w),
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.surface,
-                                      borderRadius: BorderRadius.circular(16.r),
-                                      border: Border.all(
-                                        color: Theme.of(context).dividerColor,
-                                      ),
-                                    ),
-                                    child: Text(
-                                      "...",
-                                      style: context.styleRegular14.copyWith(
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.onSurfaceVariant,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            );
-                          } else {
-                            // Structured Report Card
-                            return _buildStructuredReport(
-                              context,
-                              state.currentStructuredReport!,
-                            );
                           }
+                          return Align(
+                            alignment: Alignment.centerLeft,
+                            child: Container(
+                              padding: EdgeInsets.all(12.w),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.surface,
+                                borderRadius: BorderRadius.circular(16.r),
+                              ),
+                              child: Text("...", style: context.styleRegular14),
+                            ),
+                          );
                         },
                       ),
               ),
+
               _buildInputArea(
                 context,
+                _appLocalizations,
+                state.currentUi,
                 isSending,
                 isLimitReached,
-                state.currentUi,
               ),
             ],
           );
@@ -273,527 +271,151 @@ class _ChatbotViewState extends State<ChatbotView> {
     );
   }
 
-  Widget _buildBotMessage(BuildContext context, String text, Color riskColor) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Flexible(
-            child: Container(
-              margin: EdgeInsets.only(right: 50.w),
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-              decoration: BoxDecoration(
-                color:
-                    context.customColors.chatBubbleOthers ??
-                    colorScheme.surface,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(16.r),
-                  topRight: Radius.circular(16.r),
-                  bottomRight: Radius.circular(16.r),
-                ),
-                border: Border.all(
-                  color: riskColor != Colors.transparent
-                      ? riskColor
-                      : theme.dividerColor,
-                  width: riskColor != Colors.transparent ? 2 : 1,
-                ),
-              ),
-              child: Text(
-                text,
-                style: context.styleRegular14.copyWith(
-                  height: 1.5,
-                  color: colorScheme.onSurface,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildUserMessage(BuildContext context, String text) {
-    final colorScheme = Theme.of(context).colorScheme;
-    return Align(
-      alignment: Alignment.centerRight,
-      child: Container(
-        margin: EdgeInsets.only(left: 50.w),
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-        decoration: BoxDecoration(
-          color: context.customColors.chatBubbleMine ?? colorScheme.primary,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(16.r),
-            topRight: Radius.circular(16.r),
-            bottomLeft: Radius.circular(16.r),
-          ),
-        ),
-        child: Text(
-          text,
-          style: context.styleRegular14.copyWith(
-            color: colorScheme.onPrimary,
-            height: 1.5,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStructuredReport(
-    BuildContext context,
-    Map<String, dynamic> report,
-  ) {
-    final colorScheme = Theme.of(context).colorScheme;
-    return Card(
-      elevation: 0,
-      color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16.r),
-        side: BorderSide(color: colorScheme.outlineVariant),
-      ),
-      child: Padding(
-        padding: EdgeInsets.all(16.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Diagnosis Report',
-              style: context.styleSemiBold16.copyWith(
-                color: colorScheme.primary,
-              ),
-            ),
-            SizedBox(height: 12.h),
-            if (report['summary'] != null) ...[
-              Text('Summary', style: context.styleSemiBold14),
-              Text(report['summary'].toString(), style: context.styleRegular14),
-              SizedBox(height: 8.h),
-            ],
-            if (report['possibleCauses'] != null &&
-                (report['possibleCauses'] as List).isNotEmpty) ...[
-              Text('Possible Causes', style: context.styleSemiBold14),
-              ...(report['possibleCauses'] as List).map(
-                (cause) => Text('• $cause', style: context.styleRegular14),
-              ),
-              SizedBox(height: 8.h),
-            ],
-            if (report['advice'] != null &&
-                (report['advice'] as List).isNotEmpty) ...[
-              Text('Advice', style: context.styleSemiBold14),
-              ...(report['advice'] as List).map(
-                (item) => Text('• $item', style: context.styleRegular14),
-              ),
-              SizedBox(height: 8.h),
-            ],
-            if (report['whenToWorry'] != null &&
-                (report['whenToWorry'] as List).isNotEmpty) ...[
-              Text(
-                'When to seek urgent care',
-                style: context.styleSemiBold14.copyWith(color: Colors.red),
-              ),
-              ...(report['whenToWorry'] as List).map(
-                (item) => Text('• $item', style: context.styleRegular14),
-              ),
-              SizedBox(height: 8.h),
-            ],
-            if (report['recommendedDoctors'] != null &&
-                (report['recommendedDoctors'] as List).isNotEmpty) ...[
-              Text('Recommended Doctors', style: context.styleSemiBold14),
-              ...(report['recommendedDoctors'] as List).map(
-                (doc) => Text('• $doc', style: context.styleRegular14),
-              ),
-              SizedBox(height: 8.h),
-            ],
-            if (report['risk'] != null) ...[
-              Text('Risk Assessment', style: context.styleSemiBold14),
-              Text(report['risk'].toString(), style: context.styleRegular14),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildInputArea(
     BuildContext context,
+    AppLocalizations appLocalizations,
+    UiComponent? ui,
     bool isSending,
     bool isLimitReached,
-    UiComponent? ui,
   ) {
     if (isLimitReached) {
-      return _buildMessageInput(context, true, "Daily limit reached.");
+      return _buildMessageInput(
+        context,
+        true,
+        appLocalizations.limitReachedMessage,
+      );
     }
 
     if (ui == null || ui.type == 'text' || _showTextInputFallback) {
       return _buildMessageInput(
         context,
         isSending,
-        isSending ? 'Wait for AI...' : 'Type your message...',
+        isSending
+            ? appLocalizations.waitingForAi
+            : appLocalizations.typeYourMessage,
       );
     }
 
     if (ui.type == 'radio') {
-      return _buildRadioOptions(context, ui.options, ui.allowOther, isSending);
+      return ChatbotRadioSelector(
+        options: ui.options,
+        selectedValue: _selectedRadio,
+        isLoading: isSending,
+        allowOther: ui.allowOther,
+
+        onChanged: (value) {
+          setState(() {
+            _selectedRadio = value;
+          });
+        },
+
+        onSubmit: () {
+          _sendMessage(_selectedRadio);
+        },
+
+        onOtherTap: () {
+          setState(() {
+            _showTextInputFallback = true;
+          });
+        },
+      );
     }
 
     if (ui.type == 'checkbox') {
-      return _buildCheckboxOptions(
-        context,
-        ui.options,
-        ui.allowOther,
-        isSending,
+      return ChatbotCheckboxSelector(
+        options: ui.options,
+        selectedValues: _selectedCheckboxes,
+        isLoading: isSending,
+        allowOther: ui.allowOther,
+
+        onChanged: (value) {
+          setState(() {
+            if (_selectedCheckboxes.contains(value)) {
+              _selectedCheckboxes.remove(value);
+            } else {
+              _selectedCheckboxes.add(value);
+            }
+          });
+        },
+
+        onSubmit: () {
+          _sendMessage(_selectedCheckboxes.join(', '));
+        },
+
+        onOtherTap: () {
+          setState(() {
+            _showTextInputFallback = true;
+          });
+        },
       );
     }
 
     return _buildMessageInput(
       context,
       isSending,
-      isSending ? 'Wait for AI...' : 'Type your message...',
+      appLocalizations.typeYourMessage,
     );
   }
 
-  Widget _buildRadioOptions(
-    BuildContext context,
-    List<String> options,
-    bool allowOther,
-    bool isSending,
-  ) {
+  Widget _buildBotMessage(BuildContext context, String text, Color riskColor) {
     final theme = Theme.of(context);
 
-    return Container(
-      padding: EdgeInsets.all(16.w),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
-        border: Border.all(
-          color: theme.colorScheme.outline.withValues(alpha: .12),
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Container(
+        margin: EdgeInsets.only(right: 50.w),
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+        decoration: BoxDecoration(
+          color:
+              context.customColors.chatBubbleOthers ??
+              theme.colorScheme.surface,
+
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(16.r),
+            topRight: Radius.circular(16.r),
+            bottomRight: Radius.circular(16.r),
+          ),
+
+          border: Border.all(
+            color: riskColor != Colors.transparent
+                ? riskColor
+                : theme.dividerColor,
+            width: riskColor != Colors.transparent ? 2 : 1,
+          ),
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: .04),
-            blurRadius: 20,
-            offset: const Offset(0, -4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Choose one option",
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-
-          SizedBox(height: 16.h),
-
-          ...options.map((option) {
-            final isSelected = _selectedRadio == option;
-
-            return Padding(
-              padding: EdgeInsets.only(bottom: 12.h),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(18.r),
-                onTap: isSending
-                    ? null
-                    : () {
-                        setState(() {
-                          _selectedRadio = option;
-                        });
-
-                        _sendMessage(option);
-                      },
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 18.w,
-                    vertical: 16.h,
-                  ),
-                  decoration: BoxDecoration(
-                    color: isSelected
-                        ? theme.colorScheme.primary.withValues(alpha: .08)
-                        : theme.colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(18.r),
-                    border: Border.all(
-                      color: isSelected
-                          ? theme.colorScheme.primary
-                          : theme.colorScheme.outline.withValues(alpha: .15),
-                      width: 1.4,
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          option,
-                          style: theme.textTheme.bodyLarge?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        width: 22.w,
-                        height: 22.w,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: isSelected
-                                ? theme.colorScheme.primary
-                                : theme.colorScheme.outline,
-                            width: 2,
-                          ),
-                        ),
-                        child: Center(
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            width: isSelected ? 10.w : 0,
-                            height: isSelected ? 10.w : 0,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: theme.colorScheme.primary,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          }),
-
-          if (allowOther)
-            InkWell(
-              borderRadius: BorderRadius.circular(18.r),
-              onTap: isSending
-                  ? null
-                  : () {
-                      setState(() => _showTextInputFallback = true);
-                    },
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 16.h),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withValues(alpha: .06),
-                  borderRadius: BorderRadius.circular(18.r),
-                  border: Border.all(
-                    color: theme.colorScheme.primary.withValues(alpha: .18),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        "Other",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: theme.colorScheme.primary,
-                        ),
-                      ),
-                    ),
-
-                    Icon(
-                      Icons.edit_rounded,
-                      color: theme.colorScheme.primary,
-                      size: 20.sp,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-        ],
+        child: Text(text, style: context.styleRegular14.copyWith(height: 1.5)),
       ),
     );
   }
 
-  Widget _buildCheckboxOptions(
-    BuildContext context,
-    List<String> options,
-    bool allowOther,
-    bool isSending,
-  ) {
+  Widget _buildUserMessage(BuildContext context, String text) {
     final theme = Theme.of(context);
 
-    return Container(
-      padding: EdgeInsets.all(16.w),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
-        border: Border.all(
-          color: theme.colorScheme.outline.withValues(alpha: 0.12),
+    return Align(
+      alignment: Alignment.centerRight,
+      child: Container(
+        margin: EdgeInsets.only(left: 50.w),
+
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+
+        decoration: BoxDecoration(
+          color:
+              context.customColors.chatBubbleMine ?? theme.colorScheme.primary,
+
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(16.r),
+            topRight: Radius.circular(16.r),
+            bottomLeft: Radius.circular(16.r),
+          ),
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 20,
-            offset: const Offset(0, -4),
+
+        child: Text(
+          text,
+          style: context.styleRegular14.copyWith(
+            color: theme.colorScheme.onPrimary,
+            height: 1.5,
           ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Select one or more",
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-
-          SizedBox(height: 16.h),
-
-          ...options.map((option) {
-            final isSelected = _selectedCheckboxes.contains(option);
-
-            return Padding(
-              padding: EdgeInsets.only(bottom: 12.h),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(18.r),
-                onTap: isSending
-                    ? null
-                    : () {
-                        setState(() {
-                          if (isSelected) {
-                            _selectedCheckboxes.remove(option);
-                          } else {
-                            _selectedCheckboxes.add(option);
-                          }
-                        });
-                      },
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 18.w,
-                    vertical: 16.h,
-                  ),
-                  decoration: BoxDecoration(
-                    color: isSelected
-                        ? theme.colorScheme.primary.withValues(alpha: .08)
-                        : theme.colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(18.r),
-                    border: Border.all(
-                      color: isSelected
-                          ? theme.colorScheme.primary
-                          : theme.colorScheme.outline.withValues(alpha: .15),
-                      width: 1.4,
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          option,
-                          style: theme.textTheme.bodyLarge?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        width: 22.w,
-                        height: 22.w,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(6.r),
-                          border: Border.all(
-                            color: isSelected
-                                ? theme.colorScheme.primary
-                                : theme.colorScheme.outline,
-                            width: 2,
-                          ),
-                          color: isSelected
-                              ? theme.colorScheme.primary
-                              : Colors.transparent,
-                        ),
-                        child: isSelected
-                            ? Icon(
-                                Icons.check_rounded,
-                                size: 16.sp,
-                                color: theme.colorScheme.onPrimary,
-                              )
-                            : null,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          }),
-
-          if (allowOther)
-            Padding(
-              padding: EdgeInsets.only(top: 4.h),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(18.r),
-                onTap: isSending
-                    ? null
-                    : () {
-                        setState(() => _showTextInputFallback = true);
-                      },
-                child: Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 18.w,
-                    vertical: 16.h,
-                  ),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.primary.withValues(alpha: .06),
-                    borderRadius: BorderRadius.circular(18.r),
-                    border: Border.all(
-                      color: theme.colorScheme.primary.withValues(alpha: .18),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          "Other",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            color: theme.colorScheme.primary,
-                          ),
-                        ),
-                      ),
-
-                      Icon(
-                        Icons.edit_rounded,
-                        color: theme.colorScheme.primary,
-                        size: 20.sp,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-
-          SizedBox(height: 20.h),
-
-          SizedBox(
-            width: double.infinity,
-            height: 54.h,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                elevation: 0,
-                backgroundColor: theme.colorScheme.primary,
-                foregroundColor: theme.colorScheme.onPrimary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18.r),
-                ),
-              ),
-              onPressed: isSending || _selectedCheckboxes.isEmpty
-                  ? null
-                  : () {
-                      _sendMessage(_selectedCheckboxes.join(', '));
-                    },
-              child: Text(
-                "Submit Selection",
-                style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w700),
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -804,61 +426,64 @@ class _ChatbotViewState extends State<ChatbotView> {
     String hintText,
   ) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+
       decoration: BoxDecoration(
-        color: colorScheme.surface,
+        color: theme.colorScheme.surface,
         border: Border(top: BorderSide(color: theme.dividerColor)),
       ),
+
       child: Row(
         children: [
           Expanded(
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 16.w),
+
               decoration: BoxDecoration(
                 color: theme.scaffoldBackgroundColor,
                 borderRadius: BorderRadius.circular(24.r),
               ),
+
               child: TextField(
                 controller: _messageController,
                 enabled: !isDisabled,
                 minLines: 1,
                 maxLines: 4,
+
                 onSubmitted: (_) => _sendMessage(),
+
                 decoration: InputDecoration(
                   hintText: hintText,
-                  hintStyle: context.styleRegular14.copyWith(
-                    color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
-                  ),
                   border: InputBorder.none,
                 ),
               ),
             ),
           ),
+
           SizedBox(width: 12.w),
+
           GestureDetector(
             onTap: isDisabled ? null : () => _sendMessage(),
+
             child: Container(
               width: 48.w,
               height: 48.h,
+
               decoration: BoxDecoration(
-                color: isDisabled ? theme.dividerColor : colorScheme.primary,
+                color: isDisabled
+                    ? theme.dividerColor
+                    : theme.colorScheme.primary,
+
                 shape: BoxShape.circle,
               ),
-              child: isDisabled && !hintText.contains("limit")
-                  ? Padding(
-                      padding: EdgeInsets.all(12.w),
-                      child: CircularProgressIndicator(
-                        color: colorScheme.onPrimary,
-                        strokeWidth: 2.w,
-                      ),
-                    )
-                  : Icon(
-                      Icons.send_rounded,
-                      color: colorScheme.onPrimary,
-                      size: 20.sp,
-                    ),
+
+              child: Icon(
+                Icons.send_rounded,
+                color: theme.colorScheme.onPrimary,
+                size: 20.sp,
+              ),
             ),
           ),
         ],

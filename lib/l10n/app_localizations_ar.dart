@@ -366,4 +366,72 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get rescheduleSubmittedSuccessfully =>
       'تم تقديم طلب إعادة الجدولة بنجاح';
+
+  @override
+  String get limitReached => 'تم الوصول إلى الحد الأقصى';
+
+  @override
+  String get limitReachedMessage => 'لقد وصلت إلى الحد الأقصى من الرسائل';
+
+  @override
+  String rateYourDoctor(Object doctorName) {
+    return 'كيف كانت زيارتك مع ';
+  }
+
+  @override
+  String get rateYourVisit => 'قيّم زيارتك';
+
+  @override
+  String get skip => 'تخطي';
+
+  @override
+  String get selectRating => 'يرجى اختيار تقييم';
+
+  @override
+  String get submitRating => 'إرسال التقييم';
+
+  @override
+  String get ratingSubmitted => 'تم إرسال التقييم بنجاح';
+
+  @override
+  String get ratingUpdated => 'تم تحديث التقييم بنجاح';
+
+  @override
+  String get errorSubmittingRating => 'حدث خطأ أثناء إرسال التقييم';
+
+  @override
+  String get feedbackOptional => 'التقييم اختياري';
+
+  @override
+  String get tellUsMore => 'أخبرنا المزيد...';
+
+  @override
+  String get rateExperience => 'قيّم تجربتك';
+
+  @override
+  String get skipAndRateLater => 'تخطي والتقييم لاحقاً';
+
+  @override
+  String get weValueYourFeedback => 'نحن نقدر رأيك';
+
+  @override
+  String get feedbackHelpsUsImprove => 'رأيك يساعدنا في تحسين الخدمة';
+
+  @override
+  String get aiAssistant => 'المساعد الذكي';
+
+  @override
+  String get connecting => 'جاري الاتصال...';
+
+  @override
+  String get typing => 'يكتب...';
+
+  @override
+  String get online => 'متصل';
+
+  @override
+  String get waitingForAi => 'جاري الانتظار...';
+
+  @override
+  String get typeYourMessage => 'اكتب رسالتك...';
 }

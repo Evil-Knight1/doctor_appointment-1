@@ -793,6 +793,138 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Reschedule request submitted successfully'**
   String get rescheduleSubmittedSuccessfully;
+
+  /// No description provided for @limitReached.
+  ///
+  /// In en, this message translates to:
+  /// **'Limit Reached'**
+  String get limitReached;
+
+  /// No description provided for @limitReachedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You have reached the daily limit of messages'**
+  String get limitReachedMessage;
+
+  /// No description provided for @rateYourDoctor.
+  ///
+  /// In en, this message translates to:
+  /// **'How was your visit with {doctorName}?'**
+  String rateYourDoctor(Object doctorName);
+
+  /// No description provided for @rateYourVisit.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate Your Visit'**
+  String get rateYourVisit;
+
+  /// No description provided for @skip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get skip;
+
+  /// No description provided for @selectRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a rating'**
+  String get selectRating;
+
+  /// No description provided for @submitRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Rating'**
+  String get submitRating;
+
+  /// No description provided for @ratingSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating submitted successfully'**
+  String get ratingSubmitted;
+
+  /// No description provided for @ratingUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating updated successfully'**
+  String get ratingUpdated;
+
+  /// No description provided for @errorSubmittingRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Error submitting rating'**
+  String get errorSubmittingRating;
+
+  /// No description provided for @feedbackOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Feedback is optional'**
+  String get feedbackOptional;
+
+  /// No description provided for @tellUsMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell us more...'**
+  String get tellUsMore;
+
+  /// No description provided for @rateExperience.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate Your Experience'**
+  String get rateExperience;
+
+  /// No description provided for @skipAndRateLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip & Rate Later'**
+  String get skipAndRateLater;
+
+  /// No description provided for @weValueYourFeedback.
+  ///
+  /// In en, this message translates to:
+  /// **'We value your feedback'**
+  String get weValueYourFeedback;
+
+  /// No description provided for @feedbackHelpsUsImprove.
+  ///
+  /// In en, this message translates to:
+  /// **'Your feedback helps us improve our service.'**
+  String get feedbackHelpsUsImprove;
+
+  /// No description provided for @aiAssistant.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Assistant'**
+  String get aiAssistant;
+
+  /// No description provided for @connecting.
+  ///
+  /// In en, this message translates to:
+  /// **'Connecting...'**
+  String get connecting;
+
+  /// No description provided for @typing.
+  ///
+  /// In en, this message translates to:
+  /// **'typing...'**
+  String get typing;
+
+  /// No description provided for @online.
+  ///
+  /// In en, this message translates to:
+  /// **'online'**
+  String get online;
+
+  /// No description provided for @waitingForAi.
+  ///
+  /// In en, this message translates to:
+  /// **'waiting for AI...'**
+  String get waitingForAi;
+
+  /// No description provided for @typeYourMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'type your message...'**
+  String get typeYourMessage;
 }
 
 class _AppLocalizationsDelegate
