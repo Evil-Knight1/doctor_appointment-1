@@ -7,6 +7,7 @@ import 'package:doctor_appointment/core/utils/routes.dart';
 import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
 import '../widgets/booking_stepper.dart';
 import '../widgets/shared_app_bar.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class BookingPaymentView extends StatefulWidget {
   const BookingPaymentView({super.key, required this.args});
@@ -20,37 +21,39 @@ class _BookingPaymentViewState extends State<BookingPaymentView> {
   // Backend values: 3 = CashAtClinic, 4 = OnlineCard, 5 = MobileWallet
   int _selectedMethodId = 4;
 
-  static const _methods = [
-    _PaymentMethod(
-      id: 4,
-      label: 'Online Card',
-      subtitle: 'Pay securely with Visa or MasterCard via Paymob',
-      icon: Icons.credit_card_rounded,
-      type: _PaymentMethodType.online,
-    ),
-    _PaymentMethod(
-      id: 5,
-      label: 'Mobile Wallet',
-      subtitle: 'Pay with Vodafone Cash, Orange Money or Etisalat Cash',
-      icon: Icons.phone_android_rounded,
-      type: _PaymentMethodType.wallet,
-    ),
-    _PaymentMethod(
-      id: 3,
-      label: 'Cash at Clinic',
-      subtitle: 'Pay in person when you arrive at the clinic',
-      icon: Icons.payments_outlined,
-      type: _PaymentMethodType.cash,
-    ),
-  ];
 
   @override
+
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
+    final methods = [
+      _PaymentMethod(
+        id: 4,
+        label: l10n.onlineCard,
+        subtitle: l10n.onlineCardSubtitle,
+        icon: Icons.credit_card_rounded,
+        type: _PaymentMethodType.online,
+      ),
+      _PaymentMethod(
+        id: 5,
+        label: l10n.mobileWallet,
+        subtitle: l10n.mobileWalletSubtitle,
+        icon: Icons.phone_android_rounded,
+        type: _PaymentMethodType.wallet,
+      ),
+      _PaymentMethod(
+        id: 3,
+        label: l10n.cashAtClinic,
+        subtitle: l10n.cashAtClinicSubtitle,
+        icon: Icons.payments_outlined,
+        type: _PaymentMethodType.cash,
+      ),
+    ];
 
     return Scaffold(
       backgroundColor: colorScheme.surface,
-      appBar: const SharedAppBar(title: 'Book Appointment'),
+      appBar: SharedAppBar(title: l10n.bookAppointment),
       body: Column(
         children: [
           const BookingStepper(currentStep: 1),
@@ -58,10 +61,10 @@ class _BookingPaymentViewState extends State<BookingPaymentView> {
             child: ListView(
               padding: EdgeInsets.all(AppSpacing.lg),
               children: [
-                Text('Payment Option', style: context.headingLarge),
+                Text(l10n.paymentOption, style: context.headingLarge),
                 SizedBox(height: AppSpacing.sm),
                 Text(
-                  'Select how you\'d like to pay for your appointment',
+                  l10n.paymentOptionSubtitle,
                   style: context.bodySmall,
                 ),
                 SizedBox(height: AppSpacing.xl),
@@ -89,7 +92,7 @@ class _BookingPaymentViewState extends State<BookingPaymentView> {
                       ),
                       SizedBox(width: 4.w),
                       Text(
-                        'Payments secured by Paymob',
+                        l10n.paymobSecured,
                         style: context.bodySmall.copyWith(
                           fontSize: 11.sp,
                           color: colorScheme.onSurfaceVariant,
@@ -107,7 +110,7 @@ class _BookingPaymentViewState extends State<BookingPaymentView> {
               extra: {
                 ...widget.args,
                 'paymentMethod': _selectedMethodId,
-                'paymentLabel': _methods
+                'paymentLabel': methods
                     .firstWhere((m) => m.id == _selectedMethodId)
                     .label,
               },

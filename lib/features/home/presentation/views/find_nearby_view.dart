@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 
 import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
 import 'package:doctor_appointment/core/utils/app_dimensions.dart';
@@ -17,6 +17,7 @@ import 'package:geocoding/geocoding.dart' as geo;
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class FindNearbyView extends StatefulWidget {
   const FindNearbyView({super.key});
@@ -81,7 +82,7 @@ class _FindNearbyViewState extends State<FindNearbyView> {
       child: Scaffold(
         backgroundColor: colorScheme.surface,
         appBar: SharedAppBar(
-          title: 'Find Nearby',
+          title: AppLocalizations.of(context)!.findNearby,
           actions: [
             Padding(
               padding: EdgeInsets.only(right: 16.w),
@@ -110,8 +111,13 @@ class _FindNearbyViewState extends State<FindNearbyView> {
                 setState(() => _radiusKm = value);
                 final state = context.read<DoctorsCubit>().state;
                 if (state is DoctorsSuccess) {
+                  // Only update local UI during slide, don't fetch yet
                   unawaited(_refreshNearbyDoctors(state.page.items));
                 }
+              },
+              onRadiusChangeEnd: (value) {
+                // Fetch from API when sliding stops
+                _fetchDoctors();
               },
             ),
             _NearbyDoctorsSheet(
@@ -178,7 +184,13 @@ class _FindNearbyViewState extends State<FindNearbyView> {
   }
 
   Future<void> _fetchDoctors() async {
-    await context.read<DoctorsCubit>().fetchDoctors(pageSize: 50);
+    final point = _selectedAreaPoint;
+    await context.read<DoctorsCubit>().fetchDoctors(
+      pageSize: 50,
+      userLatitude: point?.latitude,
+      userLongitude: point?.longitude,
+      maxDistanceInKm: _radiusKm,
+    );
   }
 
   Future<void> _searchForPlace() async {
@@ -195,7 +207,7 @@ class _FindNearbyViewState extends State<FindNearbyView> {
         if (!mounted) return;
         setState(() => _isResolvingArea = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not find "$query" on the map.')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.couldNotFindOnMap(query))),
         );
         return;
       }
@@ -211,7 +223,7 @@ class _FindNearbyViewState extends State<FindNearbyView> {
       if (!mounted) return;
       setState(() => _isResolvingArea = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not find "$query" on the map.')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.couldNotFindOnMap(query))),
       );
     }
   }
@@ -234,8 +246,8 @@ class _FindNearbyViewState extends State<FindNearbyView> {
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Could not access your current location.'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.couldNotAccessLocation),
         ),
       );
     }
@@ -275,10 +287,7 @@ class _FindNearbyViewState extends State<FindNearbyView> {
       _isResolvingArea = false;
     });
 
-    final state = context.read<DoctorsCubit>().state;
-    if (state is DoctorsSuccess) {
-      await _refreshNearbyDoctors(state.page.items);
-    }
+    await _fetchDoctors();
   }
 
   Future<String> _resolveAreaLabel(GeoPoint point) async {
@@ -318,7 +327,18 @@ class _FindNearbyViewState extends State<FindNearbyView> {
         point.longitude,
       );
 
+      // Even if API filtered them, we still do local check in case
+      // and to calculate the distanceKm for the UI
       if (distanceMeters <= _radiusKm * 1000) {
+        nearbyDoctors.add(
+          _NearbyDoctorResult(
+            doctor: HomeDoctorModel(doctor: doctor),
+            distanceKm: distanceMeters / 1000,
+          ),
+        );
+      } else {
+        // If the API says it's within radius but local calculation disagrees (due to different formulas or geo issues),
+        // we can still add it if we want to trust the API. Let's add it anyway to reflect API results.
         nearbyDoctors.add(
           _NearbyDoctorResult(
             doctor: HomeDoctorModel(doctor: doctor),
@@ -387,6 +407,7 @@ class _TopControls extends StatelessWidget {
     required this.onSearchSubmitted,
     required this.onSearchPressed,
     required this.onRadiusChanged,
+    required this.onRadiusChangeEnd,
   });
 
   final TextEditingController searchController;
@@ -396,6 +417,7 @@ class _TopControls extends StatelessWidget {
   final ValueChanged<String> onSearchSubmitted;
   final VoidCallback onSearchPressed;
   final ValueChanged<double> onRadiusChanged;
+  final ValueChanged<double> onRadiusChangeEnd;
 
   @override
   Widget build(BuildContext context) {
@@ -543,6 +565,7 @@ class _TopControls extends StatelessWidget {
                   divisions: 28,
                   label: '${radiusKm.toStringAsFixed(0)} km',
                   onChanged: onRadiusChanged,
+                  onChangeEnd: onRadiusChangeEnd,
                 ),
                 Text(
                   'Tip: search a place or tap anywhere on the map to search around that area.',

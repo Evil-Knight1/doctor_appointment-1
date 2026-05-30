@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ResetPasswordView extends StatefulWidget {
   final String email;
@@ -55,7 +56,7 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
         }
         if (state is PasswordResetSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Password reset successfully!')),
+            SnackBar(content: Text(AppLocalizations.of(context)!.passwordResetSuccessfully)),
           );
           // Navigate to login screen and clear history
           context.go(AppRouter.kLoginView);
@@ -85,15 +86,15 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(height: 20.h),
-                    Text('Reset Password', style: context.styleBold32),
+                    Text(AppLocalizations.of(context)!.resetPasswordTitle, style: context.styleBold32),
                     SizedBox(height: 8.h),
                     Text(
-                      'Please enter your new password.',
+                      AppLocalizations.of(context)!.enterNewPassword,
                       style: context.styleRegular14,
                     ),
                     SizedBox(height: 36.h),
                     CustomTextFormField(
-                      hintText: 'New Password',
+                      hintText: AppLocalizations.of(context)!.newPassword,
                       textInputType: TextInputType.visiblePassword,
                       isPassword: true,
                       controller: _passwordController,
@@ -101,7 +102,7 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
                     ),
                     SizedBox(height: 16.h),
                     CustomTextFormField(
-                      hintText: 'Confirm Password',
+                      hintText: AppLocalizations.of(context)!.confirmPassword,
                       textInputType: TextInputType.visiblePassword,
                       isPassword: true,
                       controller: _confirmPasswordController,
@@ -113,7 +114,7 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
                       child: CustomButton(
                         height: 52.h,
                         width: double.infinity,
-                        text: isLoading ? 'Resetting...' : 'Reset Password',
+                        text: isLoading ? AppLocalizations.of(context)!.resetting : AppLocalizations.of(context)!.resetPasswordTitle,
                         onPressed: isLoading
                             ? () {}
                             : () {
@@ -124,9 +125,9 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
                                 if (_passwordController.text.trim() !=
                                     _confirmPasswordController.text.trim()) {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Passwords do not match'),
-                                      backgroundColor: Color(0xFFEF4444),
+                                    SnackBar(
+                                      content: Text(AppLocalizations.of(context)!.passwordsDoNotMatch),
+                                      backgroundColor: const Color(0xFFEF4444),
                                     ),
                                   );
                                   return;

@@ -375,7 +375,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String rateYourDoctor(Object doctorName) {
-    return 'كيف كانت زيارتك مع ';
+    return 'كيف كانت زيارتك مع $doctorName؟';
   }
 
   @override
@@ -434,4 +434,458 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get typeYourMessage => 'اكتب رسالتك...';
+
+  @override
+  String get registerHelp => 'المساعدة في التسجيل';
+
+  @override
+  String get authStepsCredentialsTitle => 'الخطوة 1: بيانات الاعتماد';
+
+  @override
+  String get authStepsCredentialsSubtitle =>
+      'قم بتقديم بريدك الإلكتروني المهني وكلمة مرور آمنة. ستحتاج أيضًا إلى رقم هاتف صالح للتحقق.';
+
+  @override
+  String get authStepsCredentialsHeader => 'بيانات الحساب';
+
+  @override
+  String get authStepsCredentialsEmail =>
+      'أدخل بريدك الإلكتروني، كلمة المرور والهاتف للبدء.';
+
+  @override
+  String get authStepsCredentialsPhone => 'رقم الهاتف';
+
+  @override
+  String get authStepsCredentialsPassword => 'كلمة المرور';
+
+  @override
+  String get authStepsCredentialsConfirmPassword => 'تأكيد كلمة المرور';
+
+  @override
+  String get authStepsPersonalInfoTitle => 'الخطوة 2: المعلومات الشخصية';
+
+  @override
+  String get authStepsPersonalInfoSubtitle =>
+      'شارك بعض التفاصيل الأساسية عن نفسك لملفك الشخصي.';
+
+  @override
+  String get authStepsClinicDetailsTitle => 'الخطوة 3: تفاصيل العيادة';
+
+  @override
+  String get authStepsClinicDetailsSubtitle => 'أخبرنا عن عيادتك ومكان عملك.';
+
+  @override
+  String get authStepsNote =>
+      'ملاحظة: تتم مراجعة جميع التسجيلات من قبل فريق الإدارة لدينا قبل الموافقة.';
+
+  @override
+  String get authStepsGotIt => 'حسناً';
+
+  @override
+  String get authErrorsEmailInUse => 'البريد الإلكتروني هذا مستخدم بالفعل';
+
+  @override
+  String get authErrorsPhoneInUse => 'رقم الهاتف هذا مستخدم بالفعل';
+
+  @override
+  String get authErrorsInvalidEmail => 'الرجاء إدخال عنوان بريد إلكتروني صالح';
+
+  @override
+  String get authErrorsInvalidPhone => 'الرجاء إدخال رقم هاتف صالح';
+
+  @override
+  String get authErrorsPasswordMismatch => 'كلمات المرور غير متطابقة';
+
+  @override
+  String get authTermsTermsAndConditions => 'الشروط والأحكام';
+
+  @override
+  String get authTermsAcceptedTerms => 'أوافق على الشروط والأحكام';
+
+  @override
+  String get authDoctorAuthDoctorRegistration => 'تسجيل طبيب';
+
+  @override
+  String get authDoctorAuthRegisterPending =>
+      'تم إرسال تسجيلك كطبيب بنجاح. يقوم فريق الإدارة لدينا بمراجعة تفاصيلك للتحقق من أوراق اعتمادك الطبية. ستتلقى بريدًا إلكترونيًا بمجرد الموافقة.';
+
+  @override
+  String get authDoctorAuthApplicationRecieved => 'تم استلام الطلب';
+
+  @override
+  String get authDoctorAuthSelectSpecialization => 'الرجاء اختيار التخصص';
+
+  @override
+  String get authDoctorAuthSelectClinicLocation => 'اختر موقع العيادة';
+
+  @override
+  String get authDoctorAuthSelectHospitalLocation => 'اختر موقع المستشفى';
+
+  @override
+  String get authBackToLogin => 'العودة لتسجيل الدخول';
+
+  @override
+  String get locationNotFound => 'الموقع غير موجود';
+
+  @override
+  String get couldNotGetCurrentLocation => 'تعذر الحصول على الموقع الحالي';
+
+  @override
+  String get otpVerifiedSuccessfully => 'تم التحقق من رمز OTP بنجاح.';
+
+  @override
+  String get passwordResetSuccessfully => 'تمت إعادة تعيين كلمة المرور بنجاح!';
+
+  @override
+  String get resetPasswordTitle => 'إعادة تعيين كلمة المرور';
+
+  @override
+  String get verifyOtpTitle => 'تحقق من رمز OTP';
+
+  @override
+  String verifyOtpSubtitle(String email) {
+    return 'أدخل رمز التحقق المرسل إلى $email.';
+  }
+
+  @override
+  String get verifying => 'جاري التحقق...';
+
+  @override
+  String get verify => 'تحقق';
+
+  @override
+  String get enterNewPassword => 'يرجى إدخال كلمة المرور الجديدة.';
+
+  @override
+  String get newPassword => 'كلمة المرور الجديدة';
+
+  @override
+  String get resetting => 'جاري إعادة التعيين...';
+
+  @override
+  String get forgotPasswordTitle => 'نسيت كلمة المرور';
+
+  @override
+  String get forgotPasswordSubtitle =>
+      'أدخل عنوان بريدك الإلكتروني لتلقي رمز التحقق.';
+
+  @override
+  String get sending => 'جاري الإرسال...';
+
+  @override
+  String get sendOtp => 'إرسال رمز OTP';
+
+  @override
+  String get searchForAPlace => 'ابحث عن مكان...';
+
+  @override
+  String get emailAddress => 'عنوان البريد الإلكتروني';
+
+  @override
+  String get passwordMinChars => 'الحد الأدنى 8 أحرف';
+
+  @override
+  String get meetPasswordRequirements => 'يرجى تلبية جميع متطلبات كلمة المرور';
+
+  @override
+  String get birthDate => 'تاريخ الميلاد';
+
+  @override
+  String get birthDateHint => 'شهر/يوم/سنة';
+
+  @override
+  String get selectGender => 'اختر الجنس';
+
+  @override
+  String get licenseId => 'رقم الترخيص';
+
+  @override
+  String get licenseIdHint => 'مثال: LIC-123456';
+
+  @override
+  String get expYears => 'سنوات الخبرة';
+
+  @override
+  String get consultationFee => 'رسوم الاستشارة';
+
+  @override
+  String get consultationFeeHint => 'مثال: 200';
+
+  @override
+  String get professionalBio => 'نبذة مهنية';
+
+  @override
+  String get professionalBioHint => 'أخبر المرضى عن خبرتك...';
+
+  @override
+  String get mainHospital => 'المستشفى الرئيسي';
+
+  @override
+  String get mainHospitalHint => 'مثال: مستشفى القاهرة التخصصي';
+
+  @override
+  String get clinicAddress => 'عنوان العيادة';
+
+  @override
+  String get clinicAddressHint => 'اضغط على أيقونة الخريطة للاختيار';
+
+  @override
+  String get passwordCheckUppercase => 'حرف كبير';
+
+  @override
+  String get passwordCheckLowercase => 'حرف صغير';
+
+  @override
+  String get passwordCheckSpecial => 'حرف خاص';
+
+  @override
+  String get passwordCheck8Chars => '8 أحرف';
+
+  @override
+  String get bookAppointment => 'حجز موعد';
+
+  @override
+  String get selectDate => 'اختر التاريخ';
+
+  @override
+  String get selectTime => 'اختر الوقت';
+
+  @override
+  String get appointmentType => 'نوع الموعد';
+
+  @override
+  String get regularVisit => 'زيارة عادية';
+
+  @override
+  String get regularVisitSubtitle => 'فحص طبي قياسي ومتابعة';
+
+  @override
+  String get consultation => 'استشارة';
+
+  @override
+  String get consultationSubtitle => 'تشخيص تفصيلي ورأي ثاني';
+
+  @override
+  String get noAvailability => 'الطبيب ليس لديه توافر';
+
+  @override
+  String get noAvailabilityMessage =>
+      'لم يضبط هذا الطبيب أي مواعيد بعد.\nيرجى المتابعة لاحقاً أو اختيار طبيب آخر.';
+
+  @override
+  String get noSlotsForDate => 'لا توجد مواعيد لهذا التاريخ';
+
+  @override
+  String get noSlotsHint => 'جرب اختيار تاريخ محدد بنقطة';
+
+  @override
+  String get retry => 'إعادة المحاولة';
+
+  @override
+  String get next => 'التالي';
+
+  @override
+  String get morning => 'الصباح';
+
+  @override
+  String get afternoon => 'بعد الظهر';
+
+  @override
+  String get evening => 'المساء';
+
+  @override
+  String get paymentOption => 'خيار الدفع';
+
+  @override
+  String get paymentOptionSubtitle => 'اختر طريقة الدفع لموعدك';
+
+  @override
+  String get paymobSecured => 'المدفوعات مؤمنة بواسطة Paymob';
+
+  @override
+  String get onlineCard => 'بطاقة إلكترونية';
+
+  @override
+  String get onlineCardSubtitle =>
+      'ادفع بأمان ببطاقة Visa أو MasterCard عبر Paymob';
+
+  @override
+  String get mobileWallet => 'محفظة المحمول';
+
+  @override
+  String get mobileWalletSubtitle =>
+      'ادفع باستخدام فودافون كاش أو أورنج موني أو اتصالات كاش';
+
+  @override
+  String get cashAtClinic => 'نقداً في العيادة';
+
+  @override
+  String get cashAtClinicSubtitle => 'ادفع شخصياً عند وصولك للعيادة';
+
+  @override
+  String get paymentCancelled => 'تم إلغاء الدفع. يمكنك المحاولة مرة أخرى.';
+
+  @override
+  String get reviewSubmittedSuccessfully => 'تم تقديم المراجعة بنجاح!';
+
+  @override
+  String get about => 'نبذة';
+
+  @override
+  String get clinicImages => 'صور العيادة';
+
+  @override
+  String get locationMap => 'خريطة الموقع';
+
+  @override
+  String get noReviewsYet => 'لا توجد مراجعات بعد';
+
+  @override
+  String get addReview => 'إضافة مراجعة';
+
+  @override
+  String get today => 'اليوم';
+
+  @override
+  String get noSpecialitiesFound => 'لم يتم العثور على تخصصات.';
+
+  @override
+  String couldNotFindOnMap(String query) {
+    return 'تعذر العثور على \"$query\" في الخريطة.';
+  }
+
+  @override
+  String get couldNotAccessLocation => 'تعذر الوصول إلى موقعك الحالي.';
+
+  @override
+  String get continueToPayment => 'متابعة إلى الدفع';
+
+  @override
+  String get tryAgain => 'حاول مجدداً';
+
+  @override
+  String get goBack => 'العودة';
+
+  @override
+  String get backToCheckout => 'العودة إلى الدفع';
+
+  @override
+  String get tryAgainLower => 'حاول مجدداً';
+
+  @override
+  String get paymentCancelledShort => 'تم إلغاء الدفع.';
+
+  @override
+  String get availabilityGeneratedSuccessfully => 'تم توليد التوافر بنجاح!';
+
+  @override
+  String get pleaseFillAllFields => 'يرجى ملء جميع الحقول';
+
+  @override
+  String get rescheduleApprovedSuccessfully =>
+      'تمت الموافقة على إعادة الجدولة بنجاح';
+
+  @override
+  String get recordSimulatedSuccessfully => 'تم محاكاة السجل بنجاح!';
+
+  @override
+  String get writeAReview => 'كتابة مراجعة';
+
+  @override
+  String get howWasYourExperience => 'كيف كانت تجربتك مع';
+
+  @override
+  String get writeYourReview => 'اكتب مراجعتك هنا...';
+
+  @override
+  String get submitReview => 'إرسال المراجعة';
+
+  @override
+  String get reviewSummary => 'مراجعة الملخص';
+
+  @override
+  String get doctorInformation => 'معلومات الطبيب';
+
+  @override
+  String get timeSlot => 'الفترة الزمنية';
+
+  @override
+  String get paymentMethod => 'طريقة الدفع';
+
+  @override
+  String get method => 'الطريقة';
+
+  @override
+  String get change => 'تغيير';
+
+  @override
+  String get costSummary => 'ملخص التكلفة';
+
+  @override
+  String get total => 'الإجمالي';
+
+  @override
+  String get cashAtClinicInfo =>
+      'لقد اخترت الدفع نقداً في العيادة. سيتم حجز موعدك وتأكيد الدفع من قبل الطبيب عند وصولك.';
+
+  @override
+  String get paymobPaymentInfo => 'ستكمل الدفع بأمان داخل التطبيق عبر Paymob.';
+
+  @override
+  String get rescheduleNoPayment =>
+      'أنت تعيد جدولة موعدك. لا توجد مدفوعات إضافية مطلوبة.';
+
+  @override
+  String get confirmAndPay => 'تأكيد ودفع';
+
+  @override
+  String get generalConsultation => 'استشارة عامة';
+
+  @override
+  String get clinic => 'عيادة';
+
+  @override
+  String get egpSuffix => 'ج.م.';
+
+  @override
+  String get availableTime => 'الوقت المتاح';
+
+  @override
+  String get selectDateLabel => 'اختر التاريخ';
+
+  @override
+  String get availableTimeLabel => 'الوقت المتاح';
+
+  @override
+  String get fromTime => 'من';
+
+  @override
+  String get toTime => 'إلى';
+
+  @override
+  String get duration => 'المدة';
+
+  @override
+  String get fees => 'الرسوم';
+
+  @override
+  String get appointment => 'موعد';
+
+  @override
+  String get generate => 'توليد';
+
+  @override
+  String get continueToPaymentLabel => 'متابعة إلى الدفع';
+
+  @override
+  String get tryAgainButton => 'حاول مجدداً';
+
+  @override
+  String get goBackButton => 'العودة';
+
+  @override
+  String get backToCheckoutLabel => 'العودة إلى الدفع';
+
+  @override
+  String get patientGender => 'الجنس';
 }

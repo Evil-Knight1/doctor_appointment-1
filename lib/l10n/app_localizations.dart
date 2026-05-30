@@ -925,6 +925,882 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'type your message...'**
   String get typeYourMessage;
+
+  /// No description provided for @registerHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration Help'**
+  String get registerHelp;
+
+  /// No description provided for @authStepsCredentialsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Step 1: Credentials'**
+  String get authStepsCredentialsTitle;
+
+  /// No description provided for @authStepsCredentialsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Provide your professional email and a secure password. You\'ll also need a valid phone number for verification.'**
+  String get authStepsCredentialsSubtitle;
+
+  /// No description provided for @authStepsCredentialsHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Credentails'**
+  String get authStepsCredentialsHeader;
+
+  /// No description provided for @authStepsCredentialsEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email, password and phone to get started.'**
+  String get authStepsCredentialsEmail;
+
+  /// No description provided for @authStepsCredentialsPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get authStepsCredentialsPhone;
+
+  /// No description provided for @authStepsCredentialsPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get authStepsCredentialsPassword;
+
+  /// No description provided for @authStepsCredentialsConfirmPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Password'**
+  String get authStepsCredentialsConfirmPassword;
+
+  /// No description provided for @authStepsPersonalInfoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Step 2: Personal Information'**
+  String get authStepsPersonalInfoTitle;
+
+  /// No description provided for @authStepsPersonalInfoSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Share some basic details about yourself for your profile.'**
+  String get authStepsPersonalInfoSubtitle;
+
+  /// No description provided for @authStepsClinicDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Step 3: Clinic Details'**
+  String get authStepsClinicDetailsTitle;
+
+  /// No description provided for @authStepsClinicDetailsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell us about your clinic and where you practice.'**
+  String get authStepsClinicDetailsSubtitle;
+
+  /// No description provided for @authStepsNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Note: All registrations are reviewed by our administration team before approval.'**
+  String get authStepsNote;
+
+  /// No description provided for @authStepsGotIt.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get authStepsGotIt;
+
+  /// No description provided for @authErrorsEmailInUse.
+  ///
+  /// In en, this message translates to:
+  /// **'This email is already in use'**
+  String get authErrorsEmailInUse;
+
+  /// No description provided for @authErrorsPhoneInUse.
+  ///
+  /// In en, this message translates to:
+  /// **'This phone number is already in use'**
+  String get authErrorsPhoneInUse;
+
+  /// No description provided for @authErrorsInvalidEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid email address'**
+  String get authErrorsInvalidEmail;
+
+  /// No description provided for @authErrorsInvalidPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid phone number'**
+  String get authErrorsInvalidPhone;
+
+  /// No description provided for @authErrorsPasswordMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get authErrorsPasswordMismatch;
+
+  /// No description provided for @authTermsTermsAndConditions.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms & Conditions'**
+  String get authTermsTermsAndConditions;
+
+  /// No description provided for @authTermsAcceptedTerms.
+  ///
+  /// In en, this message translates to:
+  /// **'I accept the terms and conditions'**
+  String get authTermsAcceptedTerms;
+
+  /// No description provided for @authDoctorAuthDoctorRegistration.
+  ///
+  /// In en, this message translates to:
+  /// **'Doctor Registration'**
+  String get authDoctorAuthDoctorRegistration;
+
+  /// No description provided for @authDoctorAuthRegisterPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Your registration as a Doctor has been successfully submitted. Our administration team is reviewing your details to verify your medical credentials. You will receive an email once approved.'**
+  String get authDoctorAuthRegisterPending;
+
+  /// No description provided for @authDoctorAuthApplicationRecieved.
+  ///
+  /// In en, this message translates to:
+  /// **'Application Recieved'**
+  String get authDoctorAuthApplicationRecieved;
+
+  /// No description provided for @authDoctorAuthSelectSpecialization.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a specialization'**
+  String get authDoctorAuthSelectSpecialization;
+
+  /// No description provided for @authDoctorAuthSelectClinicLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Clinic Location'**
+  String get authDoctorAuthSelectClinicLocation;
+
+  /// No description provided for @authDoctorAuthSelectHospitalLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Hospital Location'**
+  String get authDoctorAuthSelectHospitalLocation;
+
+  /// No description provided for @authBackToLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Login'**
+  String get authBackToLogin;
+
+  /// No description provided for @locationNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Location not found'**
+  String get locationNotFound;
+
+  /// No description provided for @couldNotGetCurrentLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not get current location'**
+  String get couldNotGetCurrentLocation;
+
+  /// No description provided for @otpVerifiedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'OTP Verified Successfully.'**
+  String get otpVerifiedSuccessfully;
+
+  /// No description provided for @passwordResetSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Password reset successfully!'**
+  String get passwordResetSuccessfully;
+
+  /// No description provided for @resetPasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset Password'**
+  String get resetPasswordTitle;
+
+  /// No description provided for @verifyOtpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify OTP'**
+  String get verifyOtpTitle;
+
+  /// No description provided for @verifyOtpSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the verification code sent to {email}.'**
+  String verifyOtpSubtitle(String email);
+
+  /// No description provided for @verifying.
+  ///
+  /// In en, this message translates to:
+  /// **'Verifying...'**
+  String get verifying;
+
+  /// No description provided for @verify.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify'**
+  String get verify;
+
+  /// No description provided for @enterNewPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your new password.'**
+  String get enterNewPassword;
+
+  /// No description provided for @newPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'New Password'**
+  String get newPassword;
+
+  /// No description provided for @resetting.
+  ///
+  /// In en, this message translates to:
+  /// **'Resetting...'**
+  String get resetting;
+
+  /// No description provided for @forgotPasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot Password'**
+  String get forgotPasswordTitle;
+
+  /// No description provided for @forgotPasswordSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email address to receive a verification code.'**
+  String get forgotPasswordSubtitle;
+
+  /// No description provided for @sending.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending...'**
+  String get sending;
+
+  /// No description provided for @sendOtp.
+  ///
+  /// In en, this message translates to:
+  /// **'Send OTP'**
+  String get sendOtp;
+
+  /// No description provided for @searchForAPlace.
+  ///
+  /// In en, this message translates to:
+  /// **'Search for a place...'**
+  String get searchForAPlace;
+
+  /// No description provided for @emailAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Email Address'**
+  String get emailAddress;
+
+  /// No description provided for @passwordMinChars.
+  ///
+  /// In en, this message translates to:
+  /// **'Min. 8 characters'**
+  String get passwordMinChars;
+
+  /// No description provided for @meetPasswordRequirements.
+  ///
+  /// In en, this message translates to:
+  /// **'Please meet all password requirements'**
+  String get meetPasswordRequirements;
+
+  /// No description provided for @birthDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Birth Date'**
+  String get birthDate;
+
+  /// No description provided for @birthDateHint.
+  ///
+  /// In en, this message translates to:
+  /// **'MM/DD/YYYY'**
+  String get birthDateHint;
+
+  /// No description provided for @selectGender.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Gender'**
+  String get selectGender;
+
+  /// No description provided for @licenseId.
+  ///
+  /// In en, this message translates to:
+  /// **'License ID'**
+  String get licenseId;
+
+  /// No description provided for @licenseIdHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. LIC-123456'**
+  String get licenseIdHint;
+
+  /// No description provided for @expYears.
+  ///
+  /// In en, this message translates to:
+  /// **'Exp. Years'**
+  String get expYears;
+
+  /// No description provided for @consultationFee.
+  ///
+  /// In en, this message translates to:
+  /// **'Consultation Fee'**
+  String get consultationFee;
+
+  /// No description provided for @consultationFeeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 200'**
+  String get consultationFeeHint;
+
+  /// No description provided for @professionalBio.
+  ///
+  /// In en, this message translates to:
+  /// **'Professional Bio'**
+  String get professionalBio;
+
+  /// No description provided for @professionalBioHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell patients about your expertise...'**
+  String get professionalBioHint;
+
+  /// No description provided for @mainHospital.
+  ///
+  /// In en, this message translates to:
+  /// **'Main Hospital'**
+  String get mainHospital;
+
+  /// No description provided for @mainHospitalHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Cairo Specialist Hospital'**
+  String get mainHospitalHint;
+
+  /// No description provided for @clinicAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinic Address'**
+  String get clinicAddress;
+
+  /// No description provided for @clinicAddressHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap map icon to select'**
+  String get clinicAddressHint;
+
+  /// No description provided for @passwordCheckUppercase.
+  ///
+  /// In en, this message translates to:
+  /// **'Uppercase letter'**
+  String get passwordCheckUppercase;
+
+  /// No description provided for @passwordCheckLowercase.
+  ///
+  /// In en, this message translates to:
+  /// **'Lowercase letter'**
+  String get passwordCheckLowercase;
+
+  /// No description provided for @passwordCheckSpecial.
+  ///
+  /// In en, this message translates to:
+  /// **'Special character'**
+  String get passwordCheckSpecial;
+
+  /// No description provided for @passwordCheck8Chars.
+  ///
+  /// In en, this message translates to:
+  /// **'8 characters'**
+  String get passwordCheck8Chars;
+
+  /// No description provided for @bookAppointment.
+  ///
+  /// In en, this message translates to:
+  /// **'Book Appointment'**
+  String get bookAppointment;
+
+  /// No description provided for @selectDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Date'**
+  String get selectDate;
+
+  /// No description provided for @selectTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Time'**
+  String get selectTime;
+
+  /// No description provided for @appointmentType.
+  ///
+  /// In en, this message translates to:
+  /// **'Appointment Type'**
+  String get appointmentType;
+
+  /// No description provided for @regularVisit.
+  ///
+  /// In en, this message translates to:
+  /// **'Regular Visit'**
+  String get regularVisit;
+
+  /// No description provided for @regularVisitSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Standard medical checkup & follow-up'**
+  String get regularVisitSubtitle;
+
+  /// No description provided for @consultation.
+  ///
+  /// In en, this message translates to:
+  /// **'Consultation'**
+  String get consultation;
+
+  /// No description provided for @consultationSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Detailed diagnosis & second opinion'**
+  String get consultationSubtitle;
+
+  /// No description provided for @noAvailability.
+  ///
+  /// In en, this message translates to:
+  /// **'Doctor has no availability'**
+  String get noAvailability;
+
+  /// No description provided for @noAvailabilityMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This doctor hasn\'t set any slots yet.\nPlease check back later or choose another doctor.'**
+  String get noAvailabilityMessage;
+
+  /// No description provided for @noSlotsForDate.
+  ///
+  /// In en, this message translates to:
+  /// **'No slots for this date'**
+  String get noSlotsForDate;
+
+  /// No description provided for @noSlotsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Try selecting a date marked with a dot'**
+  String get noSlotsHint;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
+  /// No description provided for @next.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get next;
+
+  /// No description provided for @morning.
+  ///
+  /// In en, this message translates to:
+  /// **'Morning'**
+  String get morning;
+
+  /// No description provided for @afternoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Afternoon'**
+  String get afternoon;
+
+  /// No description provided for @evening.
+  ///
+  /// In en, this message translates to:
+  /// **'Evening'**
+  String get evening;
+
+  /// No description provided for @paymentOption.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Option'**
+  String get paymentOption;
+
+  /// No description provided for @paymentOptionSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select how you\'d like to pay for your appointment'**
+  String get paymentOptionSubtitle;
+
+  /// No description provided for @paymobSecured.
+  ///
+  /// In en, this message translates to:
+  /// **'Payments secured by Paymob'**
+  String get paymobSecured;
+
+  /// No description provided for @onlineCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Online Card'**
+  String get onlineCard;
+
+  /// No description provided for @onlineCardSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay securely with Visa or MasterCard via Paymob'**
+  String get onlineCardSubtitle;
+
+  /// No description provided for @mobileWallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Mobile Wallet'**
+  String get mobileWallet;
+
+  /// No description provided for @mobileWalletSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay with Vodafone Cash, Orange Money or Etisalat Cash'**
+  String get mobileWalletSubtitle;
+
+  /// No description provided for @cashAtClinic.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash at Clinic'**
+  String get cashAtClinic;
+
+  /// No description provided for @cashAtClinicSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay in person when you arrive at the clinic'**
+  String get cashAtClinicSubtitle;
+
+  /// No description provided for @paymentCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment cancelled. You can try again.'**
+  String get paymentCancelled;
+
+  /// No description provided for @reviewSubmittedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Review submitted successfully!'**
+  String get reviewSubmittedSuccessfully;
+
+  /// No description provided for @about.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get about;
+
+  /// No description provided for @clinicImages.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinic Images'**
+  String get clinicImages;
+
+  /// No description provided for @locationMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Location Map'**
+  String get locationMap;
+
+  /// No description provided for @noReviewsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No reviews yet'**
+  String get noReviewsYet;
+
+  /// No description provided for @addReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Review'**
+  String get addReview;
+
+  /// No description provided for @today.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get today;
+
+  /// No description provided for @noSpecialitiesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No specialities found.'**
+  String get noSpecialitiesFound;
+
+  /// No description provided for @couldNotFindOnMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not find \"{query}\" on the map.'**
+  String couldNotFindOnMap(String query);
+
+  /// No description provided for @couldNotAccessLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not access your current location.'**
+  String get couldNotAccessLocation;
+
+  /// No description provided for @continueToPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue to Payment'**
+  String get continueToPayment;
+
+  /// No description provided for @tryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Try Again'**
+  String get tryAgain;
+
+  /// No description provided for @goBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Go Back'**
+  String get goBack;
+
+  /// No description provided for @backToCheckout.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Checkout'**
+  String get backToCheckout;
+
+  /// No description provided for @tryAgainLower.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get tryAgainLower;
+
+  /// No description provided for @paymentCancelledShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment cancelled.'**
+  String get paymentCancelledShort;
+
+  /// No description provided for @availabilityGeneratedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Availability generated successfully!'**
+  String get availabilityGeneratedSuccessfully;
+
+  /// No description provided for @pleaseFillAllFields.
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill all fields'**
+  String get pleaseFillAllFields;
+
+  /// No description provided for @rescheduleApprovedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Reschedule approved successfully'**
+  String get rescheduleApprovedSuccessfully;
+
+  /// No description provided for @recordSimulatedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Record simulated successfully!'**
+  String get recordSimulatedSuccessfully;
+
+  /// No description provided for @writeAReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a Review'**
+  String get writeAReview;
+
+  /// No description provided for @howWasYourExperience.
+  ///
+  /// In en, this message translates to:
+  /// **'How was your experience with'**
+  String get howWasYourExperience;
+
+  /// No description provided for @writeYourReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Write your review here...'**
+  String get writeYourReview;
+
+  /// No description provided for @submitReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Review'**
+  String get submitReview;
+
+  /// No description provided for @reviewSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Review Summary'**
+  String get reviewSummary;
+
+  /// No description provided for @doctorInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'Doctor Information'**
+  String get doctorInformation;
+
+  /// No description provided for @timeSlot.
+  ///
+  /// In en, this message translates to:
+  /// **'Time Slot'**
+  String get timeSlot;
+
+  /// No description provided for @paymentMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Method'**
+  String get paymentMethod;
+
+  /// No description provided for @method.
+  ///
+  /// In en, this message translates to:
+  /// **'Method'**
+  String get method;
+
+  /// No description provided for @change.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get change;
+
+  /// No description provided for @costSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Cost Summary'**
+  String get costSummary;
+
+  /// No description provided for @total.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get total;
+
+  /// No description provided for @cashAtClinicInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'You selected Cash at Clinic. Your appointment will be booked and payment confirmed by the doctor when you arrive.'**
+  String get cashAtClinicInfo;
+
+  /// No description provided for @paymobPaymentInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'You will complete payment securely inside the app via Paymob. No browser redirect.'**
+  String get paymobPaymentInfo;
+
+  /// No description provided for @rescheduleNoPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'You are rescheduling your appointment. No additional payment is required.'**
+  String get rescheduleNoPayment;
+
+  /// No description provided for @confirmAndPay.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm & Pay'**
+  String get confirmAndPay;
+
+  /// No description provided for @generalConsultation.
+  ///
+  /// In en, this message translates to:
+  /// **'General Consultation'**
+  String get generalConsultation;
+
+  /// No description provided for @clinic.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinic'**
+  String get clinic;
+
+  /// No description provided for @egpSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **'EGP'**
+  String get egpSuffix;
+
+  /// No description provided for @availableTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Available Time'**
+  String get availableTime;
+
+  /// No description provided for @selectDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Date'**
+  String get selectDateLabel;
+
+  /// No description provided for @availableTimeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Available time'**
+  String get availableTimeLabel;
+
+  /// No description provided for @fromTime.
+  ///
+  /// In en, this message translates to:
+  /// **'From'**
+  String get fromTime;
+
+  /// No description provided for @toTime.
+  ///
+  /// In en, this message translates to:
+  /// **'To'**
+  String get toTime;
+
+  /// No description provided for @duration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get duration;
+
+  /// No description provided for @fees.
+  ///
+  /// In en, this message translates to:
+  /// **'Fees'**
+  String get fees;
+
+  /// No description provided for @appointment.
+  ///
+  /// In en, this message translates to:
+  /// **'Appointment'**
+  String get appointment;
+
+  /// No description provided for @generate.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate'**
+  String get generate;
+
+  /// No description provided for @continueToPaymentLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue to Payment'**
+  String get continueToPaymentLabel;
+
+  /// No description provided for @tryAgainButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Try Again'**
+  String get tryAgainButton;
+
+  /// No description provided for @goBackButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Go Back'**
+  String get goBackButton;
+
+  /// No description provided for @backToCheckoutLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Checkout'**
+  String get backToCheckoutLabel;
+
+  /// No description provided for @patientGender.
+  ///
+  /// In en, this message translates to:
+  /// **'Gender'**
+  String get patientGender;
 }
 
 class _AppLocalizationsDelegate

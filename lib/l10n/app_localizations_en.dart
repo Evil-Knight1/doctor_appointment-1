@@ -437,4 +437,466 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get typeYourMessage => 'type your message...';
+
+  @override
+  String get registerHelp => 'Registration Help';
+
+  @override
+  String get authStepsCredentialsTitle => 'Step 1: Credentials';
+
+  @override
+  String get authStepsCredentialsSubtitle =>
+      'Provide your professional email and a secure password. You\'ll also need a valid phone number for verification.';
+
+  @override
+  String get authStepsCredentialsHeader => 'Account Credentails';
+
+  @override
+  String get authStepsCredentialsEmail =>
+      'Enter your email, password and phone to get started.';
+
+  @override
+  String get authStepsCredentialsPhone => 'Phone';
+
+  @override
+  String get authStepsCredentialsPassword => 'Password';
+
+  @override
+  String get authStepsCredentialsConfirmPassword => 'Confirm Password';
+
+  @override
+  String get authStepsPersonalInfoTitle => 'Step 2: Personal Information';
+
+  @override
+  String get authStepsPersonalInfoSubtitle =>
+      'Share some basic details about yourself for your profile.';
+
+  @override
+  String get authStepsClinicDetailsTitle => 'Step 3: Clinic Details';
+
+  @override
+  String get authStepsClinicDetailsSubtitle =>
+      'Tell us about your clinic and where you practice.';
+
+  @override
+  String get authStepsNote =>
+      'Note: All registrations are reviewed by our administration team before approval.';
+
+  @override
+  String get authStepsGotIt => 'Got it';
+
+  @override
+  String get authErrorsEmailInUse => 'This email is already in use';
+
+  @override
+  String get authErrorsPhoneInUse => 'This phone number is already in use';
+
+  @override
+  String get authErrorsInvalidEmail => 'Please enter a valid email address';
+
+  @override
+  String get authErrorsInvalidPhone => 'Please enter a valid phone number';
+
+  @override
+  String get authErrorsPasswordMismatch => 'Passwords do not match';
+
+  @override
+  String get authTermsTermsAndConditions => 'Terms & Conditions';
+
+  @override
+  String get authTermsAcceptedTerms => 'I accept the terms and conditions';
+
+  @override
+  String get authDoctorAuthDoctorRegistration => 'Doctor Registration';
+
+  @override
+  String get authDoctorAuthRegisterPending =>
+      'Your registration as a Doctor has been successfully submitted. Our administration team is reviewing your details to verify your medical credentials. You will receive an email once approved.';
+
+  @override
+  String get authDoctorAuthApplicationRecieved => 'Application Recieved';
+
+  @override
+  String get authDoctorAuthSelectSpecialization =>
+      'Please select a specialization';
+
+  @override
+  String get authDoctorAuthSelectClinicLocation => 'Select Clinic Location';
+
+  @override
+  String get authDoctorAuthSelectHospitalLocation => 'Select Hospital Location';
+
+  @override
+  String get authBackToLogin => 'Back to Login';
+
+  @override
+  String get locationNotFound => 'Location not found';
+
+  @override
+  String get couldNotGetCurrentLocation => 'Could not get current location';
+
+  @override
+  String get otpVerifiedSuccessfully => 'OTP Verified Successfully.';
+
+  @override
+  String get passwordResetSuccessfully => 'Password reset successfully!';
+
+  @override
+  String get resetPasswordTitle => 'Reset Password';
+
+  @override
+  String get verifyOtpTitle => 'Verify OTP';
+
+  @override
+  String verifyOtpSubtitle(String email) {
+    return 'Enter the verification code sent to $email.';
+  }
+
+  @override
+  String get verifying => 'Verifying...';
+
+  @override
+  String get verify => 'Verify';
+
+  @override
+  String get enterNewPassword => 'Please enter your new password.';
+
+  @override
+  String get newPassword => 'New Password';
+
+  @override
+  String get resetting => 'Resetting...';
+
+  @override
+  String get forgotPasswordTitle => 'Forgot Password';
+
+  @override
+  String get forgotPasswordSubtitle =>
+      'Enter your email address to receive a verification code.';
+
+  @override
+  String get sending => 'Sending...';
+
+  @override
+  String get sendOtp => 'Send OTP';
+
+  @override
+  String get searchForAPlace => 'Search for a place...';
+
+  @override
+  String get emailAddress => 'Email Address';
+
+  @override
+  String get passwordMinChars => 'Min. 8 characters';
+
+  @override
+  String get meetPasswordRequirements =>
+      'Please meet all password requirements';
+
+  @override
+  String get birthDate => 'Birth Date';
+
+  @override
+  String get birthDateHint => 'MM/DD/YYYY';
+
+  @override
+  String get selectGender => 'Select Gender';
+
+  @override
+  String get licenseId => 'License ID';
+
+  @override
+  String get licenseIdHint => 'e.g. LIC-123456';
+
+  @override
+  String get expYears => 'Exp. Years';
+
+  @override
+  String get consultationFee => 'Consultation Fee';
+
+  @override
+  String get consultationFeeHint => 'e.g. 200';
+
+  @override
+  String get professionalBio => 'Professional Bio';
+
+  @override
+  String get professionalBioHint => 'Tell patients about your expertise...';
+
+  @override
+  String get mainHospital => 'Main Hospital';
+
+  @override
+  String get mainHospitalHint => 'e.g. Cairo Specialist Hospital';
+
+  @override
+  String get clinicAddress => 'Clinic Address';
+
+  @override
+  String get clinicAddressHint => 'Tap map icon to select';
+
+  @override
+  String get passwordCheckUppercase => 'Uppercase letter';
+
+  @override
+  String get passwordCheckLowercase => 'Lowercase letter';
+
+  @override
+  String get passwordCheckSpecial => 'Special character';
+
+  @override
+  String get passwordCheck8Chars => '8 characters';
+
+  @override
+  String get bookAppointment => 'Book Appointment';
+
+  @override
+  String get selectDate => 'Select Date';
+
+  @override
+  String get selectTime => 'Select Time';
+
+  @override
+  String get appointmentType => 'Appointment Type';
+
+  @override
+  String get regularVisit => 'Regular Visit';
+
+  @override
+  String get regularVisitSubtitle => 'Standard medical checkup & follow-up';
+
+  @override
+  String get consultation => 'Consultation';
+
+  @override
+  String get consultationSubtitle => 'Detailed diagnosis & second opinion';
+
+  @override
+  String get noAvailability => 'Doctor has no availability';
+
+  @override
+  String get noAvailabilityMessage =>
+      'This doctor hasn\'t set any slots yet.\nPlease check back later or choose another doctor.';
+
+  @override
+  String get noSlotsForDate => 'No slots for this date';
+
+  @override
+  String get noSlotsHint => 'Try selecting a date marked with a dot';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get next => 'Next';
+
+  @override
+  String get morning => 'Morning';
+
+  @override
+  String get afternoon => 'Afternoon';
+
+  @override
+  String get evening => 'Evening';
+
+  @override
+  String get paymentOption => 'Payment Option';
+
+  @override
+  String get paymentOptionSubtitle =>
+      'Select how you\'d like to pay for your appointment';
+
+  @override
+  String get paymobSecured => 'Payments secured by Paymob';
+
+  @override
+  String get onlineCard => 'Online Card';
+
+  @override
+  String get onlineCardSubtitle =>
+      'Pay securely with Visa or MasterCard via Paymob';
+
+  @override
+  String get mobileWallet => 'Mobile Wallet';
+
+  @override
+  String get mobileWalletSubtitle =>
+      'Pay with Vodafone Cash, Orange Money or Etisalat Cash';
+
+  @override
+  String get cashAtClinic => 'Cash at Clinic';
+
+  @override
+  String get cashAtClinicSubtitle =>
+      'Pay in person when you arrive at the clinic';
+
+  @override
+  String get paymentCancelled => 'Payment cancelled. You can try again.';
+
+  @override
+  String get reviewSubmittedSuccessfully => 'Review submitted successfully!';
+
+  @override
+  String get about => 'About';
+
+  @override
+  String get clinicImages => 'Clinic Images';
+
+  @override
+  String get locationMap => 'Location Map';
+
+  @override
+  String get noReviewsYet => 'No reviews yet';
+
+  @override
+  String get addReview => 'Add Review';
+
+  @override
+  String get today => 'Today';
+
+  @override
+  String get noSpecialitiesFound => 'No specialities found.';
+
+  @override
+  String couldNotFindOnMap(String query) {
+    return 'Could not find \"$query\" on the map.';
+  }
+
+  @override
+  String get couldNotAccessLocation =>
+      'Could not access your current location.';
+
+  @override
+  String get continueToPayment => 'Continue to Payment';
+
+  @override
+  String get tryAgain => 'Try Again';
+
+  @override
+  String get goBack => 'Go Back';
+
+  @override
+  String get backToCheckout => 'Back to Checkout';
+
+  @override
+  String get tryAgainLower => 'Try again';
+
+  @override
+  String get paymentCancelledShort => 'Payment cancelled.';
+
+  @override
+  String get availabilityGeneratedSuccessfully =>
+      'Availability generated successfully!';
+
+  @override
+  String get pleaseFillAllFields => 'Please fill all fields';
+
+  @override
+  String get rescheduleApprovedSuccessfully =>
+      'Reschedule approved successfully';
+
+  @override
+  String get recordSimulatedSuccessfully => 'Record simulated successfully!';
+
+  @override
+  String get writeAReview => 'Write a Review';
+
+  @override
+  String get howWasYourExperience => 'How was your experience with';
+
+  @override
+  String get writeYourReview => 'Write your review here...';
+
+  @override
+  String get submitReview => 'Submit Review';
+
+  @override
+  String get reviewSummary => 'Review Summary';
+
+  @override
+  String get doctorInformation => 'Doctor Information';
+
+  @override
+  String get timeSlot => 'Time Slot';
+
+  @override
+  String get paymentMethod => 'Payment Method';
+
+  @override
+  String get method => 'Method';
+
+  @override
+  String get change => 'Change';
+
+  @override
+  String get costSummary => 'Cost Summary';
+
+  @override
+  String get total => 'Total';
+
+  @override
+  String get cashAtClinicInfo =>
+      'You selected Cash at Clinic. Your appointment will be booked and payment confirmed by the doctor when you arrive.';
+
+  @override
+  String get paymobPaymentInfo =>
+      'You will complete payment securely inside the app via Paymob. No browser redirect.';
+
+  @override
+  String get rescheduleNoPayment =>
+      'You are rescheduling your appointment. No additional payment is required.';
+
+  @override
+  String get confirmAndPay => 'Confirm & Pay';
+
+  @override
+  String get generalConsultation => 'General Consultation';
+
+  @override
+  String get clinic => 'Clinic';
+
+  @override
+  String get egpSuffix => 'EGP';
+
+  @override
+  String get availableTime => 'Available Time';
+
+  @override
+  String get selectDateLabel => 'Select Date';
+
+  @override
+  String get availableTimeLabel => 'Available time';
+
+  @override
+  String get fromTime => 'From';
+
+  @override
+  String get toTime => 'To';
+
+  @override
+  String get duration => 'Duration';
+
+  @override
+  String get fees => 'Fees';
+
+  @override
+  String get appointment => 'Appointment';
+
+  @override
+  String get generate => 'Generate';
+
+  @override
+  String get continueToPaymentLabel => 'Continue to Payment';
+
+  @override
+  String get tryAgainButton => 'Try Again';
+
+  @override
+  String get goBackButton => 'Go Back';
+
+  @override
+  String get backToCheckoutLabel => 'Back to Checkout';
+
+  @override
+  String get patientGender => 'Gender';
 }

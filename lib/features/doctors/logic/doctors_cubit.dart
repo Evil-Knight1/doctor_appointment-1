@@ -15,11 +15,17 @@ class DoctorsCubit extends Cubit<DoctorsState> {
   int? _currentSpecializationId;
   double? _currentMinRating;
   String? _currentSearchTerm;
+  double? _currentUserLatitude;
+  double? _currentUserLongitude;
+  double? _currentMaxDistanceInKm;
 
   Future<void> fetchDoctors({
     int? specializationId,
     double? minRating,
     String? searchTerm,
+    double? userLatitude,
+    double? userLongitude,
+    double? maxDistanceInKm,
     int pageNumber = 1,
     int pageSize = 10,
     bool isPagination = false,
@@ -31,6 +37,9 @@ class DoctorsCubit extends Cubit<DoctorsState> {
       _currentSpecializationId = specializationId;
       _currentMinRating = minRating;
       _currentSearchTerm = searchTerm;
+      _currentUserLatitude = userLatitude;
+      _currentUserLongitude = userLongitude;
+      _currentMaxDistanceInKm = maxDistanceInKm;
     }
 
     if (isPagination) {
@@ -46,6 +55,9 @@ class DoctorsCubit extends Cubit<DoctorsState> {
         specializationId: specializationId,
         minRating: minRating,
         searchTerm: searchTerm,
+        userLatitude: userLatitude,
+        userLongitude: userLongitude,
+        maxDistanceInKm: maxDistanceInKm,
         pageNumber: pageNumber,
         pageSize: pageSize,
       ),
@@ -84,6 +96,9 @@ class DoctorsCubit extends Cubit<DoctorsState> {
       specializationId: _currentSpecializationId,
       minRating: _currentMinRating,
       searchTerm: _currentSearchTerm,
+      userLatitude: _currentUserLatitude,
+      userLongitude: _currentUserLongitude,
+      maxDistanceInKm: _currentMaxDistanceInKm,
       pageNumber: _currentPage!.pageNumber + 1,
       pageSize: _currentPage!.pageSize,
       isPagination: true,

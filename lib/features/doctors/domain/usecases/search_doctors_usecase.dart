@@ -12,6 +12,9 @@ class SearchDoctorsUseCase {
       specializationId: params.specializationId,
       minRating: params.minRating,
       searchTerm: params.searchTerm,
+      userLatitude: params.userLatitude,
+      userLongitude: params.userLongitude,
+      maxDistanceInKm: params.maxDistanceInKm,
       pageNumber: params.pageNumber,
       pageSize: params.pageSize,
     );
@@ -22,6 +25,9 @@ class SearchDoctorsParams {
   final int? specializationId;
   final double? minRating;
   final String? searchTerm;
+  final double? userLatitude;
+  final double? userLongitude;
+  final double? maxDistanceInKm;
   final int pageNumber;
   final int pageSize;
 
@@ -29,6 +35,9 @@ class SearchDoctorsParams {
     this.specializationId,
     this.minRating,
     this.searchTerm,
+    this.userLatitude,
+    this.userLongitude,
+    this.maxDistanceInKm = 10.0,
     this.pageNumber = 1,
     this.pageSize = 10,
   });

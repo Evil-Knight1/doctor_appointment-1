@@ -16,6 +16,9 @@ class DoctorsRepositoryImpl implements DoctorsRepository {
     int? specializationId,
     double? minRating,
     String? searchTerm,
+    double? userLatitude,
+    double? userLongitude,
+    double? maxDistanceInKm,
     int? pageNumber = 1,
     int? pageSize = 10,
   }) async {
@@ -24,6 +27,9 @@ class DoctorsRepositoryImpl implements DoctorsRepository {
         specializationId: specializationId,
         minRating: minRating,
         searchTerm: searchTerm,
+        userLatitude: userLatitude,
+        userLongitude: userLongitude,
+        maxDistanceInKm: maxDistanceInKm,
         pageNumber: pageNumber ?? 1,
         pageSize: pageSize ?? 10,
       );

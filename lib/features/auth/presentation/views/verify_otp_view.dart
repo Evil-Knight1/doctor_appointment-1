@@ -9,6 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pinput/pinput.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class VerifyOtpView extends StatefulWidget {
   final String email;
@@ -39,7 +40,7 @@ class _VerifyOtpViewState extends State<VerifyOtpView> {
         }
         if (state is OtpVerifiedSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('OTP Verified Successfully.')),
+            SnackBar(content: Text(AppLocalizations.of(context)!.otpVerifiedSuccessfully)),
           );
           context.pushReplacement(
             AppRouter.kResetPasswordView,
@@ -75,12 +76,12 @@ class _VerifyOtpViewState extends State<VerifyOtpView> {
                   children: [
                     SizedBox(height: 20.h),
                     Text(
-                      'Verify OTP',
+                      AppLocalizations.of(context)!.verifyOtpTitle,
                       style: context.styleBold32,
                     ),
                     SizedBox(height: 8.h),
                     Text(
-                      'Enter the verification code sent to ${widget.email}.',
+                      AppLocalizations.of(context)!.verifyOtpSubtitle(widget.email),
                       style: context.styleRegular14,
                     ),
                     SizedBox(height: 36.h),
@@ -131,7 +132,7 @@ class _VerifyOtpViewState extends State<VerifyOtpView> {
                       child: CustomButton(
                         height: 52.h,
                         width: double.infinity,
-                        text: isLoading ? 'Verifying...' : 'Verify',
+                        text: isLoading ? AppLocalizations.of(context)!.verifying : AppLocalizations.of(context)!.verify,
                         onPressed: isLoading
                             ? () {}
                             : () {

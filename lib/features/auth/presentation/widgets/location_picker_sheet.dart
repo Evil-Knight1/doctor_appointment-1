@@ -1,6 +1,7 @@
 import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geocoding/geocoding.dart' as geo;
@@ -66,9 +67,9 @@ class _LocationPickerSheetState extends State<LocationPickerSheet> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Location not found')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.locationNotFound)),
+        );
       }
     } finally {
       if (mounted) setState(() => _isSearching = false);
@@ -238,7 +239,7 @@ class _LocationPickerSheetState extends State<LocationPickerSheet> {
                         color: theme.textTheme.bodyLarge?.color,
                       ),
                       decoration: InputDecoration(
-                        hintText: 'Search for a place...',
+                        hintText: AppLocalizations.of(context)!.searchForAPlace,
                         hintStyle: context.styleRegular14.copyWith(
                           color: theme.hintColor,
                         ),
@@ -282,8 +283,9 @@ class _LocationPickerSheetState extends State<LocationPickerSheet> {
                         debugPrint('Error getting current location: $e');
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Could not get current location'),
+                            SnackBar(
+                              content: Text(AppLocalizations.of(context)!
+                                  .couldNotGetCurrentLocation),
                             ),
                           );
                         }

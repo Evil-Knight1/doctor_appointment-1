@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ForgotPasswordView extends StatefulWidget {
   const ForgotPasswordView({super.key});
@@ -79,15 +80,15 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(height: 20.h),
-                    Text('Forgot Password', style: context.styleBold32),
+                    Text(AppLocalizations.of(context)!.forgotPasswordTitle, style: context.styleBold32),
                     SizedBox(height: 8.h),
                     Text(
-                      'Enter your email address to receive a verification code.',
+                      AppLocalizations.of(context)!.forgotPasswordSubtitle,
                       style: context.styleRegular14,
                     ),
                     SizedBox(height: 36.h),
                     CustomTextFormField(
-                      hintText: 'Email',
+                      hintText: AppLocalizations.of(context)!.email,
                       textInputType: TextInputType.emailAddress,
                       controller: _emailController,
                       serverError: _getServerError('email'),
@@ -98,7 +99,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                       child: CustomButton(
                         height: 52.h,
                         width: double.infinity,
-                        text: isLoading ? 'Sending...' : 'Send OTP',
+                        text: isLoading ? AppLocalizations.of(context)!.sending : AppLocalizations.of(context)!.sendOtp,
                         onPressed: isLoading
                             ? () {}
                             : () {

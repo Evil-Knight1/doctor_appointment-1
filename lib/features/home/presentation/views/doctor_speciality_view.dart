@@ -11,6 +11,7 @@ import 'package:doctor_appointment/features/doctors/logic/specializations_state.
 import 'package:doctor_appointment/core/utils/specialty_mapper.dart';
 import '../widgets/shared_app_bar.dart';
 import '../widgets/speciality_grid_card.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class DoctorSpecialityView extends StatelessWidget {
   const DoctorSpecialityView({super.key});
@@ -23,7 +24,7 @@ class DoctorSpecialityView extends StatelessWidget {
           getIt<SpecializationsCubit>()..fetchSpecializations(),
       child: Scaffold(
         backgroundColor: colorScheme.surface,
-        appBar: const SharedAppBar(title: 'Doctor Speciality'),
+        appBar: SharedAppBar(title: AppLocalizations.of(context)!.specialties),
         body: BlocBuilder<SpecializationsCubit, SpecializationsState>(
           builder: (context, state) {
             if (state is SpecializationsLoading) {
@@ -56,7 +57,7 @@ class DoctorSpecialityView extends StatelessWidget {
             } else if (state is SpecializationsSuccess) {
               final specialities = state.specializations;
               if (specialities.isEmpty) {
-                return const Center(child: Text('No specialities found.'));
+                return Center(child: Text(AppLocalizations.of(context)!.noSpecialitiesFound));
               }
               return GridView.builder(
                 padding: EdgeInsets.all(AppSpacing.lg),

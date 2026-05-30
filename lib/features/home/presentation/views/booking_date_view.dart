@@ -1,3 +1,4 @@
+import 'package:doctor_appointment/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -15,6 +16,7 @@ import '../widgets/booking_stepper.dart';
 import '../widgets/shared_app_bar.dart';
 import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class BookingDateView extends StatefulWidget {
   const BookingDateView({
@@ -73,7 +75,9 @@ class _BookingDateViewState extends State<BookingDateView> {
 
     return Scaffold(
       backgroundColor: colorScheme.surface,
-      appBar: const SharedAppBar(title: 'Book Appointment'),
+      appBar: SharedAppBar(
+        title: AppLocalizations.of(context)!.bookAppointment,
+      ),
       body: Column(
         children: [
           const BookingStepper(currentStep: 0),
@@ -81,7 +85,10 @@ class _BookingDateViewState extends State<BookingDateView> {
             child: ListView(
               padding: EdgeInsets.all(AppSpacing.lg),
               children: [
-                Text('Select Date', style: context.headingMedium),
+                Text(
+                  AppLocalizations.of(context)!.selectDate,
+                  style: context.headingMedium,
+                ),
                 SizedBox(height: AppSpacing.md),
                 BlocBuilder<DoctorSlotsCubit, DoctorSlotsState>(
                   builder: (context, state) {
@@ -107,7 +114,10 @@ class _BookingDateViewState extends State<BookingDateView> {
                   },
                 ),
                 SizedBox(height: AppSpacing.xl),
-                Text('Select Time', style: context.headingMedium),
+                Text(
+                  AppLocalizations.of(context)!.selectTime,
+                  style: context.headingMedium,
+                ),
                 SizedBox(height: AppSpacing.md),
                 BlocBuilder<DoctorSlotsCubit, DoctorSlotsState>(
                   builder: (context, state) {
@@ -237,7 +247,10 @@ class _BookingDateViewState extends State<BookingDateView> {
                   },
                 ),
                 SizedBox(height: AppSpacing.xl),
-                Text('Appointment Type', style: context.headingMedium),
+                Text(
+                  AppLocalizations.of(context)!.appointmentType,
+                  style: context.headingMedium,
+                ),
                 SizedBox(height: AppSpacing.md),
                 _buildAppointmentTypeSelector(),
               ],
@@ -399,7 +412,7 @@ class _BookingDateViewState extends State<BookingDateView> {
               widget.doctor.id,
               _selectedDate,
             ),
-            child: const Text('Retry'),
+            child: Text(AppLocalizations.of(context)!.retry),
           ),
         ],
       ),
@@ -407,12 +420,13 @@ class _BookingDateViewState extends State<BookingDateView> {
   }
 
   Widget _buildAppointmentTypeSelector() {
+    final l10n = AppLocalizations.of(context)!;
     return Row(
       children: [
         Expanded(
           child: _TypeSelectionCard(
-            title: 'Regular Visit',
-            subtitle: 'Standard medical checkup & follow-up',
+            title: l10n.regularVisit,
+            subtitle: l10n.regularVisitSubtitle,
             icon: Icons.favorite_border_rounded,
             isSelected: _selectedType == 0,
             onTap: () => setState(() => _selectedType = 0),
@@ -421,8 +435,8 @@ class _BookingDateViewState extends State<BookingDateView> {
         SizedBox(width: AppSpacing.md),
         Expanded(
           child: _TypeSelectionCard(
-            title: 'Consultation',
-            subtitle: 'Detailed diagnosis & second opinion',
+            title: l10n.consultation,
+            subtitle: l10n.consultationSubtitle,
             icon: Icons.chat_bubble_outline_rounded,
             isSelected: _selectedType == 1,
             onTap: () => setState(() => _selectedType = 1),
@@ -675,7 +689,7 @@ class _BottomAction extends StatelessWidget {
             elevation: 0,
           ),
           child: Text(
-            'Next',
+            AppLocalizations.of(context)!.next,
             style: TextStyle(
               color: colorScheme.onPrimary,
               fontWeight: FontWeight.w600,

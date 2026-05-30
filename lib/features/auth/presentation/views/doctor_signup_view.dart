@@ -8,12 +8,14 @@ import 'package:doctor_appointment/features/auth/logic/auth_cubit.dart';
 import 'package:doctor_appointment/features/auth/logic/auth_state.dart';
 import 'package:doctor_appointment/features/auth/presentation/widgets/step_progress_indicator.dart';
 import 'package:doctor_appointment/features/doctors/domain/entities/specialization.dart';
+import 'package:doctor_appointment/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:phone_form_field/phone_form_field.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class DoctorSignUpView extends StatefulWidget {
   const DoctorSignUpView({super.key});
@@ -74,7 +76,9 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
 
     if (_currentStep == 0) {
       if (_passwordController.text != _confirmPasswordController.text) {
-        _showErrorSnackBar('Passwords do not match');
+        _showErrorSnackBar(
+          AppLocalizations.of(context)!.authErrorsPasswordMismatch,
+        );
         return;
       }
       // Check whether email & phone are already in use before advancing.
@@ -138,7 +142,7 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
 
   void _submitForm() {
     setState(() => _fieldErrors = {});
-    /* TODO:
+    /* TODO (error handling):
     1- use In-line error to show error in Select Specialization TextFormField.
     2- make the submit button disabled until all required fields are filled.
     3- also clear the error when the user selects a specialization.
@@ -146,7 +150,9 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
     */
     if (_selectedSpecialization == null) {
       setState(() {
-        _fieldErrors['specialization'] = 'Please select a specialization';
+        _fieldErrors['specialization'] = AppLocalizations.of(
+          context,
+        )!.authDoctorAuthSelectSpecialization;
       });
       return;
     }
@@ -175,6 +181,7 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
       context: context,
       builder: (context) {
         final theme = Theme.of(context);
+        final l10n = AppLocalizations.of(context)!;
         return AlertDialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20.r),
@@ -187,7 +194,7 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
                 color: theme.colorScheme.primary,
               ),
               SizedBox(width: 12.w),
-              Text('Registration Help', style: context.styleBold18),
+              Text(l10n.registerHelp, style: context.styleBold18),
             ],
           ),
           content: SingleChildScrollView(
@@ -196,20 +203,20 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 _buildHelpItem(
-                  'Step 1: Credentials',
-                  'Provide your professional email and a secure password. You\'ll also need a valid phone number for verification.',
+                  l10n.authStepsCredentialsTitle,
+                  l10n.authStepsCredentialsSubtitle,
                 ),
                 _buildHelpItem(
-                  'Step 2: Personal Info',
-                  'Upload a professional profile picture. Enter your full name, birth date, gender, and medical license ID.',
+                  l10n.authStepsPersonalInfoTitle,
+                  l10n.authStepsPersonalInfoSubtitle,
                 ),
                 _buildHelpItem(
-                  'Step 3: Clinic Details',
-                  'Provide your clinic location and name of the hospital you are affiliated with. Upload images of your clinic to help patients find you.',
+                  l10n.authStepsClinicDetailsTitle,
+                  l10n.authStepsClinicDetailsSubtitle,
                 ),
                 SizedBox(height: 12.h),
                 Text(
-                  'Note: All registrations are reviewed by our administration team before approval.',
+                  l10n.authStepsNote,
                   style: context.styleRegular12.copyWith(
                     color: theme.hintColor,
                     fontStyle: FontStyle.italic,
@@ -222,7 +229,7 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
             TextButton(
               onPressed: () => Navigator.pop(context),
               child: Text(
-                'Got it',
+                l10n.authStepsGotIt,
                 style: context.styleSemiBold16.copyWith(
                   color: theme.colorScheme.primary,
                 ),
@@ -293,11 +300,12 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
         } else if (state is AvailabilityChecked) {
           final result = state.result;
           final errors = <String, String>{};
+          final l10n = AppLocalizations.of(context)!;
           if (!result.isEmailAvailable) {
-            errors['email'] = 'This email is already in use';
+            errors['email'] = l10n.authErrorsEmailInUse;
           }
           if (!result.isPhoneAvailable) {
-            errors['phone'] = 'This phone number is already in use';
+            errors['phone'] = l10n.authErrorsPhoneInUse;
           }
           if (errors.isNotEmpty) {
             setState(() {
@@ -349,7 +357,9 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
                                 ],
                               ).createShader(bounds),
                               child: Text(
-                                'Doctor Registration',
+                                AppLocalizations.of(
+                                  context,
+                                )!.authDoctorAuthDoctorRegistration,
                                 style: context.styleSemiBold16.copyWith(
                                   color: Colors.white,
                                 ),
@@ -357,7 +367,7 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
                             ),
                             SizedBox(height: 2.h),
                             Text(
-                              'Step ${_currentStep + 1} of 3',
+                              '${AppLocalizations.of(context)!.step} ${_currentStep + 1} ${AppLocalizations.of(context)!.stepOf} 3',
                               style: context.styleRegular12.copyWith(
                                 color: Theme.of(
                                   context,
@@ -434,20 +444,21 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
   }
 
   Widget _buildStep1() {
+    final l10n = AppLocalizations.of(context)!;
     return SingleChildScrollView(
       padding: EdgeInsets.symmetric(horizontal: 24.w),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Account Credentials',
+            l10n.authStepsCredentialsHeader,
             style: context.styleSemiBold16.copyWith(
               color: Theme.of(context).textTheme.headlineMedium?.color,
             ),
           ),
           SizedBox(height: 8.h),
           Text(
-            'Enter your email, password and phone to get started.',
+            l10n.authStepsCredentialsEmail,
             style: context.styleRegular14.copyWith(
               color: Theme.of(context).textTheme.bodyMedium?.color,
             ),
@@ -494,20 +505,21 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
   }
 
   Widget _buildStep2() {
+    final l10n = AppLocalizations.of(context)!;
     return SingleChildScrollView(
       padding: EdgeInsets.symmetric(horizontal: 24.w),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Personal Information',
+            l10n.personalInfo,
             style: context.styleSemiBold16.copyWith(
               color: Theme.of(context).textTheme.headlineMedium?.color,
             ),
           ),
           SizedBox(height: 8.h),
           Text(
-            'Tell us more about your professional background.',
+            l10n.authStepsPersonalInfoSubtitle,
             style: context.styleRegular14.copyWith(
               color: Theme.of(context).textTheme.bodyMedium?.color,
             ),
@@ -554,20 +566,21 @@ class _DoctorSignUpViewState extends State<DoctorSignUpView> {
   }
 
   Widget _buildStep3() {
+    final l10n = AppLocalizations.of(context)!;
     return SingleChildScrollView(
       padding: EdgeInsets.symmetric(horizontal: 24.w),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Clinic Information',
+            l10n.authStepsClinicDetailsTitle,
             style: context.styleSemiBold16.copyWith(
               color: Theme.of(context).textTheme.headlineMedium?.color,
             ),
           ),
           SizedBox(height: 8.h),
           Text(
-            'Provide details about your practice location.',
+            l10n.authStepsClinicDetailsSubtitle,
             style: context.styleRegular14.copyWith(
               color: Theme.of(context).textTheme.bodyMedium?.color,
             ),

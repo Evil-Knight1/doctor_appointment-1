@@ -10,6 +10,7 @@ import '../widgets/shared_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:doctor_appointment/features/doctors/logic/doctor_details_cubit.dart';
 import 'package:doctor_appointment/features/doctors/logic/doctor_details_state.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class BookingReviewView extends StatefulWidget {
   const BookingReviewView({super.key, required this.doctor});
@@ -30,7 +31,7 @@ class _BookingReviewViewState extends State<BookingReviewView> {
 
     return Scaffold(
       backgroundColor: colorScheme.surface,
-      appBar: const SharedAppBar(title: 'Write a Review'),
+      appBar: SharedAppBar(title: AppLocalizations.of(context)!.writeAReview),
       body: BlocConsumer<DoctorDetailsCubit, DoctorDetailsState>(
         listener: (context, state) {
           if (state is DoctorDetailsError) {
@@ -65,7 +66,7 @@ class _BookingReviewViewState extends State<BookingReviewView> {
                 ),
                 SizedBox(height: AppSpacing.lg),
                 Text(
-                  'How was your experience with',
+                  AppLocalizations.of(context)!.howWasYourExperience,
                   style: context.bodyMedium.copyWith(
                     color: colorScheme.onSurfaceVariant,
                   ),
@@ -112,7 +113,7 @@ class _BookingReviewViewState extends State<BookingReviewView> {
                     maxLines: 5,
                     style: TextStyle(color: colorScheme.onSurface),
                     decoration: InputDecoration(
-                      hintText: 'Write your review here...',
+                      hintText: AppLocalizations.of(context)!.writeYourReview,
                       hintStyle: context.bodySmall.copyWith(color: colorScheme.onSurfaceVariant),
                       contentPadding: EdgeInsets.all(AppSpacing.lg),
                       filled: false,
@@ -137,8 +138,8 @@ class _BookingReviewViewState extends State<BookingReviewView> {
                             );
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Review submitted successfully!'),
+                                SnackBar(
+                                  content: Text(AppLocalizations.of(context)!.reviewSubmittedSuccessfully),
                                 ),
                               );
                               context.goNamed(Routes.homeView);
@@ -163,7 +164,7 @@ class _BookingReviewViewState extends State<BookingReviewView> {
                             ),
                           )
                         : Text(
-                            'Submit Review',
+                            AppLocalizations.of(context)!.submitReview,
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 15.sp,

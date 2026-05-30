@@ -18,6 +18,7 @@ import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
 import '../widgets/booking_stepper.dart';
 import '../widgets/shared_app_bar.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class BookingSummaryView extends StatefulWidget {
   const BookingSummaryView({super.key, required this.args});
@@ -83,8 +84,8 @@ class _BookingSummaryViewState extends State<BookingSummaryView> {
           );
         } else if (state is PaymentCancelled) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Payment cancelled. You can try again.'),
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.paymentCancelled),
               behavior: SnackBarBehavior.floating,
             ),
           );
@@ -95,7 +96,7 @@ class _BookingSummaryViewState extends State<BookingSummaryView> {
 
         return Scaffold(
           backgroundColor: colorScheme.surface,
-          appBar: const SharedAppBar(title: 'Review Summary'),
+          appBar: SharedAppBar(title: AppLocalizations.of(context)!.reviewSummary),
           body: Column(
             children: [
               const BookingStepper(currentStep: 2),
@@ -104,7 +105,7 @@ class _BookingSummaryViewState extends State<BookingSummaryView> {
                   padding: EdgeInsets.all(AppSpacing.lg),
                   children: [
                     _SectionCard(
-                      title: 'Doctor Information',
+                      title: AppLocalizations.of(context)!.doctorInformation,
                       child: Row(
                         children: [
                           Container(
@@ -156,7 +157,7 @@ class _BookingSummaryViewState extends State<BookingSummaryView> {
                                   style: context.headingSmall,
                                 ),
                                 Text(
-                                  '${doctor.specialization.name} | ${doctor.hospital ?? 'Clinic'}',
+                                  '${doctor.specialization.name} | ${doctor.hospital ?? AppLocalizations.of(context)!.clinic}',
                                   style: context.bodySmall.copyWith(
                                     color: colorScheme.onSurfaceVariant,
                                   ),
@@ -169,12 +170,12 @@ class _BookingSummaryViewState extends State<BookingSummaryView> {
                     ),
                     SizedBox(height: AppSpacing.lg),
                     _SectionCard(
-                      title: 'Appointment Details',
+                      title: AppLocalizations.of(context)!.appointmentDetails,
                       child: Column(
                         children: [
                           _DetailRow(
                             icon: Icons.access_time,
-                            label: 'Time Slot',
+                            label: AppLocalizations.of(context)!.timeSlot,
                             value: time,
                           ),
                           Divider(
@@ -183,10 +184,10 @@ class _BookingSummaryViewState extends State<BookingSummaryView> {
                           ),
                           _DetailRow(
                             icon: Icons.medical_services_outlined,
-                            label: 'Appointment Type',
+                            label: AppLocalizations.of(context)!.appointmentType,
                             value: appointmentType == 1
-                                ? 'Consultation'
-                                : 'Regular Visit',
+                                ? AppLocalizations.of(context)!.consultation
+                                : AppLocalizations.of(context)!.regularVisit,
                           ),
                           if (reason.isNotEmpty) ...[
                             Divider(
@@ -195,7 +196,7 @@ class _BookingSummaryViewState extends State<BookingSummaryView> {
                             ),
                             _DetailRow(
                               icon: Icons.description_outlined,
-                              label: 'Reason',
+                              label: AppLocalizations.of(context)!.reason,
                               value: reason,
                             ),
                           ],
@@ -205,15 +206,15 @@ class _BookingSummaryViewState extends State<BookingSummaryView> {
                     if (!isReschedule) ...[
                       SizedBox(height: AppSpacing.lg),
                       _SectionCard(
-                        title: 'Payment Method',
+                        title: AppLocalizations.of(context)!.paymentMethod,
                         child: _DetailRow(
                           icon: _iconForMethod(paymentMethodId),
-                          label: 'Method',
+                          label: AppLocalizations.of(context)!.method,
                           value: paymentLabel,
                           trailing: GestureDetector(
                             onTap: () => context.pop(),
                             child: Text(
-                              'Change',
+                              AppLocalizations.of(context)!.change,
                               style: TextStyle(
                                 color: colorScheme.primary,
                                 fontSize: 12.sp,
@@ -225,20 +226,20 @@ class _BookingSummaryViewState extends State<BookingSummaryView> {
                       ),
                       SizedBox(height: AppSpacing.lg),
                       _SectionCard(
-                        title: 'Cost Summary',
+                        title: AppLocalizations.of(context)!.costSummary,
                         child: Column(
                           children: [
                             _CostRow(
-                              label: 'Consultation',
-                              value: '${amount.toStringAsFixed(2)} EGP',
+                              label: AppLocalizations.of(context)!.consultation,
+                              value: '${amount.toStringAsFixed(2)} ${AppLocalizations.of(context)!.egpSuffix}',
                             ),
                             Divider(
                               height: 24.h,
                               color: colorScheme.outlineVariant,
                             ),
                             _CostRow(
-                              label: 'Total',
-                              value: '${amount.toStringAsFixed(2)} EGP',
+                              label: AppLocalizations.of(context)!.total,
+                              value: '${amount.toStringAsFixed(2)} ${AppLocalizations.of(context)!.egpSuffix}',
                               isTotal: true,
                             ),
                           ],
@@ -247,22 +248,19 @@ class _BookingSummaryViewState extends State<BookingSummaryView> {
                       if (paymentMethodId == 3) ...[
                         SizedBox(height: AppSpacing.md),
                         _InfoBanner(
-                          message:
-                              'You selected Cash at Clinic. Your appointment will be booked and payment confirmed by the doctor when you arrive.',
+                          message: AppLocalizations.of(context)!.cashAtClinicInfo,
                         ),
                       ] else ...[
                         SizedBox(height: AppSpacing.md),
                         _InfoBanner(
-                          message:
-                              'You will complete payment securely inside the app via Paymob. No browser redirect.',
+                          message: AppLocalizations.of(context)!.paymobPaymentInfo,
                           isPaymob: true,
                         ),
                       ],
                     ] else ...[
                       SizedBox(height: AppSpacing.lg),
                       _InfoBanner(
-                        message:
-                            'You are rescheduling your appointment. No additional payment is required.',
+                        message: AppLocalizations.of(context)!.rescheduleNoPayment,
                       ),
                     ],
                   ],
@@ -302,7 +300,7 @@ class _BookingSummaryViewState extends State<BookingSummaryView> {
                       context: context,
                       doctorId: doctorId,
                       slotId: slotId,
-                      reason: reason.isEmpty ? 'General Consultation' : reason,
+                      reason: reason.isEmpty ? AppLocalizations.of(context)!.generalConsultation : reason,
                       paymentMethod: paymentMethodId,
                       amount: amount,
                       type: appointmentType,
@@ -560,7 +558,7 @@ class _BottomAction extends StatelessWidget {
                   ),
                 )
               : Text(
-                  isCash ? 'Book Appointment' : 'Confirm & Pay',
+                  isCash ? AppLocalizations.of(context)!.bookAppointment : AppLocalizations.of(context)!.confirmAndPay,
                   style: TextStyle(
                     color: colorScheme.onPrimary,
                     fontWeight: FontWeight.w600,

@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:phone_form_field/phone_form_field.dart';
 import 'package:doctor_appointment/core/widgets/image_picker_widget.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class DoctorSignUpForm extends StatefulWidget {
   final GlobalKey<FormState> formKey;
@@ -123,13 +124,13 @@ class _DoctorSignUpFormState extends State<DoctorSignUpForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildChecklistItem('Uppercase letter', hasUppercase),
+          _buildChecklistItem(AppLocalizations.of(context)!.passwordCheckUppercase, hasUppercase),
           SizedBox(height: 4.h),
-          _buildChecklistItem('Lowercase letter', hasLowercase),
+          _buildChecklistItem(AppLocalizations.of(context)!.passwordCheckLowercase, hasLowercase),
           SizedBox(height: 4.h),
-          _buildChecklistItem('Special character', hasSpecial),
+          _buildChecklistItem(AppLocalizations.of(context)!.passwordCheckSpecial, hasSpecial),
           SizedBox(height: 4.h),
-          _buildChecklistItem('8 characters', hasMinLength),
+          _buildChecklistItem(AppLocalizations.of(context)!.passwordCheck8Chars, hasMinLength),
         ],
       ),
     );
@@ -171,10 +172,11 @@ class _DoctorSignUpFormState extends State<DoctorSignUpForm> {
   }
 
   Widget _buildStep1() {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       children: [
         RegistrationTextField(
-          label: 'Email Address',
+          label: l10n.emailAddress,
           hintText: 'example@doctor.com',
           controller: widget.emailController,
           focusNode: _emailFocus,
@@ -187,8 +189,8 @@ class _DoctorSignUpFormState extends State<DoctorSignUpForm> {
         _buildPhoneField(),
         SizedBox(height: 16.h),
         RegistrationTextField(
-          label: 'Password',
-          hintText: 'Min. 8 characters',
+          label: l10n.password,
+          hintText: l10n.passwordMinChars,
           controller: widget.passwordController,
           focusNode: _passwordFocus,
           isPassword: true,
@@ -199,17 +201,14 @@ class _DoctorSignUpFormState extends State<DoctorSignUpForm> {
           },
           validator: (value) {
             if (value == null || value.trim().isEmpty) {
-              return 'Password is required';
+              return l10n.passwordRequired;
             }
-
             final passwordRegex = RegExp(
               r'^(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}$',
             );
-
             if (!passwordRegex.hasMatch(value.trim())) {
-              return 'Please meet all password requirements';
+              return l10n.meetPasswordRequirements;
             }
-
             return null;
           },
           serverError: _serverError('password'),
@@ -220,7 +219,7 @@ class _DoctorSignUpFormState extends State<DoctorSignUpForm> {
         ],
         SizedBox(height: 16.h),
         RegistrationTextField(
-          label: 'Confirm Password',
+          label: l10n.confirmPassword,
           hintText: '••••••••',
           controller: widget.confirmPasswordController,
           focusNode: _confirmFocus,
@@ -237,6 +236,7 @@ class _DoctorSignUpFormState extends State<DoctorSignUpForm> {
   }
 
   Widget _buildStep2() {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       children: [
         ProfileImagePicker(
@@ -245,12 +245,12 @@ class _DoctorSignUpFormState extends State<DoctorSignUpForm> {
         ),
         SizedBox(height: 24.h),
         RegistrationTextField(
-          label: 'Full Name',
+          label: l10n.fullName,
           hintText: 'Dr. John Doe',
           controller: widget.nameController,
           focusNode: _nameFocus,
           prefixIcon: Icons.person_outline_rounded,
-          validator: (value) => RegistrationValidators.validateRequired(value, 'Full Name'),
+          validator: (value) => RegistrationValidators.validateRequired(value, l10n.fullName),
           serverError: _serverError('fullname') ?? _serverError('fullName'),
         ),
         SizedBox(height: 16.h),
@@ -258,52 +258,49 @@ class _DoctorSignUpFormState extends State<DoctorSignUpForm> {
           children: [
             Expanded(
               child: RegistrationDatePicker(
-                label: 'Birth Date',
+                label: l10n.birthDate,
                 selectedDate: widget.selectedDateOfBirth,
                 onDateSelected: widget.onDateOfBirthChanged,
-                hintText: 'MM/DD/YYYY',
+                hintText: l10n.birthDateHint,
               ),
             ),
             SizedBox(width: 16.w),
             Expanded(
               child: RegistrationDropdown(
-                label: 'Gender',
+                label: l10n.gender,
                 value: widget.selectedGender,
-                items: const [
-                  DropdownMenuItem(value: 'Male', child: Text('Male')),
-                  DropdownMenuItem(value: 'Female', child: Text('Female')),
+                items: [
+                  DropdownMenuItem(value: 'Male', child: Text(l10n.male)),
+                  DropdownMenuItem(value: 'Female', child: Text(l10n.female)),
                 ],
                 onChanged: widget.onGenderChanged,
-                hintText: 'Select Gender',
+                hintText: l10n.selectGender,
               ),
             ),
           ],
         ),
         SizedBox(height: 16.h),
         RegistrationTextField(
-          label: 'License ID',
-          hintText: 'e.g. LIC-123456',
+          label: l10n.licenseId,
+          hintText: l10n.licenseIdHint,
           controller: widget.licenseController,
           focusNode: _licenseFocus,
           prefixIcon: Icons.badge_outlined,
-          validator: (value) => RegistrationValidators.validateRequired(value, 'License ID'),
-          serverError:
-              _serverError('licensenumber') ?? _serverError('licenseid'),
+          validator: (value) => RegistrationValidators.validateRequired(value, l10n.licenseId),
+          serverError: _serverError('licensenumber') ?? _serverError('licenseid'),
         ),
         SizedBox(height: 16.h),
         Row(
           children: [
             Expanded(
               child: RegistrationTextField(
-                label: 'Exp. Years',
+                label: l10n.expYears,
                 hintText: '5',
                 controller: widget.yearsController,
                 focusNode: _yearsFocus,
                 keyboardType: TextInputType.number,
                 validator: RegistrationValidators.validateExperienceYears,
-                serverError:
-                    _serverError('yearsofexperience') ??
-                    _serverError('experienceyears'),
+                serverError: _serverError('yearsofexperience') ?? _serverError('experienceyears'),
               ),
             ),
             SizedBox(width: 16.w),
@@ -317,8 +314,8 @@ class _DoctorSignUpFormState extends State<DoctorSignUpForm> {
         ),
         SizedBox(height: 16.h),
         RegistrationTextField(
-          label: 'Consultation Fee',
-          hintText: 'e.g. 200',
+          label: l10n.consultationFee,
+          hintText: l10n.consultationFeeHint,
           controller: widget.consultationFeeController,
           focusNode: _feeFocus,
           keyboardType: TextInputType.number,
@@ -328,12 +325,12 @@ class _DoctorSignUpFormState extends State<DoctorSignUpForm> {
         ),
         SizedBox(height: 16.h),
         RegistrationTextField(
-          label: 'Professional Bio',
-          hintText: 'Tell patients about your expertise...',
+          label: l10n.professionalBio,
+          hintText: l10n.professionalBioHint,
           controller: widget.bioController,
           focusNode: _bioFocus,
           maxLines: 3,
-          validator: (value) => RegistrationValidators.validateRequired(value, 'Bio'),
+          validator: (value) => RegistrationValidators.validateRequired(value, l10n.professionalBio),
           serverError: _serverError('bio'),
         ),
       ],
@@ -341,6 +338,7 @@ class _DoctorSignUpFormState extends State<DoctorSignUpForm> {
   }
 
   Widget _buildStep3() {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     return Column(
       children: [
@@ -350,12 +348,12 @@ class _DoctorSignUpFormState extends State<DoctorSignUpForm> {
         ),
         SizedBox(height: 24.h),
         RegistrationTextField(
-          label: 'Main Hospital',
-          hintText: 'e.g. Cairo Specialist Hospital',
+          label: l10n.mainHospital,
+          hintText: l10n.mainHospitalHint,
           controller: widget.hospitalController,
           focusNode: _hospitalFocus,
           prefixIcon: Icons.local_hospital_outlined,
-          validator: (value) => RegistrationValidators.validateRequired(value, 'Main Hospital'),
+          validator: (value) => RegistrationValidators.validateRequired(value, l10n.mainHospital),
           suffixIcon: IconButton(
             icon: Icon(Icons.map_rounded, color: theme.colorScheme.primary),
             onPressed: widget.onShowHospitalLocationPicker,
@@ -364,12 +362,12 @@ class _DoctorSignUpFormState extends State<DoctorSignUpForm> {
         ),
         SizedBox(height: 16.h),
         RegistrationTextField(
-          label: 'Clinic Address',
-          hintText: 'Tap map icon to select',
+          label: l10n.clinicAddress,
+          hintText: l10n.clinicAddressHint,
           controller: widget.clinicAddressController,
           focusNode: _clinicFocus,
           prefixIcon: Icons.location_on_outlined,
-          validator: (value) => RegistrationValidators.validateRequired(value, 'Clinic Address'),
+          validator: (value) => RegistrationValidators.validateRequired(value, l10n.clinicAddress),
           suffixIcon: IconButton(
             icon: Icon(Icons.map_rounded, color: theme.colorScheme.primary),
             onPressed: widget.onShowClinicLocationPicker,
@@ -381,8 +379,9 @@ class _DoctorSignUpFormState extends State<DoctorSignUpForm> {
   }
 
   Widget _buildPhoneField() {
+    final l10n = AppLocalizations.of(context)!;
     return RegistrationPhoneField(
-      label: 'Phone Number',
+      label: l10n.phone,
       controller: widget.phoneController,
       focusNode: _phoneFocus,
       serverError: _serverError('phone'),

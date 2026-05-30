@@ -6,6 +6,9 @@ abstract class DoctorsRepository {
     int? specializationId,
     double? minRating,
     String? searchTerm,
+    double? userLatitude,
+    double? userLongitude,
+    double? maxDistanceInKm,
     int? pageNumber,
     int? pageSize,
   });
