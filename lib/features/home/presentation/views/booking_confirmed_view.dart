@@ -6,6 +6,7 @@ import 'package:doctor_appointment/features/doctors/domain/entities/doctor.dart'
 import 'package:doctor_appointment/core/utils/routes.dart';
 import '../widgets/booking_confirmed_widgets.dart';
 import '../widgets/shared_app_bar.dart';
+import 'package:doctor_appointment/l10n/app_localizations.dart';
 
 class BookingConfirmedView extends StatelessWidget {
   const BookingConfirmedView({super.key, this.args});
@@ -16,11 +17,12 @@ class BookingConfirmedView extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final Doctor? doctor = args?['doctor'] as Doctor?;
     final String time = args?['time'] as String? ?? '';
-    final String paymentLabel = args?['paymentLabel'] as String? ?? 'Cash at Clinic';
+    final l10n = AppLocalizations.of(context)!;
+    final String paymentLabel = args?['paymentLabel'] as String? ?? l10n.cashAtClinicDefault;
 
     return Scaffold(
       backgroundColor: colorScheme.surface,
-      appBar: const SharedAppBar(title: 'Booking Confirmed'),
+      appBar: SharedAppBar(title: AppLocalizations.of(context)!.bookingConfirmedTitle),
       body: Column(
         children: [
           Expanded(
@@ -30,12 +32,12 @@ class BookingConfirmedView extends StatelessWidget {
                 const ConfirmedBadge(),
                 SizedBox(height: AppSpacing.xxl),
                 ConfirmedInfoSection(
-                  title: 'Booking Information',
+                  title: AppLocalizations.of(context)!.bookingInformation,
                   children: [
                     BookingInfoRow(
                       icon: Icons.calendar_today_outlined,
-                      label: 'Date & Time',
-                      value: time.isNotEmpty ? time : 'Appointment Booked',
+                      label: AppLocalizations.of(context)!.dateAndTime,
+                      value: time.isNotEmpty ? time : AppLocalizations.of(context)!.appointmentBooked,
                       trailing: Container(
                         padding: EdgeInsets.symmetric(
                           horizontal: 10.w,
@@ -46,7 +48,7 @@ class BookingConfirmedView extends StatelessWidget {
                           borderRadius: BorderRadius.circular(AppRadius.full),
                         ),
                         child: Text(
-                          'Get Location',
+                          AppLocalizations.of(context)!.getLocation,
                           style: TextStyle(
                             fontSize: 11.sp,
                             color: colorScheme.primary,
@@ -58,7 +60,7 @@ class BookingConfirmedView extends StatelessWidget {
                     Divider(height: 20.h, color: colorScheme.outlineVariant),
                     BookingInfoRow(
                       icon: Icons.payment_outlined,
-                      label: 'Payment',
+                      label: AppLocalizations.of(context)!.paymentLabel,
                       value: paymentLabel,
                     ),
                   ],
@@ -66,7 +68,7 @@ class BookingConfirmedView extends StatelessWidget {
                 if (doctor != null) ...[
                   SizedBox(height: AppSpacing.xl),
                   ConfirmedInfoSection(
-                    title: 'Doctor Information',
+                    title: AppLocalizations.of(context)!.doctorInformation,
                     children: [
                       DoctorInfoRow(doctor: doctor),
                     ],

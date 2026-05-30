@@ -817,6 +817,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get doctorInformation => 'Doctor Information';
 
   @override
+  String get recommendations => 'Recommendations';
+
+  @override
+  String get noDoctorsFound => 'No doctors found.';
+
+  @override
   String get timeSlot => 'Time Slot';
 
   @override
@@ -1040,4 +1046,41 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get saveChanges => 'Save Changes';
+
+  @override
+  String get notificationsTitle => 'Notification';
+
+  @override
+  String get noNotificationsYet => 'No notifications yet';
+
+  @override
+  String get noNotificationsSubtitle =>
+      'We\'ll notify you when something important happens';
+
+  @override
+  String get allNotifications => 'All Notifications';
+
+  @override
+  String get markAllAsRead => 'Mark all as read';
+
+  @override
+  String get bookingConfirmedTitle => 'Booking Confirmed';
+
+  @override
+  String get bookingInformation => 'Booking Information';
+
+  @override
+  String get dateAndTime => 'Date & Time';
+
+  @override
+  String get appointmentBooked => 'Appointment Booked';
+
+  @override
+  String get getLocation => 'Get Location';
+
+  @override
+  String get paymentLabel => 'Payment';
+
+  @override
+  String get cashAtClinicDefault => 'Cash at Clinic';
 }

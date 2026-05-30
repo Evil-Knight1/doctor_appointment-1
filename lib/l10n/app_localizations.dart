@@ -1640,6 +1640,18 @@ abstract class AppLocalizations {
   /// **'Doctor Information'**
   String get doctorInformation;
 
+  /// No description provided for @recommendations.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommendations'**
+  String get recommendations;
+
+  /// No description provided for @noDoctorsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No doctors found.'**
+  String get noDoctorsFound;
+
   /// No description provided for @timeSlot.
   ///
   /// In en, this message translates to:
@@ -2077,6 +2089,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save Changes'**
   String get saveChanges;
+
+  /// No description provided for @notificationsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification'**
+  String get notificationsTitle;
+
+  /// No description provided for @noNotificationsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No notifications yet'**
+  String get noNotificationsYet;
+
+  /// No description provided for @noNotificationsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ll notify you when something important happens'**
+  String get noNotificationsSubtitle;
+
+  /// No description provided for @allNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'All Notifications'**
+  String get allNotifications;
+
+  /// No description provided for @markAllAsRead.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark all as read'**
+  String get markAllAsRead;
+
+  /// No description provided for @bookingConfirmedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking Confirmed'**
+  String get bookingConfirmedTitle;
+
+  /// No description provided for @bookingInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking Information'**
+  String get bookingInformation;
+
+  /// No description provided for @dateAndTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Date & Time'**
+  String get dateAndTime;
+
+  /// No description provided for @appointmentBooked.
+  ///
+  /// In en, this message translates to:
+  /// **'Appointment Booked'**
+  String get appointmentBooked;
+
+  /// No description provided for @getLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Get Location'**
+  String get getLocation;
+
+  /// No description provided for @paymentLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment'**
+  String get paymentLabel;
+
+  /// No description provided for @cashAtClinicDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash at Clinic'**
+  String get cashAtClinicDefault;
 }
 
 class _AppLocalizationsDelegate

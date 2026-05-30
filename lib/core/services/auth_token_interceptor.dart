@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:dio/dio.dart';
 import 'package:doctor_appointment/features/auth/data/datasources/auth_local_data_source.dart';
@@ -38,6 +39,21 @@ class AuthTokenInterceptor extends Interceptor {
     if (!_shouldSkipRefresh(options) && token.isNotEmpty) {
       options.headers['Authorization'] = 'Bearer $token';
     }
+
+    // Set Accept-Language to the current in-app language.
+    // LocaleCubit persists the chosen locale under 'language_code' in
+    // SharedPreferences, so reading it here is always up-to-date.
+    String languageCode =
+        SharedPreferencesHelper.getString('language_code') ??
+        PlatformDispatcher.instance.locale.languageCode;
+    
+    List<String> supportedLangs = ['en', 'ar'];
+    if (!supportedLangs.contains(languageCode)) {
+      languageCode = 'en';
+    }
+    
+    options.headers['Accept-Language'] = languageCode;
+
     handler.next(options);
   }
 

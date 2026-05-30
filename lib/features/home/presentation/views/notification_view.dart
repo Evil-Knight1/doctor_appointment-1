@@ -10,6 +10,7 @@ import 'package:doctor_appointment/features/home/logic/notification_state.dart';
 import '../widgets/notification_tile.dart';
 import '../widgets/shared_app_bar.dart';
 import 'package:doctor_appointment/core/utils/app_dimensions.dart';
+import 'package:doctor_appointment/l10n/app_localizations.dart';
 
 import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
 
@@ -32,7 +33,7 @@ class NotificationsView extends StatelessWidget {
   PreferredSizeWidget _buildAppBar(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     return SharedAppBar(
-      title: 'Notification',
+      title: AppLocalizations.of(context)!.notificationsTitle,
       actions: [
         BlocBuilder<NotificationCubit, NotificationState>(
           builder: (context, state) {
@@ -109,14 +110,14 @@ class NotificationsView extends StatelessWidget {
                   ),
                   SizedBox(height: AppSpacing.md),
                   Text(
-                    'No notifications yet',
+                    AppLocalizations.of(context)!.noNotificationsYet,
                     style: context.headingSmall.copyWith(
                       color: colorScheme.onSurfaceVariant,
                     ),
                   ),
                   SizedBox(height: AppSpacing.sm),
                   Text(
-                    'We\'ll notify you when something important happens',
+                    AppLocalizations.of(context)!.noNotificationsSubtitle,
                     style: context.bodySmall.copyWith(
                       color: colorScheme.onSurfaceVariant,
                     ),
@@ -139,7 +140,7 @@ class NotificationsView extends StatelessWidget {
                   return Padding(
                     padding: EdgeInsets.only(bottom: AppSpacing.md),
                     child: _SectionLabel(
-                      label: 'All Notifications',
+                      label: AppLocalizations.of(context)!.allNotifications,
                       onMarkAll: () =>
                           context.read<NotificationCubit>().markAllAsRead(),
                     ),
@@ -183,7 +184,7 @@ class _SectionLabel extends StatelessWidget {
           GestureDetector(
             onTap: onMarkAll,
             child: Text(
-              'Mark all as read',
+              AppLocalizations.of(context)!.markAllAsRead,
               style: context.labelLarge.copyWith(
                 color: colorScheme.primary,
                 fontWeight: FontWeight.w700,

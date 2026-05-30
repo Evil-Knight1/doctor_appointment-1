@@ -9,6 +9,7 @@ import 'package:doctor_appointment/core/utils/routes.dart';
 import '../widgets/doctor_list_tile.dart';
 import '../widgets/recommendation_widgets.dart';
 import '../widgets/shared_app_bar.dart';
+import 'package:doctor_appointment/l10n/app_localizations.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:doctor_appointment/features/doctors/logic/doctors_cubit.dart';
@@ -51,7 +52,7 @@ class _RecommendationViewState extends State<RecommendationView> {
     return Scaffold(
       backgroundColor: colorScheme.surface,
       appBar: SharedAppBar(
-        title: 'Recommendations',
+        title: AppLocalizations.of(context)!.recommendations,
         actions: [
           Padding(
             padding: EdgeInsets.only(right: 8.w),
@@ -128,7 +129,7 @@ class _RecommendationViewState extends State<RecommendationView> {
                   if (doctors.isEmpty) {
                     return Center(
                       child: Text(
-                        'No doctors found.',
+                        AppLocalizations.of(context)!.noDoctorsFound,
                         style: TextStyle(color: colorScheme.onSurfaceVariant),
                       ),
                     );
@@ -142,13 +143,18 @@ class _RecommendationViewState extends State<RecommendationView> {
                       }
                       return false;
                     },
-                    child: ListView.separated(
+                    child: GridView.builder(
+                      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                        maxCrossAxisExtent: 400,
+                        mainAxisExtent: 140.h, // Fixed height for DoctorListTile
+                        crossAxisSpacing: AppSpacing.md,
+                        mainAxisSpacing: AppSpacing.md,
+                      ),
                       padding: EdgeInsets.symmetric(
                         horizontal: AppSpacing.lg,
                         vertical: AppSpacing.sm,
                       ),
                       itemCount: doctors.length + (isLoadingMore ? 1 : 0),
-                      separatorBuilder: (_, _) => SizedBox(height: AppSpacing.md),
                       itemBuilder: (context, index) {
                         if (index == doctors.length) {
                           return Padding(

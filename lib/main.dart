@@ -91,6 +91,7 @@ class DoctorAppointment extends StatelessWidget {
             builder: (context, locale) {
               return ScreenUtilInit(
                 designSize: const Size(375, 812),
+                minTextAdapt: true,
                 splitScreenMode: true,
                 builder: (context, child) {
                   return AnnotatedRegion<SystemUiOverlayStyle>(
@@ -130,26 +131,19 @@ class DoctorAppointment extends StatelessWidget {
                                   context,
                                 ).colorScheme.surface,
                                 child: ResponsiveScaledBox(
-                                  width: ResponsiveValue<double>(
+                                  // Only scale down on very small screens, 
+                                  // but let Tablet and Desktop flow naturally (width = null).
+                                  width: ResponsiveValue<double?>(
                                     context,
-                                    defaultValue: 450,
+                                    defaultValue: null,
                                     conditionalValues: [
                                       const Condition.equals(
                                         name: MOBILE,
-                                        value: 450,
-                                      ),
-                                      const Condition.between(
-                                        start: 800,
-                                        end: 1100,
-                                        value: 800,
-                                      ),
-                                      const Condition.largerThan(
-                                        name: TABLET,
-                                        value: 1000,
+                                        value: 450, // Scale small mobile devices
                                       ),
                                     ],
                                   ).value,
-                                  child: appChild,
+                                  child: appChild!,
                                 ),
                               );
                             },

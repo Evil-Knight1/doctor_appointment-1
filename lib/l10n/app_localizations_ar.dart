@@ -807,6 +807,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get doctorInformation => 'معلومات الطبيب';
 
   @override
+  String get recommendations => 'التوصيات';
+
+  @override
+  String get noDoctorsFound => 'لم يتم العثور على أطباء.';
+
+  @override
   String get timeSlot => 'الفترة الزمنية';
 
   @override
@@ -1028,4 +1034,40 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get saveChanges => 'حفظ التغييرات';
+
+  @override
+  String get notificationsTitle => 'الإشعارات';
+
+  @override
+  String get noNotificationsYet => 'لا توجد إشعارات حتى الآن';
+
+  @override
+  String get noNotificationsSubtitle => 'سنخطرك عند حدوث شيء مهم';
+
+  @override
+  String get allNotifications => 'جميع الإشعارات';
+
+  @override
+  String get markAllAsRead => 'تحديد الكل كمقروء';
+
+  @override
+  String get bookingConfirmedTitle => 'تم تأكيد الحجز';
+
+  @override
+  String get bookingInformation => 'معلومات الحجز';
+
+  @override
+  String get dateAndTime => 'التاريخ والوقت';
+
+  @override
+  String get appointmentBooked => 'تم حجز الموعد';
+
+  @override
+  String get getLocation => 'الحصول على الموقع';
+
+  @override
+  String get paymentLabel => 'الدفع';
+
+  @override
+  String get cashAtClinicDefault => 'نقداً في العيادة';
 }

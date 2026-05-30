@@ -36,10 +36,15 @@ class MedicalRecordsView extends StatelessWidget {
         backgroundColor: colorScheme.primary,
         child: Icon(Icons.add_rounded, color: colorScheme.onPrimary),
       ),
-      body: ListView.separated(
+      body: GridView.builder(
+        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+          maxCrossAxisExtent: 400,
+          mainAxisExtent: 100.h,
+          crossAxisSpacing: 12.w,
+          mainAxisSpacing: 12.h,
+        ),
         padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
         itemCount: 4,
-        separatorBuilder: (context, index) => SizedBox(height: 12.h),
         itemBuilder: (context, index) {
           return _buildRecordCard(context, index);
         },

@@ -4,6 +4,7 @@ import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 import 'package:doctor_appointment/features/calendar/presentation/views/calendar_view.dart';
 
 import 'package:doctor_appointment/features/home/presentation/views/home_view.dart';
@@ -66,18 +67,52 @@ class RootState extends State<Root> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final isDesktop = ResponsiveBreakpoints.of(context).largerThan(MOBILE);
+
+    final body = PageView(
+      controller: _pageController,
+      onPageChanged: (index) {
+        setState(() {
+          _currentIndex = index;
+        });
+      },
+      children: _widgetOptions,
+    );
+
+    if (isDesktop) {
+      return Scaffold(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        body: Row(
+          children: [
+            NavigationRail(
+              selectedIndex: _currentIndex,
+              onDestinationSelected: _changeItem,
+              labelType: NavigationRailLabelType.all,
+              backgroundColor: colorScheme.surface,
+              indicatorColor: colorScheme.primaryContainer,
+              selectedIconTheme: IconThemeData(color: colorScheme.primary),
+              unselectedIconTheme: IconThemeData(color: colorScheme.onSurfaceVariant),
+              selectedLabelTextStyle: TextStyle(color: colorScheme.primary, fontWeight: FontWeight.bold, fontSize: 13.sp),
+              unselectedLabelTextStyle: TextStyle(color: colorScheme.onSurfaceVariant, fontSize: 13.sp),
+              destinations: const [
+                NavigationRailDestination(icon: Icon(Icons.home_rounded), label: Text('Home')),
+                NavigationRailDestination(icon: Icon(Icons.chat_bubble_rounded), label: Text('Chat')),
+                NavigationRailDestination(icon: Icon(Icons.search_rounded), label: Text('Search')),
+                NavigationRailDestination(icon: Icon(Icons.calendar_month_rounded), label: Text('Bookings')),
+                NavigationRailDestination(icon: Icon(Icons.person_rounded), label: Text('Profile')),
+              ],
+            ),
+            VerticalDivider(thickness: 1, width: 1, color: colorScheme.outlineVariant),
+            Expanded(child: body),
+          ],
+        ),
+      );
+    }
+
     return Scaffold(
       extendBody: true,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: PageView(
-        controller: _pageController,
-        onPageChanged: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        children: _widgetOptions,
-      ),
+      body: body,
       bottomNavigationBar: CurvedNavigationBar(
         index: _currentIndex,
         backgroundColor: Colors.transparent,

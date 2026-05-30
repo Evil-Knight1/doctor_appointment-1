@@ -68,7 +68,7 @@ class _BookingPaymentViewState extends State<BookingPaymentView> {
                   style: context.bodySmall,
                 ),
                 SizedBox(height: AppSpacing.xl),
-                ..._methods.map(
+                ...methods.map(
                   (method) => Padding(
                     padding: EdgeInsets.only(bottom: AppSpacing.md),
                     child: _PaymentMethodTile(
