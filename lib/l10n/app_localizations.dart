@@ -1801,6 +1801,282 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Gender'**
   String get patientGender;
+
+  /// No description provided for @amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get amount;
+
+  /// No description provided for @verifyingPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Verifying Payment…'**
+  String get verifyingPayment;
+
+  /// No description provided for @paymentConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Confirmed!'**
+  String get paymentConfirmed;
+
+  /// No description provided for @verificationDelayed.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification Delayed'**
+  String get verificationDelayed;
+
+  /// No description provided for @paymentFailedText.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Failed'**
+  String get paymentFailedText;
+
+  /// No description provided for @processing.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing…'**
+  String get processing;
+
+  /// No description provided for @waitingForPaymentConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for payment confirmation from the gateway. This usually takes a few seconds.'**
+  String get waitingForPaymentConfirmation;
+
+  /// No description provided for @appointmentConfirmedInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Your appointment has been confirmed. You will receive a confirmation shortly.'**
+  String get appointmentConfirmedInfo;
+
+  /// No description provided for @aboutMe.
+  ///
+  /// In en, this message translates to:
+  /// **'About me'**
+  String get aboutMe;
+
+  /// No description provided for @experience.
+  ///
+  /// In en, this message translates to:
+  /// **'Experience'**
+  String get experience;
+
+  /// No description provided for @hospital.
+  ///
+  /// In en, this message translates to:
+  /// **'Hospital'**
+  String get hospital;
+
+  /// No description provided for @contact.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact'**
+  String get contact;
+
+  /// No description provided for @practicePlace.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice Place'**
+  String get practicePlace;
+
+  /// No description provided for @noAddressProvided.
+  ///
+  /// In en, this message translates to:
+  /// **'No address provided'**
+  String get noAddressProvided;
+
+  /// No description provided for @clinicLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinic Location'**
+  String get clinicLocation;
+
+  /// No description provided for @patientNameLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient Name Loading'**
+  String get patientNameLoading;
+
+  /// No description provided for @reviewCommentPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Review comment content loading placeholder text.'**
+  String get reviewCommentPlaceholder;
+
+  /// No description provided for @bookNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Book Now'**
+  String get bookNow;
+
+  /// No description provided for @chatLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat'**
+  String get chatLabel;
+
+  /// No description provided for @aboutTab.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get aboutTab;
+
+  /// No description provided for @locationTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get locationTab;
+
+  /// No description provided for @reviewsTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviews'**
+  String get reviewsTab;
+
+  /// No description provided for @reviewsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'reviews'**
+  String get reviewsCount;
+
+  /// No description provided for @medicalRecordsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Medical Records'**
+  String get medicalRecordsTitle;
+
+  /// No description provided for @addedByPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Added by'**
+  String get addedByPrefix;
+
+  /// No description provided for @addMedicalRecordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Medical Record'**
+  String get addMedicalRecordTitle;
+
+  /// No description provided for @recordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Record Title'**
+  String get recordTitle;
+
+  /// No description provided for @recordTitleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Blood Test Results'**
+  String get recordTitleHint;
+
+  /// No description provided for @doctorFacilityName.
+  ///
+  /// In en, this message translates to:
+  /// **'Doctor/Facility Name'**
+  String get doctorFacilityName;
+
+  /// No description provided for @doctorFacilityNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Dr. Sarah'**
+  String get doctorFacilityNameHint;
+
+  /// No description provided for @uploadDocument.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload Document'**
+  String get uploadDocument;
+
+  /// No description provided for @additionalNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Additional Notes'**
+  String get additionalNotes;
+
+  /// No description provided for @additionalNotesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Any extra details...'**
+  String get additionalNotesHint;
+
+  /// No description provided for @saveRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Record'**
+  String get saveRecord;
+
+  /// No description provided for @tapToUploadDoc.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to upload PDF, JPG, or PNG'**
+  String get tapToUploadDoc;
+
+  /// No description provided for @editProfileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Profile'**
+  String get editProfileTitle;
+
+  /// No description provided for @enterFullName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your full name'**
+  String get enterFullName;
+
+  /// No description provided for @nameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Name is required'**
+  String get nameRequired;
+
+  /// No description provided for @phoneNumberLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone Number'**
+  String get phoneNumberLabel;
+
+  /// No description provided for @genderLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Gender'**
+  String get genderLabel;
+
+  /// No description provided for @maleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Male'**
+  String get maleLabel;
+
+  /// No description provided for @femaleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Female'**
+  String get femaleLabel;
+
+  /// No description provided for @dateOfBirthLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Date of Birth'**
+  String get dateOfBirthLabel;
+
+  /// No description provided for @addressLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get addressLabel;
+
+  /// No description provided for @enterAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your address'**
+  String get enterAddress;
+
+  /// No description provided for @saveChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Changes'**
+  String get saveChanges;
 }
 
 class _AppLocalizationsDelegate

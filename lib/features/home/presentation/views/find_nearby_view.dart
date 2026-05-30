@@ -17,7 +17,7 @@ import 'package:geocoding/geocoding.dart' as geo;
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:doctor_appointment/l10n/app_localizations.dart';
 
 class FindNearbyView extends StatefulWidget {
   const FindNearbyView({super.key});

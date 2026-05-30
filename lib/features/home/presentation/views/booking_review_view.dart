@@ -10,7 +10,7 @@ import '../widgets/shared_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:doctor_appointment/features/doctors/logic/doctor_details_cubit.dart';
 import 'package:doctor_appointment/features/doctors/logic/doctor_details_state.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:doctor_appointment/l10n/app_localizations.dart';
 
 class BookingReviewView extends StatefulWidget {
   const BookingReviewView({super.key, required this.doctor});

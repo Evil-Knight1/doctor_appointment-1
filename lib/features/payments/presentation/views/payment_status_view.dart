@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:go_router/go_router.dart';
+import 'package:doctor_appointment/l10n/app_localizations.dart';
 
 /// Shows real-time payment verification status while the backend
 /// processes the Paymob webhook.
@@ -68,13 +69,13 @@ class PaymentStatusView extends StatelessWidget {
               _buildStatusIndicator(context, state),
               SizedBox(height: 32.h),
               Text(
-                _titleFor(state),
+                _titleFor(context, state),
                 style: context.styleSemiBold22,
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: 12.h),
               Text(
-                _subtitleFor(state),
+                _subtitleFor(context, state),
                 style: context.styleRegular14.copyWith(
                   color: colorScheme.onSurfaceVariant,
                 ),
@@ -95,7 +96,7 @@ class PaymentStatusView extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Amount',
+                        AppLocalizations.of(context)!.amount,
                         style: context.styleRegular14.copyWith(
                           color: colorScheme.onSurfaceVariant,
                         ),
@@ -119,7 +120,7 @@ class PaymentStatusView extends StatelessWidget {
                 TextButton.icon(
                   onPressed: () => Navigator.of(context).pop(),
                   icon: const Icon(Icons.arrow_back_rounded),
-                  label: const Text('Back to Checkout'),
+                  label: Text(AppLocalizations.of(context)!.backToCheckoutLabel),
                 ),
               ],
             ],
@@ -156,26 +157,24 @@ class PaymentStatusView extends StatelessWidget {
     return SpinKitFadingCircle(color: colorScheme.primary, size: 60.sp);
   }
 
-  String _titleFor(PaymentState state) {
-    if (state is PaymentPendingVerification) return 'Verifying Payment…';
-    if (state is PaymentSuccess) return 'Payment Confirmed!';
+  String _titleFor(BuildContext context, PaymentState state) {
+    if (state is PaymentPendingVerification) return AppLocalizations.of(context)!.verifyingPayment;
+    if (state is PaymentSuccess) return AppLocalizations.of(context)!.paymentConfirmed;
     if (state is PaymentFailure) {
       if (state.lastKnownStatus == PaymentStatus.unknown) {
-        return 'Verification Delayed';
+        return AppLocalizations.of(context)!.verificationDelayed;
       }
-      return 'Payment ${state.lastKnownStatus?.name.toUpperCase() ?? 'Failed'}';
+      return '${AppLocalizations.of(context)!.paymentFailedText} ${state.lastKnownStatus?.name.toUpperCase() ?? ''}';
     }
-    return 'Processing…';
+    return AppLocalizations.of(context)!.processing;
   }
 
-  String _subtitleFor(PaymentState state) {
+  String _subtitleFor(BuildContext context, PaymentState state) {
     if (state is PaymentPendingVerification) {
-      return 'Waiting for payment confirmation from the gateway. '
-          'This usually takes a few seconds.';
+      return AppLocalizations.of(context)!.waitingForPaymentConfirmation;
     }
     if (state is PaymentSuccess) {
-      return 'Your appointment has been confirmed. '
-          'You will receive a confirmation shortly.';
+      return AppLocalizations.of(context)!.appointmentConfirmedInfo;
     }
     if (state is PaymentFailure) {
       return state.message;

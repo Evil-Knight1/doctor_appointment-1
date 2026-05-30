@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:phone_form_field/phone_form_field.dart';
 import 'package:doctor_appointment/core/widgets/image_picker_widget.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:doctor_appointment/l10n/app_localizations.dart';
 
 class DoctorSignUpForm extends StatefulWidget {
   final GlobalKey<FormState> formKey;

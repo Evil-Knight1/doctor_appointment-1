@@ -11,7 +11,7 @@ import 'package:doctor_appointment/features/doctors/logic/specializations_state.
 import 'package:doctor_appointment/core/utils/specialty_mapper.dart';
 import '../widgets/shared_app_bar.dart';
 import '../widgets/speciality_grid_card.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:doctor_appointment/l10n/app_localizations.dart';
 
 class DoctorSpecialityView extends StatelessWidget {
   const DoctorSpecialityView({super.key});

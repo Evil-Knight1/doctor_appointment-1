@@ -5,6 +5,7 @@ import 'package:doctor_appointment/features/on_boarding_view/presentation/widget
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:doctor_appointment/l10n/app_localizations.dart';
 
 class CreateRecordView extends StatelessWidget {
   const CreateRecordView({super.key});
@@ -27,7 +28,7 @@ class CreateRecordView extends StatelessWidget {
           onPressed: () => context.pop(),
         ),
         title: Text(
-          'Add Medical Record',
+          AppLocalizations.of(context)!.addMedicalRecordTitle,
           style: context.styleSemiBold18.copyWith(color: colorScheme.onSurface),
         ),
       ),
@@ -37,48 +38,48 @@ class CreateRecordView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Record Title',
+              AppLocalizations.of(context)!.recordTitle,
               style: context.styleMedium14.copyWith(color: colorScheme.onSurface),
             ),
             SizedBox(height: 8.h),
-            const CustomTextFormField(
-              hintText: 'e.g. Blood Test Results',
+            CustomTextFormField(
+              hintText: AppLocalizations.of(context)!.recordTitleHint,
               textInputType: TextInputType.text,
             ),
             SizedBox(height: 20.h),
             Text(
-              'Doctor/Facility Name',
+              AppLocalizations.of(context)!.doctorFacilityName,
               style: context.styleMedium14.copyWith(color: colorScheme.onSurface),
             ),
             SizedBox(height: 8.h),
-            const CustomTextFormField(
-              hintText: 'e.g. Dr. Sarah',
+            CustomTextFormField(
+              hintText: AppLocalizations.of(context)!.doctorFacilityNameHint,
               textInputType: TextInputType.text,
             ),
             SizedBox(height: 20.h),
             Text(
-              'Upload Document',
+              AppLocalizations.of(context)!.uploadDocument,
               style: context.styleMedium14.copyWith(color: colorScheme.onSurface),
             ),
             SizedBox(height: 8.h),
             _buildUploadBox(context),
             SizedBox(height: 20.h),
             Text(
-              'Additional Notes',
+              AppLocalizations.of(context)!.additionalNotes,
               style: context.styleMedium14.copyWith(color: colorScheme.onSurface),
             ),
             SizedBox(height: 8.h),
-            const CustomTextFormField(
-              hintText: 'Any extra details...',
+            CustomTextFormField(
+              hintText: AppLocalizations.of(context)!.additionalNotesHint,
               textInputType: TextInputType.text,
             ),
             SizedBox(height: 32.h),
             CustomButton(
-              text: 'Save Record',
+              text: AppLocalizations.of(context)!.saveRecord,
               onPressed: () {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Record simulated successfully!'),
+                  SnackBar(
+                    content: Text(AppLocalizations.of(context)!.recordSimulatedSuccessfully),
                   ),
                 );
                 context.pop();
@@ -117,7 +118,7 @@ class CreateRecordView extends StatelessWidget {
           ),
           SizedBox(height: 12.h),
           Text(
-            'Tap to upload PDF, JPG, or PNG',
+            AppLocalizations.of(context)!.tapToUploadDoc,
             style: context.styleMedium14.copyWith(color: colorScheme.onSurfaceVariant),
           ),
         ],

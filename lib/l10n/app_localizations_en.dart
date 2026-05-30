@@ -899,4 +899,145 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get patientGender => 'Gender';
+
+  @override
+  String get amount => 'Amount';
+
+  @override
+  String get verifyingPayment => 'Verifying Payment…';
+
+  @override
+  String get paymentConfirmed => 'Payment Confirmed!';
+
+  @override
+  String get verificationDelayed => 'Verification Delayed';
+
+  @override
+  String get paymentFailedText => 'Payment Failed';
+
+  @override
+  String get processing => 'Processing…';
+
+  @override
+  String get waitingForPaymentConfirmation =>
+      'Waiting for payment confirmation from the gateway. This usually takes a few seconds.';
+
+  @override
+  String get appointmentConfirmedInfo =>
+      'Your appointment has been confirmed. You will receive a confirmation shortly.';
+
+  @override
+  String get aboutMe => 'About me';
+
+  @override
+  String get experience => 'Experience';
+
+  @override
+  String get hospital => 'Hospital';
+
+  @override
+  String get contact => 'Contact';
+
+  @override
+  String get practicePlace => 'Practice Place';
+
+  @override
+  String get noAddressProvided => 'No address provided';
+
+  @override
+  String get clinicLocation => 'Clinic Location';
+
+  @override
+  String get patientNameLoading => 'Patient Name Loading';
+
+  @override
+  String get reviewCommentPlaceholder =>
+      'Review comment content loading placeholder text.';
+
+  @override
+  String get bookNow => 'Book Now';
+
+  @override
+  String get chatLabel => 'Chat';
+
+  @override
+  String get aboutTab => 'About';
+
+  @override
+  String get locationTab => 'Location';
+
+  @override
+  String get reviewsTab => 'Reviews';
+
+  @override
+  String get reviewsCount => 'reviews';
+
+  @override
+  String get medicalRecordsTitle => 'Medical Records';
+
+  @override
+  String get addedByPrefix => 'Added by';
+
+  @override
+  String get addMedicalRecordTitle => 'Add Medical Record';
+
+  @override
+  String get recordTitle => 'Record Title';
+
+  @override
+  String get recordTitleHint => 'e.g. Blood Test Results';
+
+  @override
+  String get doctorFacilityName => 'Doctor/Facility Name';
+
+  @override
+  String get doctorFacilityNameHint => 'e.g. Dr. Sarah';
+
+  @override
+  String get uploadDocument => 'Upload Document';
+
+  @override
+  String get additionalNotes => 'Additional Notes';
+
+  @override
+  String get additionalNotesHint => 'Any extra details...';
+
+  @override
+  String get saveRecord => 'Save Record';
+
+  @override
+  String get tapToUploadDoc => 'Tap to upload PDF, JPG, or PNG';
+
+  @override
+  String get editProfileTitle => 'Edit Profile';
+
+  @override
+  String get enterFullName => 'Enter your full name';
+
+  @override
+  String get nameRequired => 'Name is required';
+
+  @override
+  String get phoneNumberLabel => 'Phone Number';
+
+  @override
+  String get genderLabel => 'Gender';
+
+  @override
+  String get maleLabel => 'Male';
+
+  @override
+  String get femaleLabel => 'Female';
+
+  @override
+  String get dateOfBirthLabel => 'Date of Birth';
+
+  @override
+  String get addressLabel => 'Address';
+
+  @override
+  String get enterAddress => 'Enter your address';
+
+  @override
+  String get saveChanges => 'Save Changes';
 }

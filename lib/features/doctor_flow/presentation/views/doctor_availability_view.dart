@@ -6,6 +6,7 @@ import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
 import 'package:doctor_appointment/features/doctor_flow/logic/doctor_availability_cubit.dart';
 import 'package:doctor_appointment/features/doctor_flow/logic/doctor_availability_state.dart';
 import 'package:doctor_appointment/features/doctors/data/models/availability_model.dart';
+import 'package:doctor_appointment/l10n/app_localizations.dart';
 
 class DoctorAvailabilityView extends StatefulWidget {
   final int doctorId;
@@ -104,7 +105,7 @@ class _DoctorAvailabilityViewState extends State<DoctorAvailabilityView> {
         apptStr.isEmpty) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Please fill all fields')));
+      ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.pleaseFillAllFields)));
       return;
     }
 
@@ -152,8 +153,8 @@ class _DoctorAvailabilityViewState extends State<DoctorAvailabilityView> {
 
     if (mounted && success) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Availability generated successfully!'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.availabilityGeneratedSuccessfully),
           backgroundColor: Colors.green,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
@@ -184,7 +185,7 @@ class _DoctorAvailabilityViewState extends State<DoctorAvailabilityView> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Available Time',
+          AppLocalizations.of(context)!.availableTime,
           style: context.styleSemiBold18.copyWith(color: colorScheme.onSurface),
         ),
       ),
@@ -213,7 +214,7 @@ class _DoctorAvailabilityViewState extends State<DoctorAvailabilityView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Select Date',
+                  AppLocalizations.of(context)!.selectDateLabel,
                   style: context.styleSemiBold16.copyWith(
                     color: colorScheme.onSurface,
                   ),
@@ -290,7 +291,7 @@ class _DoctorAvailabilityViewState extends State<DoctorAvailabilityView> {
                 ),
                 SizedBox(height: 32.h),
                 Text(
-                  'Available time',
+                  AppLocalizations.of(context)!.availableTimeLabel,
                   style: context.styleSemiBold16.copyWith(
                     color: colorScheme.onSurface,
                   ),
@@ -300,7 +301,7 @@ class _DoctorAvailabilityViewState extends State<DoctorAvailabilityView> {
                   children: [
                     Expanded(
                       child: _CustomInputField(
-                        hintText: 'From',
+                        hintText: AppLocalizations.of(context)!.fromTime,
                         controller: _fromController,
                         onTap: () => _pickTime(_fromController),
                         isReadOnly: true,
@@ -309,7 +310,7 @@ class _DoctorAvailabilityViewState extends State<DoctorAvailabilityView> {
                     SizedBox(width: 16.w),
                     Expanded(
                       child: _CustomInputField(
-                        hintText: 'To',
+                        hintText: AppLocalizations.of(context)!.toTime,
                         controller: _toController,
                         onTap: () => _pickTime(_toController),
                         isReadOnly: true,
@@ -319,7 +320,7 @@ class _DoctorAvailabilityViewState extends State<DoctorAvailabilityView> {
                 ),
                 SizedBox(height: 16.h),
                 Text(
-                  'Duration',
+                  AppLocalizations.of(context)!.duration,
                   style: context.styleSemiBold16.copyWith(
                     color: colorScheme.onSurface,
                   ),
@@ -331,7 +332,7 @@ class _DoctorAvailabilityViewState extends State<DoctorAvailabilityView> {
                 ),
                 SizedBox(height: 32.h),
                 Text(
-                  'Fees',
+                  AppLocalizations.of(context)!.fees,
                   style: context.styleSemiBold16.copyWith(
                     color: colorScheme.onSurface,
                   ),
@@ -344,7 +345,7 @@ class _DoctorAvailabilityViewState extends State<DoctorAvailabilityView> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Consultation',
+                            AppLocalizations.of(context)!.consultation,
                             style: context.styleMedium14.copyWith(
                               color: colorScheme.onSurface.withValues(
                                 alpha: .5,
@@ -353,7 +354,7 @@ class _DoctorAvailabilityViewState extends State<DoctorAvailabilityView> {
                           ),
                           SizedBox(height: 16.h),
                           _CustomInputField(
-                            hintText: '100 EGP',
+                            hintText: '100 ${AppLocalizations.of(context)!.egpSuffix}',
                             controller: _consultationController,
                           ),
                         ],
@@ -365,7 +366,7 @@ class _DoctorAvailabilityViewState extends State<DoctorAvailabilityView> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Appointment',
+                            AppLocalizations.of(context)!.appointment,
                             style: context.styleMedium14.copyWith(
                               color: colorScheme.onSurface.withValues(
                                 alpha: .5,
@@ -374,7 +375,7 @@ class _DoctorAvailabilityViewState extends State<DoctorAvailabilityView> {
                           ),
                           SizedBox(height: 16.h),
                           _CustomInputField(
-                            hintText: '50 EGP',
+                            hintText: '50 ${AppLocalizations.of(context)!.egpSuffix}',
                             controller: _appointmentController,
                           ),
                         ],
@@ -397,7 +398,7 @@ class _DoctorAvailabilityViewState extends State<DoctorAvailabilityView> {
                       elevation: 0,
                     ),
                     child: Text(
-                      'Generate',
+                      AppLocalizations.of(context)!.generate,
                       style: context.styleBold16.copyWith(
                         color: colorScheme.onPrimary,
                       ),

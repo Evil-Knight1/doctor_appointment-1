@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:doctor_appointment/core/utils/app_dimensions.dart';
 import 'package:doctor_appointment/features/home/data/models/home_doctor_model.dart';
+import 'package:doctor_appointment/l10n/app_localizations.dart';
 
 
 class DoctorHeaderCard extends StatelessWidget {
@@ -83,7 +84,7 @@ class DoctorHeaderCard extends StatelessWidget {
                     ),
                     SizedBox(width: 3.w),
                     Text(
-                      '${doctor.rating} (${doctor.reviewCount} reviews)',
+                      '${doctor.rating} (${doctor.reviewCount} ${AppLocalizations.of(context)!.reviewsCount})',
                       style: context.bodySmall.copyWith(
                         fontWeight: FontWeight.w500,
                       ),
@@ -127,10 +128,10 @@ class DoctorTabBar extends StatelessWidget {
         labelColor: colorScheme.onPrimary,
         unselectedLabelColor: colorScheme.onSurfaceVariant,
         dividerColor: Colors.transparent,
-        tabs: const [
-          Tab(text: 'About'),
-          Tab(text: 'Location'),
-          Tab(text: 'Reviews'),
+        tabs: [
+          Tab(text: AppLocalizations.of(context)!.aboutTab),
+          Tab(text: AppLocalizations.of(context)!.locationTab),
+          Tab(text: AppLocalizations.of(context)!.reviewsTab),
         ],
       ),
     );

@@ -19,6 +19,7 @@ import 'package:doctor_appointment/core/widgets/full_screen_image_viewer.dart';
 import 'package:doctor_appointment/core/utils/image_url_helper.dart';
 import '../widgets/doctor_details_widgets.dart';
 import '../widgets/shared_app_bar.dart';
+import 'package:doctor_appointment/l10n/app_localizations.dart';
 
 class DoctorDetailsView extends StatefulWidget {
   const DoctorDetailsView({super.key, required this.doctor});
@@ -129,23 +130,23 @@ class _AboutTab extends StatelessWidget {
       padding: EdgeInsets.all(AppSpacing.lg),
       children: [
         InfoSection(
-          title: 'About me',
+          title: AppLocalizations.of(context)!.aboutMe,
           content: doctor.doctor.bio ??
               'Dr. ${doctor.name} is a top specialist${doctor.doctor.hospital != null ? ' at ${doctor.doctor.hospital}' : ''}. They have received several awards for their outstanding contribution in the medical field and are available for private consultation.',
         ),
         SizedBox(height: AppSpacing.xl),
         if (doctor.doctor.yearsOfExperience != null) ...[
           LabelValue(
-            label: 'Experience',
+            label: AppLocalizations.of(context)!.experience,
             value: '${doctor.doctor.yearsOfExperience} years',
           ),
           SizedBox(height: AppSpacing.lg),
         ],
         if (doctor.doctor.hospital != null) ...[
-          LabelValue(label: 'Hospital', value: doctor.doctor.hospital!),
+          LabelValue(label: AppLocalizations.of(context)!.hospital, value: doctor.doctor.hospital!),
           SizedBox(height: AppSpacing.lg),
         ],
-        LabelValue(label: 'Contact', value: doctor.doctor.phone),
+        LabelValue(label: AppLocalizations.of(context)!.contact, value: doctor.doctor.phone),
         SizedBox(height: AppSpacing.lg),
       ],
     );
@@ -164,13 +165,13 @@ class _AddressTab extends StatelessWidget {
       padding: EdgeInsets.all(AppSpacing.lg),
       children: [
         LabelValue(
-          label: 'Practice Place',
-          value: doctor.doctor.clinicAddress ?? 'No address provided',
+          label: AppLocalizations.of(context)!.practicePlace,
+          value: doctor.doctor.clinicAddress ?? AppLocalizations.of(context)!.noAddressProvided,
         ),
         if (doctor.doctor.clinicImagesUrls != null &&
             doctor.doctor.clinicImagesUrls!.isNotEmpty) ...[
           SizedBox(height: AppSpacing.xl),
-          Text('Clinic Images', style: context.headingSmall),
+          Text(AppLocalizations.of(context)!.clinicImages, style: context.headingSmall),
           SizedBox(height: AppSpacing.md),
           SizedBox(
             height: 100.h,
@@ -229,7 +230,7 @@ class _AddressTab extends StatelessWidget {
           ),
         ],
         SizedBox(height: AppSpacing.xl),
-        Text('Location Map', style: context.headingSmall),
+        Text(AppLocalizations.of(context)!.locationMap, style: context.headingSmall),
         SizedBox(height: AppSpacing.md),
         GestureDetector(
           onTap: () async {
@@ -259,7 +260,7 @@ class _AddressTab extends StatelessWidget {
 
               await availableMaps.first.showMarker(
                 coords: Coords(lat, lng),
-                title: doctor.doctor.clinicAddress ?? "Clinic Location",
+                title: doctor.doctor.clinicAddress ?? AppLocalizations.of(context)!.clinicLocation,
               );
             }
           },
@@ -348,8 +349,8 @@ class _ReviewsTab extends StatelessWidget {
               separatorBuilder: (_, _) =>
                   Divider(height: AppSpacing.xxl, color: colorScheme.outlineVariant),
               itemBuilder: (_, index) => _ReviewTile(
-                name: 'Patient Name Loading',
-                text: 'Review comment content loading placeholder text.',
+                name: AppLocalizations.of(context)!.patientNameLoading,
+                text: AppLocalizations.of(context)!.reviewCommentPlaceholder,
                 stars: 5,
                 date: DateTime.now(),
               ),
@@ -366,7 +367,7 @@ class _ReviewsTab extends StatelessWidget {
           final reviews = state.reviews;
           if (reviews.isEmpty) {
             return Center(
-              child: Text('No reviews yet', style: context.bodyMedium),
+              child: Text(AppLocalizations.of(context)!.noReviewsYet, style: context.bodyMedium),
             );
           }
           return ListView.separated(
@@ -496,7 +497,7 @@ class _AppointmentButton extends StatelessWidget {
                   elevation: 0,
                 ),
                 child: Text(
-                  'Book Now',
+                  AppLocalizations.of(context)!.bookNow,
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 15.sp,
@@ -524,7 +525,7 @@ class _AppointmentButton extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  'Chat',
+                  AppLocalizations.of(context)!.chatLabel,
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 15.sp,

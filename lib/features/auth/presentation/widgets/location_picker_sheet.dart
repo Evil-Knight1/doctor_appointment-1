@@ -1,7 +1,7 @@
 import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:doctor_appointment/l10n/app_localizations.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geocoding/geocoding.dart' as geo;

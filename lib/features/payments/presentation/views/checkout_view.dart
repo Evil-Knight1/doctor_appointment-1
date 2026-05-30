@@ -11,6 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:doctor_appointment/l10n/app_localizations.dart';
 
 class CheckoutPayload {
   final AppointmentDraft draft;
@@ -73,7 +75,7 @@ class _CheckoutViewState extends State<CheckoutView> {
                 onPressed: isLoading ? null : () => context.pop(),
               ),
               title: Text(
-                'Payment',
+                AppLocalizations.of(context)!.paymentOption,
                 style: context.styleSemiBold22.copyWith(fontSize: 18.sp),
               ),
             ),
@@ -83,29 +85,29 @@ class _CheckoutViewState extends State<CheckoutView> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Select Payment Method',
+                    AppLocalizations.of(context)!.paymentOptionSubtitle,
                     style: context.styleSemiBold16,
                   ),
                   SizedBox(height: 16.h),
                   _buildMethodTile(
                     value: 1,
-                    label: 'Credit / Debit Card',
+                    label: AppLocalizations.of(context)!.onlineCard,
                     icon: Icons.credit_card_rounded,
-                    subtitle: 'Visa, Mastercard accepted',
+                    subtitle: AppLocalizations.of(context)!.onlineCardSubtitle,
                   ),
                   SizedBox(height: 12.h),
                   _buildMethodTile(
                     value: 2,
-                    label: 'Mobile Wallet',
+                    label: AppLocalizations.of(context)!.mobileWallet,
                     icon: Icons.account_balance_wallet_rounded,
-                    subtitle: 'Vodafone Cash, Etisalat Cash',
+                    subtitle: AppLocalizations.of(context)!.mobileWalletSubtitle,
                   ),
                   SizedBox(height: 12.h),
                   _buildMethodTile(
                     value: 3,
-                    label: 'Cash at Clinic',
+                    label: AppLocalizations.of(context)!.cashAtClinic,
                     icon: Icons.payments_rounded,
-                    subtitle: 'Pay directly at the clinic',
+                    subtitle: AppLocalizations.of(context)!.cashAtClinicSubtitle,
                   ),
                   const Spacer(),
                   _buildAmountRow(context, amount),
@@ -123,7 +125,7 @@ class _CheckoutViewState extends State<CheckoutView> {
                   ],
                   SizedBox(height: 16.h),
                   CustomButton(
-                    text: isLoading ? 'Processing…' : 'Confirm & Pay',
+                    text: isLoading ? '${AppLocalizations.of(context)!.confirmAndPay}...' : AppLocalizations.of(context)!.confirmAndPay,
                     onPressed: isLoading ? () {} : _onConfirm,
                     width: double.infinity,
                     height: 52.h,
@@ -180,8 +182,8 @@ class _CheckoutViewState extends State<CheckoutView> {
       );
     } else if (state is PaymentCancelled) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Payment cancelled.'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.paymentCancelledShort),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -206,13 +208,13 @@ class _CheckoutViewState extends State<CheckoutView> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          'Total Fees:',
+          '${AppLocalizations.of(context)!.total}:',
           style: context.styleMedium14.copyWith(
             color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
         Text(
-          'EGP ${amount.toStringAsFixed(2)}',
+          '${AppLocalizations.of(context)!.egpSuffix} ${amount.toStringAsFixed(2)}',
           style: context.styleSemiBold24.copyWith(
             color: Theme.of(context).colorScheme.primary,
           ),

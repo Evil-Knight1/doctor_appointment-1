@@ -888,4 +888,144 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get patientGender => 'الجنس';
+
+  @override
+  String get amount => 'المبلغ';
+
+  @override
+  String get verifyingPayment => 'جاري التحقق من الدفع…';
+
+  @override
+  String get paymentConfirmed => 'تم تأكيد الدفع!';
+
+  @override
+  String get verificationDelayed => 'تأخر التحقق';
+
+  @override
+  String get paymentFailedText => 'فشل الدفع';
+
+  @override
+  String get processing => 'جاري المعالجة…';
+
+  @override
+  String get waitingForPaymentConfirmation =>
+      'في انتظار تأكيد الدفع من البوابة. يستغرق هذا عادة بضع ثوانٍ.';
+
+  @override
+  String get appointmentConfirmedInfo =>
+      'تم تأكيد موعدك. ستتلقى تأكيداً قريباً.';
+
+  @override
+  String get aboutMe => 'من أنا';
+
+  @override
+  String get experience => 'الخبرة';
+
+  @override
+  String get hospital => 'المستشفى';
+
+  @override
+  String get contact => 'جهة الاتصال';
+
+  @override
+  String get practicePlace => 'مكان العمل';
+
+  @override
+  String get noAddressProvided => 'لا يوجد عنوان متاح';
+
+  @override
+  String get clinicLocation => 'موقع العيادة';
+
+  @override
+  String get patientNameLoading => 'جاري تحميل اسم المريض';
+
+  @override
+  String get reviewCommentPlaceholder => 'نص افتراضي لتحميل تعليق المراجعة.';
+
+  @override
+  String get bookNow => 'احجز الآن';
+
+  @override
+  String get chatLabel => 'دردشة';
+
+  @override
+  String get aboutTab => 'حول';
+
+  @override
+  String get locationTab => 'الموقع';
+
+  @override
+  String get reviewsTab => 'المراجعات';
+
+  @override
+  String get reviewsCount => 'مراجعات';
+
+  @override
+  String get medicalRecordsTitle => 'السجلات الطبية';
+
+  @override
+  String get addedByPrefix => 'أضيف بواسطة';
+
+  @override
+  String get addMedicalRecordTitle => 'إضافة سجل طبي';
+
+  @override
+  String get recordTitle => 'عنوان السجل';
+
+  @override
+  String get recordTitleHint => 'مثل: نتائج فحص الدم';
+
+  @override
+  String get doctorFacilityName => 'اسم الطبيب/المنشأة';
+
+  @override
+  String get doctorFacilityNameHint => 'مثل: د. سارة';
+
+  @override
+  String get uploadDocument => 'رفع مستند';
+
+  @override
+  String get additionalNotes => 'ملاحظات إضافية';
+
+  @override
+  String get additionalNotesHint => 'أي تفاصيل إضافية...';
+
+  @override
+  String get saveRecord => 'حفظ السجل';
+
+  @override
+  String get tapToUploadDoc => 'اضغط لرفع ملف PDF أو JPG أو PNG';
+
+  @override
+  String get editProfileTitle => 'تعديل الملف الشخصي';
+
+  @override
+  String get enterFullName => 'أدخل اسمك الكامل';
+
+  @override
+  String get nameRequired => 'الاسم مطلوب';
+
+  @override
+  String get phoneNumberLabel => 'رقم الهاتف';
+
+  @override
+  String get genderLabel => 'الجنس';
+
+  @override
+  String get maleLabel => 'ذكر';
+
+  @override
+  String get femaleLabel => 'أنثى';
+
+  @override
+  String get dateOfBirthLabel => 'تاريخ الميلاد';
+
+  @override
+  String get addressLabel => 'العنوان';
+
+  @override
+  String get enterAddress => 'أدخل عنوانك';
+
+  @override
+  String get saveChanges => 'حفظ التغييرات';
 }

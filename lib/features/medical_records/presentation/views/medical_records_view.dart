@@ -4,6 +4,7 @@ import 'package:doctor_appointment/core/utils/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:doctor_appointment/l10n/app_localizations.dart';
 
 class MedicalRecordsView extends StatelessWidget {
   const MedicalRecordsView({super.key});
@@ -26,7 +27,7 @@ class MedicalRecordsView extends StatelessWidget {
           onPressed: () => context.pop(),
         ),
         title: Text(
-          'Medical Records',
+          AppLocalizations.of(context)!.medicalRecordsTitle,
           style: context.styleSemiBold18.copyWith(color: colorScheme.onSurface),
         ),
       ),
@@ -112,7 +113,7 @@ class MedicalRecordsView extends StatelessWidget {
                 ),
                 SizedBox(height: 4.h),
                 Text(
-                  'Added by ${docs[index % docs.length]}',
+                  '${AppLocalizations.of(context)!.addedByPrefix} ${docs[index % docs.length]}',
                   style: context.styleMedium14.copyWith(color: colorScheme.onSurfaceVariant),
                 ),
                 SizedBox(height: 4.h),

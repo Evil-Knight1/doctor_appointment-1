@@ -17,6 +17,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:doctor_appointment/core/utils/image_url_helper.dart';
 import 'package:phone_form_field/phone_form_field.dart';
+import 'package:doctor_appointment/l10n/app_localizations.dart';
 
 class EditProfileView extends StatefulWidget {
   final PatientProfile profile;
@@ -86,7 +87,7 @@ class _EditProfileViewState extends State<EditProfileView> {
             onPressed: () => context.pop(),
           ),
           title: Text(
-            'Edit Profile',
+            AppLocalizations.of(context)!.editProfileTitle,
             style: context.styleSemiBold18.copyWith(
               color: Theme.of(context).colorScheme.onSurface,
             ),
@@ -209,36 +210,36 @@ class _EditProfileViewState extends State<EditProfileView> {
                     SizedBox(height: 32.h),
                     RegistrationTextField(
                       controller: _nameController,
-                      label: 'Full Name',
-                      hintText: 'Enter your full name',
+                      label: AppLocalizations.of(context)!.fullName,
+                      hintText: AppLocalizations.of(context)!.enterFullName,
                       prefixIcon: Icons.person_outline_rounded,
                       validator: (value) => value == null || value.isEmpty
-                          ? 'Name is required'
+                          ? AppLocalizations.of(context)!.nameRequired
                           : null,
                     ),
                     SizedBox(height: 20.h),
                     RegistrationPhoneField(
                       controller: _phoneController,
-                      label: 'Phone Number',
+                      label: AppLocalizations.of(context)!.phoneNumberLabel,
                     ),
                     SizedBox(height: 20.h),
                     RegistrationDropdown<String>(
-                      label: 'Gender',
+                      label: AppLocalizations.of(context)!.genderLabel,
                       value: _selectedGender,
                       onChanged: (val) => setState(() => _selectedGender = val),
                       prefixIcon: Icons.person_search_outlined,
-                      hintText: 'Select Gender',
+                      hintText: AppLocalizations.of(context)!.selectGender,
                       items: [
-                        DropdownMenuItem(value: 'Male', child: Text('Male')),
+                        DropdownMenuItem(value: 'Male', child: Text(AppLocalizations.of(context)!.maleLabel)),
                         DropdownMenuItem(
                           value: 'Female',
-                          child: Text('Female'),
+                          child: Text(AppLocalizations.of(context)!.femaleLabel),
                         ),
                       ],
                     ),
                     SizedBox(height: 20.h),
                     RegistrationDatePicker(
-                      label: 'Date of Birth',
+                      label: AppLocalizations.of(context)!.dateOfBirthLabel,
                       selectedDate: _dateOfBirth,
                       onDateSelected: (date) =>
                           setState(() => _dateOfBirth = date),
@@ -248,8 +249,8 @@ class _EditProfileViewState extends State<EditProfileView> {
                     SizedBox(height: 20.h),
                     RegistrationTextField(
                       controller: _addressController,
-                      label: 'Address',
-                      hintText: 'Enter your address',
+                      label: AppLocalizations.of(context)!.addressLabel,
+                      hintText: AppLocalizations.of(context)!.enterAddress,
                       prefixIcon: Icons.location_on_outlined,
                     ),
                     SizedBox(height: 40.h),
@@ -277,7 +278,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                                 ),
                               )
                             : Text(
-                                'Save Changes',
+                                AppLocalizations.of(context)!.saveChanges,
                                 style: context.styleSemiBold16.copyWith(
                                   color: Theme.of(
                                     context,

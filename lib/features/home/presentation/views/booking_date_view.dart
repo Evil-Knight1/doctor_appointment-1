@@ -16,7 +16,7 @@ import '../widgets/booking_stepper.dart';
 import '../widgets/shared_app_bar.dart';
 import 'package:doctor_appointment/core/theme/app_theme_extension.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:doctor_appointment/l10n/app_localizations.dart';
 
 class BookingDateView extends StatefulWidget {
   const BookingDateView({
